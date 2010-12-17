@@ -16,13 +16,12 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.lang;
+package wyjs.lang;
 
 import java.util.*;
-import wyil.ModuleLoader;
-import wyil.lang.*;
-import wyil.util.SyntacticElement;
-import wyil.util.SyntaxError;
+import wyjs.ModuleLoader;
+import wyjs.util.SyntacticElement;
+import wyjs.util.SyntaxError;
 
 public class WhileyFile {
 	public final ModuleID module;

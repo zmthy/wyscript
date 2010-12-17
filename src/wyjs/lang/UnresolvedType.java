@@ -16,11 +16,11 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.lang;
+package wyjs.lang;
 
 import java.util.*;
-import wyil.lang.Attribute;
-import wyil.util.SyntacticElement;
+import wyjs.util.Attribute;
+import wyjs.util.SyntacticElement;
 
 public interface UnresolvedType extends SyntacticElement {
 

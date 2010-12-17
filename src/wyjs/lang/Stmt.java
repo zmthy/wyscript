@@ -16,13 +16,11 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.lang;
+package wyjs.lang;
 
 import java.util.*;
 
-import wyil.lang.Attribute;
-import wyil.util.*;
-import wyjvm.lang.Bytecode;
+import wyjs.util.*;
 
 public interface Stmt extends SyntacticElement {
 	

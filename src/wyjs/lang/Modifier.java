@@ -16,7 +16,7 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.lang;
+package wyjs.lang;
 
 public interface Modifier {
 	public static final Modifier PUBLIC = new Public();	
