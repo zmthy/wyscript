@@ -16,14 +16,13 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.stages;
+package wyjs.stages;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 
-import wyil.jvm.rt.BigRational;
-import wyil.util.SyntaxError;
+import wyjs.util.SyntaxError;
 
 public class WhileyLexer {	
 	private String filename;
@@ -107,7 +106,7 @@ public class WhileyLexer {
 			while (pos < input.length() && Character.isDigit(input.charAt(pos))) {
 				pos = pos + 1;
 			}			
-			BigRational r = new BigRational(input.substring(start, pos));
+			Double r = new Double(input.substring(start, pos));
 			return new Real(r,input.substring(start,pos),start);
 		} else {
 			BigInteger r = new BigInteger(input.substring(start, pos));
@@ -484,8 +483,8 @@ public class WhileyLexer {
 	}
 	
 	public static class Real extends Token {
-		public final BigRational value;
-		public Real(BigRational r, String text, int pos) { 
+		public final double value;
+		public Real(double r, String text, int pos) { 
 			super(text,pos);
 			value = r;
 		}

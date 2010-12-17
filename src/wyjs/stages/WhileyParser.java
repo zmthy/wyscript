@@ -16,22 +16,15 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.stages;
+package wyjs.stages;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
 
-import wyil.lang.*;
-import wyil.jvm.rt.BigRational;
-import wyil.util.*;
-import wyjc.lang.*;
-import wyjc.lang.Stmt;
-import wyjc.lang.WhileyFile.*;
-import wyjc.util.*;
-import wyjvm.lang.Bytecode;
-
-import static wyjc.stages.WhileyLexer.*;
+import wyjs.lang.*;
+import wyjs.lang.WhileyFile.*;
+import static wyjs.stages.WhileyLexer.*;
 
 public class WhileyParser {
 	private String filename;

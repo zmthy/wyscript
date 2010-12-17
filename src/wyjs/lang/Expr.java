@@ -16,13 +16,12 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.lang;
+package wyjs.lang;
 
 import java.util.*;
 
-import wyil.lang.*;
-import wyil.util.Pair;
-import wyil.util.SyntacticElement;
+import wyjs.util.Pair;
+import wyjs.util.SyntacticElement;
 
 public interface Expr extends SyntacticElement {
 

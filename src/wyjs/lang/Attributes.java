@@ -16,10 +16,7 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.lang;
-
-import wyil.lang.*;
-import wyil.lang.Type;
+package wyjs.lang;
 
 /**
  * An attribute is simply a piece of information that we may wish to
@@ -31,18 +28,10 @@ import wyil.lang.Type;
 public interface Attributes {
 
 	public static final class Fun implements Attribute {
-		public final wyil.lang.Type.Fun type;
+		public final Type.Fun type;
 
-		public Fun(wyil.lang.Type.Fun type) {
+		public Fun(Type.Fun type) {
 			this.type = type;
-		}
-	}
-	
-	public static final class Module implements Attribute {
-		public final ModuleID module;
-		
-		public Module(ModuleID module) {
-			this.module = module;
 		}
 	}
 	

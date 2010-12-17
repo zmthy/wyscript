@@ -16,13 +16,13 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.testing;
+package wyjs.testing;
 
 import static org.junit.Assert.fail;
 
 import java.io.*;
 
-import wyjc.Main;
+import wyjs.Main;
 
 public class TestHarness {
 	private String srcPath;    // path to source files	
