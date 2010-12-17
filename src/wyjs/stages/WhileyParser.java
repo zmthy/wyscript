@@ -267,8 +267,6 @@ public class WhileyParser {
 			return parseWhile(indent);
 		} else if(token.text.equals("for")) {			
 			return parseFor(indent);
-		} else if(token.text.equals("spawn")) {			
-			return parseSpawn();
 		} else if ((index + 1) < tokens.size()
 				&& tokens.get(index + 1) instanceof LeftBrace) {
 			// must be a method invocation
@@ -678,21 +676,6 @@ public class WhileyParser {
 					lhs = new Expr.ListAccess(lhs, rhs, sourceAttr(start,
 							index - 1));
 				}
-			} else if(lookahead instanceof Arrow) {								
-				match(Arrow.class);					
-				int tmp = index; 
-				String name = matchIdentifier().text;
-				if(index < tokens.size() && tokens.get(index) instanceof LeftBrace) {
-					// this indicates a method invocation.
-					index = tmp; // slight backtrack
-					Expr.Invoke ivk = parseInvokeExpr();							
-					lhs = new Expr.Invoke(ivk.name, lhs, ivk.arguments,
-							sourceAttr(ostart, index - 1));				
-				} else {					
-					lhs = new Expr.UnOp(Expr.UOp.PROCESSACCESS, lhs,
-							sourceAttr(start, index - 1));
-					lhs = new Expr.RecordAccess(lhs, name, sourceAttr(start,index - 1));			
-				}
 			} else {				
 				match(Dot.class);
 				String name = matchIdentifier().text;				
@@ -724,13 +707,6 @@ public class WhileyParser {
 			token = tokens.get(index);			
 			match(RightBrace.class);
 			return v;			 		
-		} else if(token instanceof Star) {
-			// this indicates a process dereference
-			match(Star.class);
-			skipWhiteSpace();
-			Expr e = parseAddSubExpression();
-			return new Expr.UnOp(Expr.UOp.PROCESSACCESS, e, sourceAttr(start,
-					index - 1));
 		} else if ((index + 1) < tokens.size()
 				&& token instanceof Identifier
 				&& tokens.get(index + 1) instanceof LeftBrace) {				
@@ -748,8 +724,6 @@ public class WhileyParser {
 			matchKeyword("false");
 			return new Expr.Constant(false,
 					sourceAttr(start, index - 1));			
-		} else if(token.text.equals("spawn")) {
-			return parseSpawn();			
 		} else if (token instanceof Identifier) {
 			return new Expr.Variable(matchIdentifier().text, sourceAttr(start,
 					index - 1));			
@@ -781,14 +755,6 @@ public class WhileyParser {
 		}
 		syntaxError("unrecognised term.",token);
 		return null;		
-	}
-	
-	private Expr.Spawn parseSpawn() {
-		int start = index;
-		matchKeyword("spawn");
-		skipWhiteSpace();
-		Expr state = parseAddSubExpression();
-		return new Expr.Spawn(state, sourceAttr(start,index - 1));
 	}
 	
 	private Expr parseListVal() {

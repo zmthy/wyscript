@@ -127,8 +127,6 @@ public interface Expr extends SyntacticElement {
 		NOT,
 		NEG,
 		LENGTHOF,
-		PROCESSACCESS,
-		PROCESSSPAWN
 	}
 	
 	public static class UnOp extends SyntacticElement.Impl implements Expr {
@@ -248,12 +246,6 @@ public interface Expr extends SyntacticElement {
 			this.name = name;
 			this.receiver = receiver;
 			this.arguments = arguments;
-		}
-	}
-	
-	public static class Spawn extends UnOp implements Stmt {		
-		public Spawn(Expr mhs, Attribute... attributes) {
-			super(UOp.PROCESSSPAWN,mhs,attributes);							
 		}
 	}
 	
