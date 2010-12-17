@@ -6,7 +6,6 @@
   </target>
 
   <target name="build-wyjs" depends="compile">
-    <buildnumber file="build.num"/>
     <mkdir dir="tmp"/>
     <manifest file="tmp/MANIFEST.MF">
       <attribute name="Built-By" value="${user.name}"/>
