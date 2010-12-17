@@ -16,22 +16,14 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.stages;
+package wyjs.stages;
 
 import java.util.*;
 import java.math.BigInteger;
 
-import static wyil.util.SyntaxError.*;
-import wyil.ModuleLoader;
-import wyil.stages.TypePropagation;
-import wyil.util.*;
-import wyil.lang.*;
-import wyil.lang.Code.IfGoto;
-import wyjc.lang.*;
-import wyjc.lang.WhileyFile.*;
-import wyjc.lang.Stmt;
-import wyjc.lang.Stmt.*;
-import wyjc.lang.Expr.*;
+import static wyjs.util.SyntaxError.*;
+import wyjs.util.*;
+import wyjs.lang.*;
 
 public class ModuleBuilder {
 	private final ModuleLoader loader;	

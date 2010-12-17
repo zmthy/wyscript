@@ -19,7 +19,7 @@
 package wyjs.lang;
 
 import java.util.*;
-import wyjs.ModuleLoader;
+import wyjs.util.Attribute;
 import wyjs.util.SyntacticElement;
 import wyjs.util.SyntaxError;
 
@@ -33,22 +33,7 @@ public class WhileyFile {
 		this.filename = filename;
 		this.declarations = new ArrayList<Decl>(decls);
 	}
-	
-	public ModuleLoader.Skeleton skeleton() {		
-		return new ModuleLoader.Skeleton(module) {
-			public boolean hasName(String name) {
-				// FIXME: improve performance!
-				for(Decl d : declarations) {
-					if(d.name().equals(name)) {
-						return true;
-					}
-				}
-				return false;
-			}			
-		};
-	}
-
-	
+		
 	public interface Decl extends SyntacticElement {
 		public String name();
 	}

@@ -16,12 +16,12 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyjc.stages;
+package wyjs.stages;
 
 import java.util.*;
 
-import static wyil.util.SyntaxError.*;
-import wyil.ModuleLoader;
+import static wyjs.util.SyntaxError.*;
+import wyjs.ModuleLoader;
 import wyil.util.*;
 import wyil.lang.*;
 import wyjc.lang.*;

@@ -16,7 +16,7 @@
 //
 // Copyright 2010, David James Pearce. 
 
-package wyil.lang;
+package wyjs.lang;
 
 import java.util.*;
 import java.io.File;
