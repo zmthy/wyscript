@@ -100,7 +100,7 @@ public class WhileyLexer {
 			if(pos < input.length() && input.charAt(pos) == '.') {
 				// this is case for range e.g. 0..1
 				pos = pos - 1;
-				BigInteger r = new BigInteger(input.substring(start, pos));
+				int r = new BigInteger(input.substring(start, pos)).intValue();
 				return new Int(r,input.substring(start,pos),start);
 			}
 			while (pos < input.length() && Character.isDigit(input.charAt(pos))) {
@@ -109,7 +109,7 @@ public class WhileyLexer {
 			Double r = new Double(input.substring(start, pos));
 			return new Real(r,input.substring(start,pos),start);
 		} else {
-			BigInteger r = new BigInteger(input.substring(start, pos));
+			int r = new BigInteger(input.substring(start, pos)).intValue();
 			return new Int(r,input.substring(start,pos),start);			
 		}		
 	}
@@ -135,7 +135,7 @@ public class WhileyLexer {
 			syntaxError("unexpected end-of-character",pos);
 		}
 		pos = pos + 1;
-		return new Int(BigInteger.valueOf(c),input.substring(start,pos),start);
+		return new Int(c,input.substring(start,pos),start);
 	}
 	
 	public Token scanString() {
@@ -490,8 +490,8 @@ public class WhileyLexer {
 		}
 	}
 	public static class Int extends Token {
-		public final BigInteger value;
-		public Int(BigInteger r, String text, int pos) { 
+		public final int value;
+		public Int(int r, String text, int pos) { 
 			super(text,pos);
 			value = r;
 		}

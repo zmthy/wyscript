@@ -20,8 +20,7 @@ package wyjs.lang;
 
 import java.util.*;
 
-import wyjs.util.Pair;
-import wyjs.util.SyntacticElement;
+import wyjs.util.*;
 
 public interface Expr extends SyntacticElement {
 
@@ -54,9 +53,9 @@ public interface Expr extends SyntacticElement {
 	}
 
 	public static class Constant extends SyntacticElement.Impl implements Expr {
-		public final Value value;
+		public final Object value;
 
-		public Constant(Value val, Attribute... attributes) {
+		public Constant(Object val, Attribute... attributes) {
 			super(attributes);
 			this.value = val;
 		}

@@ -19,11 +19,11 @@
 package wyjs.stages;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.util.*;
 
 import wyjs.lang.*;
 import wyjs.lang.WhileyFile.*;
+import wyjs.util.*;
 import static wyjs.stages.WhileyLexer.*;
 
 public class WhileyParser {
@@ -277,8 +277,6 @@ public class WhileyParser {
 			return parseWhile(indent);
 		} else if(token.text.equals("for")) {			
 			return parseFor(indent);
-		} else if(token.text.equals("extern")) {			
-			return parseExtern(indent);
 		} else if(token.text.equals("spawn")) {			
 			return parseSpawn();
 		} else if ((index + 1) < tokens.size()
@@ -419,59 +417,7 @@ public class WhileyParser {
 		List<Stmt> blk = parseBlock(indent+1);								
 		
 		return new Stmt.For(id.text,source,blk, sourceAttr(start,end-1));
-	}
-	
-	private Stmt parseExtern(int indent) {
-		int start = index;
-		matchKeyword("extern");
-		Token tok = tokens.get(index++);
-		if(!tok.text.equals("jvm")) {
-			syntaxError("unsupported extern language: " + tok,tok);
-		}		
-		match(Colon.class);
-		int end = index;
-		matchEndLine();
-		Tabs tabs = null;
-		
-		if(tokens.get(index) instanceof Tabs) {
-			tabs = (Tabs) tokens.get(index);
-		}
-		indent = indent + 1;
-		ArrayList<Bytecode> bytecodes = new ArrayList<Bytecode>();
-		while(tabs != null && tabs.ntabs == indent) {												
-			index = index + 1;
-			bytecodes.add(parseBytecode());								
-			tabs = null;
-			if(index < tokens.size() && tokens.get(index) instanceof Tabs) {
-				tabs = (Tabs) tokens.get(index);
-			} else {
-				tabs = null;
-			}
-		}
-		
-		return new Stmt.ExternJvm(bytecodes,sourceAttr(start,end-1));
-	}		
-	
-	private Bytecode parseBytecode() {
-		String line = "";
-		int start = index;
-		while(index < tokens.size() && !(tokens.get(index) instanceof NewLine)) {
-			Token tok = tokens.get(index);
-			while(line.length() != tok.start) {
-				line = line + " ";
-			}			
-			line = line + tokens.get(index).text;			
-			index++;
-		}				
-		try {
-			Bytecode b = wyjvm.util.Parser.parseBytecode(line);			
-			matchEndLine();
-			return b;
-		} catch(wyjvm.util.Parser.ParseError err) {	
-			Attribute.Source sa = sourceAttr(start,index-1);
-			throw new SyntaxError(err.getMessage(),filename,sa.start,sa.end,err);
-		}
-	}		
+	}	
 	
 	private Stmt parseAssign() {		
 		// standard assignment
@@ -713,9 +659,8 @@ public class WhileyParser {
 					Expr end = parseAddSubExpression();
 					match(RightSquare.class);
 					return new Expr.NaryOp(Expr.NOp.SUBLIST, sourceAttr(start,
-							index - 1), lhs, new Expr.Constant(Value
-							.V_INT(BigInteger.ZERO), sourceAttr(start,
-							index - 1)), end);
+							index - 1), lhs, new Expr.Constant(0, sourceAttr(
+							start, index - 1)), end);
 				}
 				
 				Expr rhs = parseAddSubExpression();
@@ -803,15 +748,15 @@ public class WhileyParser {
 			return parseInvokeExpr();
 		} else if (token.text.equals("null")) {
 			matchKeyword("null");			
-			return new Expr.Constant(Value.V_NULL,
+			return new Expr.Constant(null,
 					sourceAttr(start, index - 1));
 		} else if (token.text.equals("true")) {
 			matchKeyword("true");			
-			return new Expr.Constant(Value.V_BOOL(true),
+			return new Expr.Constant(true,
 					sourceAttr(start, index - 1));
 		} else if (token.text.equals("false")) {	
 			matchKeyword("false");
-			return new Expr.Constant(Value.V_BOOL(false),
+			return new Expr.Constant(false,
 					sourceAttr(start, index - 1));			
 		} else if(token.text.equals("spawn")) {
 			return parseSpawn();			
@@ -819,11 +764,11 @@ public class WhileyParser {
 			return new Expr.Variable(matchIdentifier().text, sourceAttr(start,
 					index - 1));			
 		} else if (token instanceof Int) {			
-			BigInteger val = match(Int.class).value;
-			return new Expr.Constant(Value.V_INT(val), sourceAttr(start, index - 1));
+			int val = match(Int.class).value;
+			return new Expr.Constant(val, sourceAttr(start, index - 1));
 		} else if (token instanceof Real) {
-			BigRational val = match(Real.class).value;
-			return new Expr.Constant(Value.V_REAL(val), sourceAttr(start,
+			double val = match(Real.class).value;
+			return new Expr.Constant(val, sourceAttr(start,
 					index - 1));			
 		} else if (token instanceof Strung) {
 			return parseString();
@@ -837,7 +782,7 @@ public class WhileyParser {
 			return parseSetVal();
 		} else if (token instanceof EmptySet) {
 			match(EmptySet.class);
-			return new Expr.Constant(Value.V_SET(new ArrayList<Value>()),
+			return new Expr.Constant(new HashSet(),
 					sourceAttr(start, index - 1));
 		} else if (token instanceof Shreak) {
 			match(Shreak.class);
@@ -932,9 +877,8 @@ public class WhileyParser {
 		
 		if(token instanceof RightCurly) {
 			match(RightCurly.class);			
-			// empty set definition
-			Value v = Value.V_SET(new ArrayList<Value>()); 
-			return new Expr.Constant(v, sourceAttr(start, index - 1));
+			// empty set definition			
+			return new Expr.Constant(new HashSet(), sourceAttr(start, index - 1));
 		}
 		
 		exprs.add(parseCondition());
@@ -1087,14 +1031,12 @@ public class WhileyParser {
 		
 		if(e instanceof Expr.Constant) {
 			Expr.Constant c = (Expr.Constant) e;
-			if(c.value instanceof Value.Int) { 
-				java.math.BigInteger bi = ((Value.Int)c.value).value;
-				return new Expr.Constant(Value.V_INT(bi.negate()),
-						sourceAttr(start, index));
-			} else if(c.value instanceof Value.Real){
-				BigRational br = ((Value.Real)c.value).value;				
-				return new Expr.Constant(Value.V_REAL(br.negate()), sourceAttr(
-						start, index));	
+			if(c.value instanceof Integer) { 
+				int bi = (Integer) c.value;
+				return new Expr.Constant(-bi, sourceAttr(start, index));
+			} else if(c.value instanceof Double){
+				double br = (Double)c.value;				
+				return new Expr.Constant(-br, sourceAttr(start, index));
 			}
 		} 
 		
@@ -1127,12 +1069,11 @@ public class WhileyParser {
 	private Expr parseString() {
 		int start = index;
 		String s = match(Strung.class).string;
-		ArrayList<Value> vals = new ArrayList<Value>();
+		ArrayList<Object> vals = new ArrayList<Object>();
 		for (int i = 0; i != s.length(); ++i) {
-			vals.add(Value.V_INT(BigInteger.valueOf(s.charAt(i))));
-		}
-		Value.List list = Value.V_LIST(vals);
-		return new Expr.Constant(list, sourceAttr(start, index - 1));
+			vals.add(s.charAt(i));
+		}		
+		return new Expr.Constant(vals, sourceAttr(start, index - 1));
 	}
 	
 	private UnresolvedType parseType() {
