@@ -131,16 +131,6 @@ public class WhileyParser {
 	private FunDecl parseFunction(List<Modifier> modifiers) {			
 		int start = index;		
 		UnresolvedType ret = parseType();				
-		// FIXME: potential bug here at end of file
-		Token token = tokens.get(index+1);
-		UnresolvedType receiver = null;
-							
-		if(token instanceof Colon) {
-			receiver = parseType();			
-			match(Colon.class);
-			match(Colon.class);					
-		}
-		
 		Identifier name = matchIdentifier();						
 		
 		match(LeftBrace.class);		
@@ -168,7 +158,7 @@ public class WhileyParser {
 		
 		List<Stmt> stmts = parseBlock(1);
 		
-		return new FunDecl(modifiers, name.text, receiver, ret, paramTypes,
+		return new FunDecl(modifiers, name.text, ret, paramTypes,
 				stmts, sourceAttr(start, end - 1));
 	}
 	
@@ -1124,9 +1114,6 @@ public class WhileyParser {
 		} else if(token.text.equals("bool")) {
 			matchKeyword("bool");
 			t = new UnresolvedType.Bool(sourceAttr(start,index-1));
-		} else if(token.text.equals("process")) {
-			matchKeyword("process");
-			t = new UnresolvedType.Process(parseType(),sourceAttr(start,index-1));			
 		} else if(token instanceof LeftBrace) {
 			match(LeftBrace.class);
 			skipWhiteSpace();

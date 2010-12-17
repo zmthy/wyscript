@@ -1,0 +1,30 @@
+<project name="wyscript" default="build-wyjs">  
+  <property name="version" value="0.1.0"/>
+
+  <target name="compile">
+    <javac debug="true" srcdir="src/" includeantruntime="true" includes="wyjs/**" excludes="wyjs/testing/**"/> 
+  </target>
+
+  <target name="build-wyjs" depends="compile">
+    <buildnumber file="build.num"/>
+    <mkdir dir="tmp"/>
+    <manifest file="tmp/MANIFEST.MF">
+      <attribute name="Built-By" value="${user.name}"/>
+      <attribute name="Main-Class" value="wyjs.Main"/>
+      <attribute name="Implementation-Version" value="${version}-${build.number}"/>
+    </manifest>
+    <jar destfile="lib/wyjs.jar" basedir="src" includes="wyjs/**/*.class" manifest="tmp/MANIFEST.MF"/>
+    <delete dir="tmp"/>
+  </target>
+
+ <target name="clean">
+  <delete includeEmptyDirs="true" failonerror="false">
+   <fileset file="lib/*.jar"/>
+   <fileset file="*.jar"/>
+   <fileset file="*.tgz"/>
+   <fileset dir="src" includes="**/*.class"/>
+   <fileset dir="tmp/" includes="**"/>
+  </delete>
+ </target>
+
+</project>

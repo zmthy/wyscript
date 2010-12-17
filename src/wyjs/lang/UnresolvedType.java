@@ -104,13 +104,7 @@ public interface UnresolvedType extends SyntacticElement {
 			this.bounds = new ArrayList<NonUnion>(bounds);
 		}	
 	}
-	
-	public static final class Process extends SyntacticElement.Impl implements NonUnion {
-		public final UnresolvedType element;
-		public Process(UnresolvedType element, Attribute... attributes) {
-			this.element = element;
-		}
-	}
+		
 	public static final class Record extends SyntacticElement.Impl implements NonUnion {
 		public final HashMap<String,UnresolvedType> types;
 		public Record(Map<String,UnresolvedType> types, Attribute... attributes) {

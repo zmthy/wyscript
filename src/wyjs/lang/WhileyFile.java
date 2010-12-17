@@ -115,8 +115,7 @@ public class WhileyFile {
 
 	public final static class FunDecl extends SyntacticElement.Impl implements Decl {
 		public final ArrayList<Modifier> modifiers; 
-		public final String name;
-		public final UnresolvedType receiver;
+		public final String name;		
 		public final UnresolvedType ret;
 		public final ArrayList<Parameter> parameters;
 		public final ArrayList<Stmt> statements;
@@ -136,13 +135,11 @@ public class WhileyFile {
 		 *            The Statements making up the function body.
 		 */
 		public FunDecl(List<Modifier> modifiers, String name,
-				UnresolvedType receiver, UnresolvedType ret,
-				List<Parameter> parameters, List<Stmt> statements,
-				Attribute... attributes) {
+				UnresolvedType ret, List<Parameter> parameters,
+				List<Stmt> statements, Attribute... attributes) {
 			super(attributes);
 			this.modifiers = new ArrayList<Modifier>(modifiers);
 			this.name = name;
-			this.receiver = receiver;
 			this.ret = ret;
 			this.parameters = new ArrayList<Parameter>(parameters);
 			this.statements = new ArrayList<Stmt>(statements);
