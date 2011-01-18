@@ -6,6 +6,8 @@ import java.util.List;
 import wyjs.ast.JsBase;
 import wyjs.ast.JsNode;
 import wyjs.ast.expr.JsAccess;
+import wyjs.ast.expr.JsAssign;
+import wyjs.ast.expr.JsAssign.JsAssignable;
 import wyjs.ast.expr.JsBinOp;
 import wyjs.ast.expr.JsExpr;
 import wyjs.ast.expr.JsInvoke;
@@ -14,7 +16,10 @@ import wyjs.ast.expr.JsUnOp;
 import wyjs.ast.expr.JsVariable;
 import wyjs.ast.stmt.JsConstant;
 import wyjs.ast.stmt.JsFunctionStmt;
+import wyjs.ast.stmt.JsLine;
+import wyjs.ast.stmt.JsReturn;
 import wyjs.ast.stmt.JsStmt;
+import wyjs.ast.stmt.JsWhile;
 import wyjs.ast.util.JsHelpers;
 import wyjs.lang.Expr;
 import wyjs.lang.Expr.BOp;
@@ -28,11 +33,16 @@ import wyjs.lang.Expr.TypeConst;
 import wyjs.lang.Expr.UOp;
 import wyjs.lang.Expr.UnOp;
 import wyjs.lang.Expr.Variable;
+import wyjs.lang.Stmt;
+import wyjs.lang.Stmt.Assign;
+import wyjs.lang.Stmt.Return;
+import wyjs.lang.Stmt.While;
 import wyjs.lang.WhileyFile;
 import wyjs.lang.WhileyFile.ConstDecl;
 import wyjs.lang.WhileyFile.Decl;
 import wyjs.lang.WhileyFile.FunDecl;
 import wyjs.lang.WhileyFile.ImportDecl;
+import wyjs.lang.WhileyFile.Parameter;
 import wyjs.lang.WhileyFile.TypeDecl;
 import wyjs.util.SyntaxError;
 
@@ -76,7 +86,63 @@ public class JsBuilder {
   }
 
   public JsStmt doFun(WhileyFile wfile, FunDecl decl) {
+    List<String> parameters = decl.parameters.isEmpty() ? null
+        : new ArrayList<String>();
+    List<JsStmt> body = decl.statements.isEmpty() ? null
+        : new ArrayList<JsStmt>();
+
+    for (Parameter parameter : decl.parameters) {
+      parameters.add(parameter.name);
+    }
+
+    for (Stmt statement : decl.statements) {
+      body.add(doStmt(wfile, statement));
+    }
+
     return new JsFunctionStmt(decl.name);
+  }
+
+  public JsStmt doStmt(WhileyFile wfile, Stmt stmt) {
+    if (stmt instanceof Assign) {
+      return doAssign(wfile, (Assign) stmt);
+    // } else if (stmt instanceof Assert) {
+    } else if (stmt instanceof Return) {
+      return doReturn(wfile, (Return) stmt);
+    } else if (stmt instanceof While) {
+      return doWhile(wfile, (While) stmt);
+    // } else if (stmt instanceof For) {
+    // } else if (stmt instanceof IfElse) {
+    // } else if (stmt instanceof Skip) {
+    // } else if (stmt instanceof Debug) {
+    }
+
+    throw new SyntaxError("Unrecognised statement " + stmt, wfile.filename, 0,
+        0);
+  }
+
+  public JsStmt doAssign(WhileyFile wfile, Assign stmt) {
+    JsExpr lhs = doExpr(wfile, stmt.lhs);
+
+    if (!(lhs instanceof JsAssignable)) {
+      throw new SyntaxError("Unassignable left hand side used: " + lhs,
+          wfile.filename, 0, 0);
+    }
+
+    return new JsLine(new JsAssign((JsAssignable) lhs, doExpr(wfile, stmt.rhs)));
+  }
+
+  public JsStmt doReturn(WhileyFile wfile, Return stmt) {
+    return new JsReturn(doExpr(wfile, stmt.expr));
+  }
+  
+  public JsStmt doWhile(WhileyFile wfile, While stmt) {
+    List<JsStmt> body = stmt.body.isEmpty() ? null : new ArrayList<JsStmt>();
+    
+    for (Stmt statement : stmt.body) {
+      body.add(doStmt(wfile, statement));
+    }
+    
+    return new JsWhile(doExpr(wfile, stmt.condition), body);
   }
 
   public JsExpr doExpr(WhileyFile wfile, Expr expr) {

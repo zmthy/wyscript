@@ -18,7 +18,7 @@ public class JsReturn implements JsStmt {
    * An empty return statement.
    */
   public JsReturn() {
-    this.value = null;
+    this(null);
   }
 
   /**
