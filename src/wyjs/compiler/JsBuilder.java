@@ -35,6 +35,7 @@ import wyjs.lang.Expr.UnOp;
 import wyjs.lang.Expr.Variable;
 import wyjs.lang.Stmt;
 import wyjs.lang.Stmt.Assign;
+import wyjs.lang.Stmt.Debug;
 import wyjs.lang.Stmt.Return;
 import wyjs.lang.Stmt.While;
 import wyjs.lang.WhileyFile;
@@ -113,7 +114,8 @@ public class JsBuilder {
     // } else if (stmt instanceof For) {
     // } else if (stmt instanceof IfElse) {
     // } else if (stmt instanceof Skip) {
-    // } else if (stmt instanceof Debug) {
+    } else if (stmt instanceof Debug) {
+      return doDebug(wfile, (Debug) stmt);
     }
 
     throw new SyntaxError("Unrecognised statement " + stmt, wfile.filename, 0,
@@ -143,6 +145,10 @@ public class JsBuilder {
     }
     
     return new JsWhile(doExpr(wfile, stmt.condition), body);
+  }
+  
+  public JsStmt doDebug(WhileyFile wfile, Debug stmt) {
+    return new JsLine(JsHelpers.debug(doExpr(wfile, stmt.expr)));
   }
 
   public JsExpr doExpr(WhileyFile wfile, Expr expr) {

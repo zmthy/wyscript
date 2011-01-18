@@ -7,6 +7,10 @@ import wyjs.ast.expr.JsVariable;
 
 public abstract class JsHelpers {
 
+  public static JsInvoke debug(JsExpr m) {
+    return new JsInvoke(new JsVariable("$debug"), m);
+  }
+  
   public static JsInvoke in(JsExpr a, JsExpr e) {
     return new JsInvoke(new JsVariable("$in"), e);
   }
