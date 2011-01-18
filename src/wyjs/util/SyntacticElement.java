@@ -26,8 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * the syntactic structure of the file, and in particular parts we may wish to
  * add information too (e.g. line numbers, types, etc).
  * 
- * @author djp
- * 
+ * @author David Pearce
  */
 public interface SyntacticElement {
 

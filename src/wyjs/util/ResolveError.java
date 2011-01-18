@@ -24,8 +24,7 @@ package wyjs.util;
  * error (e.g. trying to import from module that doesn't exist). However, it
  * could also indicate that the WHILEYPATH is not configured correctly.
  * 
- * @author djp
- * 
+ * @author David Pearce
  */
 @SuppressWarnings("serial")
 public class ResolveError extends Exception {

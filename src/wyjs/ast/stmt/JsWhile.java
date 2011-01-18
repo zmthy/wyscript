@@ -23,10 +23,8 @@ public class JsWhile implements JsStmt {
   /**
    * A one statement loop.
    * 
-   * @param condition
-   *          The loop condition.
-   * @param body
-   *          The body of the loop.
+   * @param condition The loop condition.
+   * @param body The body of the loop.
    */
   public JsWhile(JsExpr condition, JsStmt body) {
     this(condition, body, null);
@@ -35,10 +33,8 @@ public class JsWhile implements JsStmt {
   /**
    * A basic loop.
    * 
-   * @param condition
-   *          The loop condition.
-   * @param body
-   *          The body of the loop.
+   * @param condition The loop condition.
+   * @param body The body of the loop.
    */
   public JsWhile(JsExpr condition, List<JsStmt> body) {
     this(condition, body, null);
@@ -47,12 +43,9 @@ public class JsWhile implements JsStmt {
   /**
    * A one statement labelled loop.
    * 
-   * @param condition
-   *          The loop condition.
-   * @param body
-   *          The body of the loop.
-   * @param label
-   *          The loop label.
+   * @param condition The loop condition.
+   * @param body The body of the loop.
+   * @param label The loop label.
    */
   public JsWhile(JsExpr condition, JsStmt body, String label) {
     this(condition, (List<JsStmt>) null, label);
@@ -62,12 +55,9 @@ public class JsWhile implements JsStmt {
   /**
    * A labelled loop.
    * 
-   * @param condition
-   *          The loop condition.
-   * @param body
-   *          The body of the loop.
-   * @param label
-   *          The loop label.
+   * @param condition The loop condition.
+   * @param body The body of the loop.
+   * @param label The loop label.
    */
   public JsWhile(JsExpr condition, List<JsStmt> body, String label) {
     assert JsRegex.isIdentifier(label);

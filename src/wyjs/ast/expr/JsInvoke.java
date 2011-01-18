@@ -22,20 +22,28 @@ public class JsInvoke implements JsExpr {
   /**
    * An invocation with no arguments.
    * 
-   * @param value
-   *          The value to invoke.
+   * @param value The value to invoke.
    */
   public JsInvoke(JsExpr value) {
-    this(value, null);
+    this(value, (List<JsExpr>) null);
+  }
+  
+  /**
+   * An invocation with a single argument.
+   * 
+   * @param value The value to invoke.
+   * @param arg The argument to pass.
+   */
+  public JsInvoke(JsExpr value, JsExpr arg) {
+    this(value, (List<JsExpr>) null);
+    this.args.add(arg);
   }
 
   /**
    * An invocation with arguments.
    * 
-   * @param value
-   *          The value to invoke.
-   * @param args
-   *          The arguments to pass.
+   * @param value The value to invoke.
+   * @param args The arguments to pass.
    */
   public JsInvoke(JsExpr value, List<? extends JsExpr> args) {
     this.value = value instanceof JsFunction ? new JsParens(value) : value;
@@ -58,8 +66,7 @@ public class JsInvoke implements JsExpr {
   /**
    * A helper function to reduce boilerplate.
    * 
-   * @param value
-   *          The value to invoke.
+   * @param value The value to invoke.
    * @return The generated invocation.
    */
   public static JsInvoke inv(JsExpr value) {
@@ -69,10 +76,8 @@ public class JsInvoke implements JsExpr {
   /**
    * A helper function for invoking a value's method.
    * 
-   * @param value
-   *          The value who's method is to be invoked.
-   * @param method
-   *          The name of the method to invoke.
+   * @param value The value who's method is to be invoked.
+   * @param method The name of the method to invoke.
    * @return The generated invocation.
    */
   public static JsInvoke invm(JsExpr value, String method) {
@@ -82,8 +87,7 @@ public class JsInvoke implements JsExpr {
   /**
    * A helper function for invoking an anonymous function.
    * 
-   * @param body
-   *          The body of the anonymous function that will be generated.
+   * @param body The body of the anonymous function that will be generated.
    * @return The generated invocation, wrapping the generated function.
    */
   public static JsInvoke cl(List<? extends JsStmt> body) {

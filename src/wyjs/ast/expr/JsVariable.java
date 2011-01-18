@@ -13,8 +13,7 @@ import wyjs.ast.expr.JsAssign.JsAssignable;
 public class JsVariable extends JsLiteral implements JsAssignable {
 
   /**
-   * @param name
-   *          The name of the variable.
+   * @param name The name of the variable.
    */
   public JsVariable(String name) {
     super(name);
@@ -28,8 +27,7 @@ public class JsVariable extends JsLiteral implements JsAssignable {
   /**
    * A helper function to reduce boilerplate.
    * 
-   * @param name
-   *          The name of the variable.
+   * @param name The name of the variable.
    * @return The generated variable.
    */
   public static JsVariable var(String name) {

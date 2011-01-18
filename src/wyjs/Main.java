@@ -29,6 +29,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import wyjs.ast.util.JsBareFormatter;
+import wyjs.ast.util.JsFormatter;
+import wyjs.ast.util.JsPrettyFormatter;
+import wyjs.compiler.JsBuilder;
 import wyjs.lang.WhileyFile;
 import wyjs.stages.WhileyLexer;
 import wyjs.stages.WhileyParser;
@@ -48,6 +52,10 @@ public class Main {
   public static final int MINOR_VERSION;
   public static final int MINOR_REVISION;
   public static final int BUILD_NUMBER;
+
+  private static final JsBuilder builder = new JsBuilder();
+  private static final JsFormatter bare = new JsBareFormatter(),
+      pretty = new JsPrettyFormatter();
 
   static {
     try {
@@ -222,15 +230,17 @@ public class Main {
     // we'll do the type checking here
 
     for (WhileyFile wf : wyfiles) {
-      translate(wf);
+      translate(wf, true);
     }
   }
 
-  public static void translate(WhileyFile wf) throws IOException {
+  public static void translate(WhileyFile wf, boolean pp) throws IOException {
     String filename = wf.filename.replace(".whiley", ".js");
     FileOutputStream fout = new FileOutputStream(filename);
     PrintStream out = new PrintStream(fout);
-    out.println("This is where we translate the files");
+
+    out.println(builder.build(wf).compile(pp ? pretty : bare));
+
     out.close();
   }
 
@@ -238,14 +248,10 @@ public class Main {
    * This method simply reads in the input file, and prints out a given line of
    * text, with little markers (i.e. '^') placed underneath a portion of it.
    * 
-   * @param fileArg
-   *          - the name of the file whose line to print
-   * @param start
-   *          - the start position of the offending region.
-   * @param end
-   *          - the end position of the offending region.
-   * @param message
-   *          - the message to print about the error
+   * @param fileArg - the name of the file whose line to print
+   * @param start - the start position of the offending region.
+   * @param end - the end position of the offending region.
+   * @param message - the message to print about the error
    */
   public static void outputSourceError(String fileArg, int start, int end,
       String message) throws IOException {

@@ -21,10 +21,8 @@ public class JsAccess implements JsAssignable {
    * Access a property. Will use the dot notation if the property name is a
    * valid identifier.
    * 
-   * @param value
-   *          The value to access a property of.
-   * @param prop
-   *          The name of the property to access.
+   * @param value The value to access a property of.
+   * @param prop The name of the property to access.
    */
   public JsAccess(JsExpr value, String prop) {
     assert !prop.isEmpty();
@@ -45,10 +43,8 @@ public class JsAccess implements JsAssignable {
   /**
    * Access a property as an array access. Always uses the bracket notation.
    * 
-   * @param value
-   *          The value to access a property of.
-   * @param prop
-   *          The index of the property to access.
+   * @param value The value to access a property of.
+   * @param prop The index of the property to access.
    */
   public JsAccess(JsExpr value, int prop) {
     this.value = value;
@@ -60,10 +56,8 @@ public class JsAccess implements JsAssignable {
    * Access a property with an unevaluated expression. Always uses bracket
    * notation.
    * 
-   * @param value
-   *          The value to access a property of.
-   * @param prop
-   *          The expression for the property to access.
+   * @param value The value to access a property of.
+   * @param prop The expression for the property to access.
    */
   public JsAccess(JsExpr value, JsExpr prop) {
     this.value = value;
@@ -92,10 +86,8 @@ public class JsAccess implements JsAssignable {
    * The first property is accessed from the value, and each subsequent access
    * is from the previous access value.
    * 
-   * @param value
-   *          The initial value to access from.
-   * @param props
-   *          The names to access.
+   * @param value The initial value to access from.
+   * @param props The names to access.
    * @return A outermost value in a chain of accesses.
    */
   public static JsAccess acc(JsExpr value, String... props) {

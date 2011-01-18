@@ -11,15 +11,13 @@ import wyjs.ast.util.JsFormatter;
  */
 public enum JsBinOp {
 
-  Addition, Subtraction, Multiplication, Division, Equal, Greater, Less, GreaterEqual, LessEqual;
+  AND, OR, ADD, SUB, MUL, DIV, EQ, NEQ, LT, GT, LTE, GTE, IOF;
 
   /**
    * Makes a new AST node of the given binary operator.
    * 
-   * @param lhs
-   *          The left hand side of the operation.
-   * @param rhs
-   *          The right hand side of the operation.
+   * @param lhs The left hand side of the operation.
+   * @param rhs The right hand side of the operation.
    * @return An AST node of the operation.
    */
   public JsExpr newNode(JsExpr lhs, JsExpr rhs) {
@@ -33,25 +31,36 @@ public enum JsBinOp {
    */
   public String compile() {
     switch (this) {
-    case Subtraction:
-      return "-";
-    case Multiplication:
-      return "*";
-    case Division:
-      return "/";
-    case Greater:
-      return ">";
-    case Less:
-      return "<";
-    case Equal:
-      return "==";
-    case GreaterEqual:
-      return ">=";
-    case LessEqual:
-      return "<=";
-    default:
+    case AND:
+      return "&&";
+    case OR:
+      return "||";
+    case ADD:
       return "+";
+    case SUB:
+      return "-";
+    case MUL:
+      return "*";
+    case DIV:
+      return "/";
+    case EQ:
+      return "===";
+    case NEQ:
+      return "!==";
+    case LT:
+      return "<";
+    case GT:
+      return ">";
+    case LTE:
+      return "<=";
+    case GTE:
+      return ">=";
+    case IOF:
+      return " instanceof ";
     }
+    
+    // We can't reach this, but need to satisfy the compiler.
+    throw new RuntimeException("Unrecognised binary operator."); 
   }
 
   @Override
@@ -62,14 +71,12 @@ public enum JsBinOp {
   /**
    * A helper function for generating an add node.
    * 
-   * @param lhs
-   *          The left hand side of the operation.
-   * @param rhs
-   *          The right hand side of the operation.
+   * @param lhs The left hand side of the operation.
+   * @param rhs The right hand side of the operation.
    * @return An AST node of the operation.
    */
   public static JsExpr add(JsExpr lhs, JsExpr rhs) {
-    return Addition.newNode(lhs, rhs);
+    return ADD.newNode(lhs, rhs);
   }
 
   /**
@@ -82,10 +89,8 @@ public enum JsBinOp {
     private final JsExpr lhs, rhs;
 
     /**
-     * @param lhs
-     *          The left hand side of the operation.
-     * @param rhs
-     *          The right hand side of the operation.
+     * @param lhs The left hand side of the operation.
+     * @param rhs The right hand side of the operation.
      */
     public BIN_OP(JsExpr lhs, JsExpr rhs) {
       this.lhs = lhs;

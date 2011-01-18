@@ -16,8 +16,7 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
   /**
    * An empty function.
    * 
-   * @param name
-   *          The name of the function.
+   * @param name The name of the function.
    */
   public JsFunctionStmt(String name) {
     this(name, null, null);
@@ -26,10 +25,8 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
   /**
    * A function without parameters.
    * 
-   * @param name
-   *          The name of the function.
-   * @param body
-   *          The body of the function.
+   * @param name The name of the function.
+   * @param body The body of the function.
    */
   public JsFunctionStmt(String name, List<? extends JsStmt> body) {
     this(name, null, body);
@@ -38,12 +35,9 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
   /**
    * A function with parameters and a body.
    * 
-   * @param name
-   *          The name of the function.
-   * @param params
-   *          The parameters of the function.
-   * @param body
-   *          The body of the function.
+   * @param name The name of the function.
+   * @param params The parameters of the function.
+   * @param body The body of the function.
    */
   public JsFunctionStmt(String name, List<String> params,
       List<? extends JsStmt> body) {
@@ -63,8 +57,7 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
   /**
    * A helper function for reducing boilerplate.
    * 
-   * @param name
-   *          The name of the function.
+   * @param name The name of the function.
    * @return The generated function.
    */
   public static JsFunctionStmt fn(String name) {
@@ -74,10 +67,8 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
   /**
    * A helper function for reducing boilerplate.
    * 
-   * @param name
-   *          The name of the function.
-   * @param body
-   *          The body of the function.
+   * @param name The name of the function.
+   * @param body The body of the function.
    * @return The generated function.
    */
   public static JsFunctionStmt fn(String name, List<? extends JsStmt> body) {
@@ -87,12 +78,9 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
   /**
    * A helper function for reducing boilerplate.
    * 
-   * @param name
-   *          The name of the function.
-   * @param params
-   *          The parameters of the function.
-   * @param body
-   *          The body of the function.
+   * @param name The name of the function.
+   * @param params The parameters of the function.
+   * @param body The body of the function.
    * @return The generated function.
    */
   public static JsFunctionStmt fn(String name, List<String> params,

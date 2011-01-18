@@ -24,8 +24,7 @@ public class JsReturn implements JsStmt {
   /**
    * A non-empty return statement.
    * 
-   * @param value
-   *          The value to return.
+   * @param value The value to return.
    */
   public JsReturn(JsExpr value) {
     this.value = value;

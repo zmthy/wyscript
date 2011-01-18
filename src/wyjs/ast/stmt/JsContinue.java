@@ -23,8 +23,7 @@ public class JsContinue implements JsStmt {
   /**
    * A continue with a label.
    * 
-   * @param label
-   *          The continue's label.
+   * @param label The continue's label.
    */
   public JsContinue(String label) {
     this.label = label;

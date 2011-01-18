@@ -17,11 +17,39 @@ public class JsLiteral implements JsExpr {
   private final String literal;
 
   /**
-   * @param literal
-   *          The code to insert.
+   * A custom literal value.
+   * 
+   * @param literal The code to insert.
    */
   public JsLiteral(String literal) {
     this.literal = literal;
+  }
+  
+  /**
+   * An integer literal value.
+   * 
+   * @param literal The value to insert.
+   */
+  public JsLiteral(int literal) {
+    this.literal = Integer.toString(literal);
+  }
+  
+  /**
+   * A number literal value.
+   * 
+   * @param literal The value to insert.
+   */
+  public JsLiteral(double literal) {
+    this.literal = Double.toString(literal);
+  }
+  
+  /**
+   * A boolean literal value.
+   * 
+   * @param literal The value to insert.
+   */
+  public JsLiteral(boolean literal) {
+    this.literal = Boolean.toString(literal);
   }
 
   /**
@@ -43,8 +71,7 @@ public class JsLiteral implements JsExpr {
   /**
    * A helper function to reduce boilerplate.
    * 
-   * @param literal
-   *          The code to insert.
+   * @param literal The code to insert.
    * @return The generated literal.
    */
   public static JsLiteral lit(String literal) {

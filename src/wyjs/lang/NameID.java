@@ -23,8 +23,7 @@ package wyjs.lang;
  * purpose of this is to provide a uniform way of referring to modules + names
  * throughout the compiler.
  * 
- * @author djp
- * 
+ * @author David Pearce
  */
 public class NameID {
 

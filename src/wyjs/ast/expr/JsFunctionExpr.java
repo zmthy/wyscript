@@ -24,8 +24,7 @@ public class JsFunctionExpr extends JsFunction implements JsExpr {
   /**
    * A function expression with the given body.
    * 
-   * @param body
-   *          The body of the function.
+   * @param body The body of the function.
    */
   public JsFunctionExpr(List<? extends JsStmt> body) {
     this(null, body);
@@ -34,10 +33,8 @@ public class JsFunctionExpr extends JsFunction implements JsExpr {
   /**
    * A function expression with the given parameters and body.
    * 
-   * @param params
-   *          The parameters of the function.
-   * @param body
-   *          The body of the function.
+   * @param params The parameters of the function.
+   * @param body The body of the function.
    */
   public JsFunctionExpr(List<String> params, List<? extends JsStmt> body) {
     super(null, params, body);

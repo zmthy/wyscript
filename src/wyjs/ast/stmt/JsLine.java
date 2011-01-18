@@ -8,7 +8,8 @@ import wyjs.ast.util.JsFormatter;
 
 /**
  * A Javascript line, terminated by a semicolon or a line break (depending on
- * the formatter used).
+ * the formatter used). Applies to expressions only, as statements end
+ * themselves.
  * 
  * @author Timothy Jones
  */
@@ -17,8 +18,7 @@ public class JsLine implements JsStmt {
   private final JsExpr node;
 
   /**
-   * @param node
-   *          The node to line terminate.
+   * @param node The node to line terminate.
    */
   public JsLine(JsExpr node) {
     this.node = node;
@@ -49,8 +49,7 @@ public class JsLine implements JsStmt {
   /**
    * A helper function to reduce boilerplate.
    * 
-   * @param node
-   *          The node to line terminate.
+   * @param node The node to line terminate.
    * @return The generated line.
    */
   public static JsLine line(JsExpr node) {

@@ -17,8 +17,7 @@ public class JsVar implements JsStmt {
   private final Set<String> vars = new HashSet<String>();
 
   /**
-   * @param vars
-   *          The names of the variable to grant local scope.
+   * @param vars The names of the variable to grant local scope.
    */
   public JsVar(Collection<String> vars) {
     if (vars != null) {

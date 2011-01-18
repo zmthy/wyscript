@@ -33,14 +33,10 @@ public class TestHarness {
   /**
    * Construct a test harness object.
    * 
-   * @param srcPath
-   *          The path to the source files to be tested
-   * @param outputPath
-   *          The path to the sample output files to compare against.
-   * @param outputExtension
-   *          The extension of output files
-   * @param verification
-   *          if true, the verifier is used.
+   * @param srcPath The path to the source files to be tested
+   * @param outputPath The path to the sample output files to compare against.
+   * @param outputExtension The extension of output files
+   * @param verification if true, the verifier is used.
    */
   public TestHarness(String srcPath, String outputPath, String outputExtension) {
     this.srcPath = srcPath.replace('/', File.separatorChar);
@@ -52,8 +48,7 @@ public class TestHarness {
    * Compile and execute a test case, whilst comparing its output against the
    * sample output.
    * 
-   * @param name
-   *          Name of the test to run. This must correspond to an executable
+   * @param name Name of the test to run. This must correspond to an executable
    *          Java file in the srcPath of the same name.
    */
   protected void runTest(String name, String... params) {
@@ -160,11 +155,10 @@ public class TestHarness {
    * Compare the output of executing java on the test case with a reference
    * file.
    * 
-   * @param output
-   *          This provides the output from executing java on the test case.
-   * @param referenceFile
-   *          The full path to the reference file. This should use the
-   *          appropriate separator char for the host operating system.
+   * @param output This provides the output from executing java on the test
+   *          case.
+   * @param referenceFile The full path to the reference file. This should use
+   *          the appropriate separator char for the host operating system.
    */
   private static void compare(String output, String referenceFile) {
     try {

@@ -14,12 +14,9 @@ import wyjs.ast.stmt.JsStmt;
 public class JsProtoAssign extends JsAssign {
 
   /**
-   * @param lhs
-   *          The value whose prototype is to be attached to.
-   * @param prop
-   *          The name of the property to attach.
-   * @param rhs
-   *          The value to attach.
+   * @param lhs The value whose prototype is to be attached to.
+   * @param prop The name of the property to attach.
+   * @param rhs The value to attach.
    */
   public JsProtoAssign(JsAssignable lhs, String prop, JsExpr rhs) {
     super(new JsAccess(new JsAccess(lhs, "prototype"), prop), rhs);
@@ -28,12 +25,9 @@ public class JsProtoAssign extends JsAssign {
   /**
    * A helper function to reduce boilerplate.
    * 
-   * @param lhs
-   *          The value whose prototype is to be attached to.
-   * @param prop
-   *          The name of the property to attach.
-   * @param rhs
-   *          The value to attach.
+   * @param lhs The value whose prototype is to be attached to.
+   * @param prop The name of the property to attach.
+   * @param rhs The value to attach.
    * @return The generated prototype assignment.
    */
   public static JsProtoAssign pro(JsAssignable lhs, String prop, JsExpr rhs) {
@@ -43,10 +37,8 @@ public class JsProtoAssign extends JsAssign {
   /**
    * A helper function for attaching an empty method.
    * 
-   * @param lhs
-   *          The value to attach a method to.
-   * @param name
-   *          The name of the method.
+   * @param lhs The value to attach a method to.
+   * @param name The name of the method.
    * @return The generated assignment as a statement.
    */
   public static JsLine meth(JsAssignable lhs, String name) {
@@ -56,12 +48,9 @@ public class JsProtoAssign extends JsAssign {
   /**
    * A helper function for attaching a method.
    * 
-   * @param lhs
-   *          The value to attach a method to.
-   * @param name
-   *          The name of the method.
-   * @param body
-   *          The body of the method to attach.
+   * @param lhs The value to attach a method to.
+   * @param name The name of the method.
+   * @param body The body of the method to attach.
    * @return The generated assignment as a statement.
    */
   public static JsLine meth(JsAssignable lhs, String name,

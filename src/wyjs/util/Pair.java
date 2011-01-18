@@ -19,14 +19,12 @@
 package wyjs.util;
 
 /**
- * This class represents a pair of items
+ * This class represents a pair of items.
  * 
- * @author djp
+ * @author David Pearce
  * 
- * @param <FIRST>
- *          Type of first item
- * @param <SECOND>
- *          Type of second item
+ * @param <FIRST> Type of first item.
+ * @param <SECOND> Type of second item.
  */
 public class Pair<FIRST, SECOND> {
 

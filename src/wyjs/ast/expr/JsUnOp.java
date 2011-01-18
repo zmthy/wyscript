@@ -11,13 +11,12 @@ import wyjs.ast.util.JsFormatter;
  */
 public enum JsUnOp {
 
-  Positive, Negative;
+  NOT, NEG;
 
   /**
    * Makes a new AST node of the given unary operator.
    * 
-   * @param value
-   *          The value to apply the operation to.
+   * @param value The value to apply the operation to.
    * @return An AST node of the operation.
    */
   public JsExpr newNode(JsExpr value) {
@@ -31,11 +30,14 @@ public enum JsUnOp {
    */
   public String compile() {
     switch (this) {
-    case Negative:
+    case NOT:
+      return "!";
+    case NEG:
       return "-";
-    default:
-      return "+";
     }
+    
+    // We can't reach this, but need to satisfy the compiler.
+    throw new RuntimeException("Unrecognised unary operator.");
   }
 
   @Override
@@ -53,8 +55,7 @@ public enum JsUnOp {
     private final JsExpr value;
 
     /**
-     * @param value
-     *          The value to apply the operation to.
+     * @param value The value to apply the operation to.
      */
     public UN_OP(JsExpr value) {
       this.value = value;

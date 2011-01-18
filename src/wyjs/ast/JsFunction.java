@@ -37,8 +37,7 @@ public abstract class JsFunction implements JsNode {
    * Note that if the function has no name, pass <code>null</code>, not the
    * empty string, otherwise it will fail verification.
    * 
-   * @param name
-   *          The name of the function.
+   * @param name The name of the function.
    */
   public JsFunction(String name) {
     this(name, null, null);
@@ -50,10 +49,8 @@ public abstract class JsFunction implements JsNode {
    * Note that if the function has no name, pass <code>null</code>, not the
    * empty string, otherwise it will fail verification.
    * 
-   * @param name
-   *          The name of the function.
-   * @param body
-   *          The body of the function.
+   * @param name The name of the function.
+   * @param body The body of the function.
    */
   public JsFunction(String name, List<? extends JsStmt> body) {
     this(name, null, body);
@@ -65,12 +62,9 @@ public abstract class JsFunction implements JsNode {
    * Note that if the function has no name, pass <code>null</code>, not the
    * empty string, otherwise it will fail verification.
    * 
-   * @param name
-   *          The name of the function.
-   * @param params
-   *          The parameters of the function.
-   * @param body
-   *          The body of the function.
+   * @param name The name of the function.
+   * @param params The parameters of the function.
+   * @param body The body of the function.
    */
   public JsFunction(String name, List<String> params,
       List<? extends JsStmt> body) {

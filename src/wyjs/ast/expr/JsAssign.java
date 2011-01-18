@@ -15,10 +15,8 @@ public class JsAssign implements JsExpr {
   private final JsExpr rhs;
 
   /**
-   * @param lhs
-   *          The value to assign to.
-   * @param rhs
-   *          The value to assign.
+   * @param lhs The value to assign to.
+   * @param rhs The value to assign.
    */
   public JsAssign(JsAssignable lhs, JsExpr rhs) {
     this.lhs = lhs;

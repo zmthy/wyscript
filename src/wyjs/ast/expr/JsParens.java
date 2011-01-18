@@ -14,8 +14,7 @@ public class JsParens implements JsExpr {
   private final JsExpr value;
 
   /**
-   * @param value
-   *          The value to wrap in parenthesis.
+   * @param value The value to wrap in parenthesis.
    */
   public JsParens(JsExpr value) {
     this.value = value;

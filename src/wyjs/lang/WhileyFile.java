@@ -131,17 +131,13 @@ public class WhileyFile {
     /**
      * Construct an object representing a Whiley function.
      * 
-     * @param name
-     *          - The name of the function.
-     * @param returnType
-     *          - The return type of this method
-     * @param paramTypes
-     *          - The list of parameter names and their types for this method
-     * @param precondition
-     *          - The constraint which must hold true on entry and exit (maybe
-     *          null)
-     * @param statements
-     *          - The Statements making up the function body.
+     * @param name - The name of the function.
+     * @param returnType - The return type of this method
+     * @param paramTypes - The list of parameter names and their types for this
+     *          method
+     * @param precondition - The constraint which must hold true on entry and
+     *          exit (maybe null)
+     * @param statements - The Statements making up the function body.
      */
     public FunDecl(List<Modifier> modifiers, String name, UnresolvedType ret,
         List<Parameter> parameters, List<Stmt> statements,

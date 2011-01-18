@@ -16,10 +16,8 @@ public class JsConstant implements JsStmt {
   private final JsExpr value;
 
   /**
-   * @param name
-   *          The name of the constant.
-   * @param value
-   *          The value to assign to the constant.
+   * @param name The name of the constant.
+   * @param value The value to assign to the constant.
    */
   public JsConstant(String name, JsExpr value) {
     this.name = name;

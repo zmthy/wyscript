@@ -14,8 +14,7 @@ public class JsNew extends JsInvoke {
   /**
    * An invocation with no arguments.
    * 
-   * @param value
-   *          The value to invoke with <code>new</code>.
+   * @param value The value to invoke with <code>new</code>.
    */
   public JsNew(JsExpr value) {
     super(value);
@@ -24,10 +23,8 @@ public class JsNew extends JsInvoke {
   /**
    * An invocation with arguments.
    * 
-   * @param value
-   *          The value to invoke with <code>new</code>.
-   * @param args
-   *          The arguments to pass.
+   * @param value The value to invoke with <code>new</code>.
+   * @param args The arguments to pass.
    */
   public JsNew(JsExpr value, List<? extends JsExpr> args) {
     super(value, args);
@@ -41,8 +38,7 @@ public class JsNew extends JsInvoke {
   /**
    * A helper function to reduce boilerplate.
    * 
-   * @param value
-   *          The value to invoke with <code>new</code>.
+   * @param value The value to invoke with <code>new</code>.
    * @return The generated invocation.
    */
   public static JsNew invn(JsExpr value) {

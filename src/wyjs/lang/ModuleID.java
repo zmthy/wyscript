@@ -26,8 +26,7 @@ import java.util.*;
  * purpose of the UMI is to provide a uniform way of referring to modules
  * throughout the compiler.
  * 
- * @author djp
- * 
+ * @author David Pearce
  */
 public class ModuleID {
 
@@ -37,11 +36,9 @@ public class ModuleID {
   /**
    * Construct a module identifier.
    * 
-   * @param pkg
-   *          --- A list of packages. For example, "whiley.lang" becomes
+   * @param pkg --- A list of packages. For example, "whiley.lang" becomes
    *          ["whiley","lang"]
-   * @param module
-   *          --- A module name.
+   * @param module --- A module name.
    */
   public ModuleID(Collection<String> pkg, String module) {
     this.pkg = new PkgID(pkg);

@@ -21,8 +21,7 @@ package wyjs.util;
 /**
  * This exception is thrown when a syntax error occurs in the parser.
  * 
- * @author djp
- * 
+ * @author David Pearce
  */
 public class SyntaxError extends RuntimeException {
 
@@ -34,14 +33,10 @@ public class SyntaxError extends RuntimeException {
   /**
    * Identify a syntax error at a particular point in a file.
    * 
-   * @param msg
-   *          Message detailing the problem.
-   * @param filename
-   *          The source file that this error is referring to.
-   * @param line
-   *          Line number within file containing problem.
-   * @param column
-   *          Column within line of file containing problem.
+   * @param msg Message detailing the problem.
+   * @param filename The source file that this error is referring to.
+   * @param line Line number within file containing problem.
+   * @param column Column within line of file containing problem.
    */
   public SyntaxError(String msg, String filename, int start, int end) {
     this.msg = msg;
@@ -53,14 +48,10 @@ public class SyntaxError extends RuntimeException {
   /**
    * Identify a syntax error at a particular point in a file.
    * 
-   * @param msg
-   *          Message detailing the problem.
-   * @param filename
-   *          The source file that this error is referring to.
-   * @param line
-   *          Line number within file containing problem.
-   * @param column
-   *          Column within line of file containing problem.
+   * @param msg Message detailing the problem.
+   * @param filename The source file that this error is referring to.
+   * @param line Line number within file containing problem.
+   * @param column Column within line of file containing problem.
    */
   public SyntaxError(String msg, String filename, int start, int end,
       Throwable ex) {
