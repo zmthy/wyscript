@@ -19,9 +19,13 @@
 package wyjs.lang;
 
 public interface Modifier {
-	public static final Modifier PUBLIC = new Public();	
-	
-	public static class Public implements Modifier {
-		public String toString() { return "public"; }
-	}	
+
+  public static final Modifier PUBLIC = new Public();
+
+  public static class Public implements Modifier {
+
+    public String toString() {
+      return "public";
+    }
+  }
 }

@@ -23,155 +23,167 @@ import java.util.*;
 import wyjs.util.*;
 
 public interface Stmt extends SyntacticElement {
-	
-	public static final class Assign extends SyntacticElement.Impl implements Stmt {
-		public final Expr.LVal lhs;
-		public final Expr rhs;
 
-		public Assign(Expr.LVal lhs, Expr rhs, Attribute... attributes) {
-			super(attributes);
-			this.lhs = lhs;
-			this.rhs = rhs;
-		}
+  public static final class Assign extends SyntacticElement.Impl implements
+      Stmt {
 
-		public Assign(Expr.LVal lhs, Expr rhs, Collection<Attribute> attributes) {
-			super(attributes);
-			this.lhs = lhs;
-			this.rhs = rhs;
-		}
-		
-		public String toString() {
-			return lhs + " = " + rhs;
-		}
-	}
-	
-	public static final class Assert extends SyntacticElement.Impl implements Stmt {
-		public final Expr expr;		
+    public final Expr.LVal lhs;
+    public final Expr rhs;
 
-		public Assert(Expr expr, Attribute... attributes) {
-			super(attributes);
-			this.expr = expr;			
-		}
+    public Assign(Expr.LVal lhs, Expr rhs, Attribute... attributes) {
+      super(attributes);
+      this.lhs = lhs;
+      this.rhs = rhs;
+    }
 
-		public Assert(String msg, Expr expr, Collection<Attribute> attributes) {
-			super(attributes);
-			this.expr = expr;
-		}
-		
-		public String toString() {
-			return "assert " + expr;
-		}
-	}
-	
-	public static final class Return extends SyntacticElement.Impl implements Stmt {
-		public final Expr expr;		
+    public Assign(Expr.LVal lhs, Expr rhs, Collection<Attribute> attributes) {
+      super(attributes);
+      this.lhs = lhs;
+      this.rhs = rhs;
+    }
 
-		public Return(Expr expr, Attribute... attributes) {
-			super(attributes);
-			this.expr = expr;			
-		}
+    public String toString() {
+      return lhs + " = " + rhs;
+    }
+  }
 
-		public Return(Expr expr, Collection<Attribute> attributes) {
-			super(attributes);
-			this.expr = expr;			
-		}
-		
-		public String toString() {
-			if(expr != null) {
-				return "return " + expr;
-			} else {
-				return "return";
-			}
-		}
-	}
-	
-	public static final class While extends SyntacticElement.Impl implements Stmt {
-		public final Expr condition;		
-		public final ArrayList<Stmt> body;
+  public static final class Assert extends SyntacticElement.Impl implements
+      Stmt {
 
-		public While(Expr condition, Collection<Stmt> body, Attribute... attributes) {
-			super(attributes);
-			this.condition = condition;
-			this.body = new ArrayList<Stmt>(body);
-		}
+    public final Expr expr;
 
-		public While(Expr condition, Expr invariant, Collection<Stmt> body,
-				Collection<Attribute> attributes) {
-			super(attributes);
-			this.condition = condition;
-			this.body = new ArrayList<Stmt>(body);				
-		}		
-	}
+    public Assert(Expr expr, Attribute... attributes) {
+      super(attributes);
+      this.expr = expr;
+    }
 
-	public static final class For extends SyntacticElement.Impl implements Stmt {
-		public final String variable;		
-		public final Expr source;
-		public final ArrayList<Stmt> body;
+    public Assert(String msg, Expr expr, Collection<Attribute> attributes) {
+      super(attributes);
+      this.expr = expr;
+    }
 
-		public For(String variable, Expr source, Collection<Stmt> body, Attribute... attributes) {
-			super(attributes);
-			this.variable = variable;
-			this.source = source;			
-			this.body = new ArrayList<Stmt>(body);
-		}
+    public String toString() {
+      return "assert " + expr;
+    }
+  }
 
-		public For(String variable, Expr source,
-				Collection<Stmt> body, Collection<Attribute> attributes) {
-			super(attributes);
-			this.variable = variable;
-			this.source = source;			
-			this.body = new ArrayList<Stmt>(body);
-		}		
-	}
+  public static final class Return extends SyntacticElement.Impl implements
+      Stmt {
 
-	
-	public static final class IfElse extends SyntacticElement.Impl implements Stmt {
-		public final Expr condition;
-		public final ArrayList<Stmt> trueBranch;
-		public final ArrayList<Stmt> falseBranch;
-		
-		public IfElse(Expr condition, List<Stmt> trueBranch,
-				List<Stmt> falseBranch, Attribute... attributes) {
-			super(attributes);
-			this.condition = condition;
-			this.trueBranch = new ArrayList<Stmt>(trueBranch);			
-			this.falseBranch = new ArrayList<Stmt>(falseBranch);			
-		}
-		
-		public IfElse(Expr condition, List<Stmt> trueBranch,
-				List<Stmt> falseBranch, Collection<Attribute> attributes) {
-			super(attributes);
-			this.condition = condition;
-			this.trueBranch = new ArrayList<Stmt>(trueBranch);
-			this.falseBranch = new ArrayList<Stmt>(falseBranch);
-		}
-	}
-	
-	public static class Skip extends SyntacticElement.Impl implements Stmt {
-		public Skip(Attribute... attributes) {
-			super(attributes);
-		}
+    public final Expr expr;
 
-		public Skip(Collection<Attribute> attributes) {
-			super(attributes);
-		}
-	}
-	
-	public static final class Debug extends Skip {
-		public final Expr expr;		
+    public Return(Expr expr, Attribute... attributes) {
+      super(attributes);
+      this.expr = expr;
+    }
 
-		public Debug(Expr expr, Attribute... attributes) {
-			super(attributes);
-			this.expr = expr;			
-		}
+    public Return(Expr expr, Collection<Attribute> attributes) {
+      super(attributes);
+      this.expr = expr;
+    }
 
-		public Debug(Expr expr, Collection<Attribute> attributes) {
-			super(attributes);
-			this.expr = expr;			
-		}
-		
-		public String toString() {
-			return "debug " + expr;			
-		}
-	}	
+    public String toString() {
+      if (expr != null) {
+        return "return " + expr;
+      } else {
+        return "return";
+      }
+    }
+  }
+
+  public static final class While extends SyntacticElement.Impl implements Stmt {
+
+    public final Expr condition;
+    public final ArrayList<Stmt> body;
+
+    public While(Expr condition, Collection<Stmt> body, Attribute... attributes) {
+      super(attributes);
+      this.condition = condition;
+      this.body = new ArrayList<Stmt>(body);
+    }
+
+    public While(Expr condition, Expr invariant, Collection<Stmt> body,
+        Collection<Attribute> attributes) {
+      super(attributes);
+      this.condition = condition;
+      this.body = new ArrayList<Stmt>(body);
+    }
+  }
+
+  public static final class For extends SyntacticElement.Impl implements Stmt {
+
+    public final String variable;
+    public final Expr source;
+    public final ArrayList<Stmt> body;
+
+    public For(String variable, Expr source, Collection<Stmt> body,
+        Attribute... attributes) {
+      super(attributes);
+      this.variable = variable;
+      this.source = source;
+      this.body = new ArrayList<Stmt>(body);
+    }
+
+    public For(String variable, Expr source, Collection<Stmt> body,
+        Collection<Attribute> attributes) {
+      super(attributes);
+      this.variable = variable;
+      this.source = source;
+      this.body = new ArrayList<Stmt>(body);
+    }
+  }
+
+  public static final class IfElse extends SyntacticElement.Impl implements
+      Stmt {
+
+    public final Expr condition;
+    public final ArrayList<Stmt> trueBranch;
+    public final ArrayList<Stmt> falseBranch;
+
+    public IfElse(Expr condition, List<Stmt> trueBranch,
+        List<Stmt> falseBranch, Attribute... attributes) {
+      super(attributes);
+      this.condition = condition;
+      this.trueBranch = new ArrayList<Stmt>(trueBranch);
+      this.falseBranch = new ArrayList<Stmt>(falseBranch);
+    }
+
+    public IfElse(Expr condition, List<Stmt> trueBranch,
+        List<Stmt> falseBranch, Collection<Attribute> attributes) {
+      super(attributes);
+      this.condition = condition;
+      this.trueBranch = new ArrayList<Stmt>(trueBranch);
+      this.falseBranch = new ArrayList<Stmt>(falseBranch);
+    }
+  }
+
+  public static class Skip extends SyntacticElement.Impl implements Stmt {
+
+    public Skip(Attribute... attributes) {
+      super(attributes);
+    }
+
+    public Skip(Collection<Attribute> attributes) {
+      super(attributes);
+    }
+  }
+
+  public static final class Debug extends Skip {
+
+    public final Expr expr;
+
+    public Debug(Expr expr, Attribute... attributes) {
+      super(attributes);
+      this.expr = expr;
+    }
+
+    public Debug(Expr expr, Collection<Attribute> attributes) {
+      super(attributes);
+      this.expr = expr;
+    }
+
+    public String toString() {
+      return "debug " + expr;
+    }
+  }
 }

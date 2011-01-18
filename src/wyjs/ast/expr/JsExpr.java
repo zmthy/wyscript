@@ -7,4 +7,5 @@ import wyjs.ast.JsNode;
  * 
  * @author Timothy Jones
  */
-public interface JsExpr extends JsNode {}
+public interface JsExpr extends JsNode {
+}

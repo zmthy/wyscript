@@ -7,4 +7,5 @@ import wyjs.ast.JsNode;
  * 
  * @author Timothy Jones
  */
-public interface JsStmt extends JsNode {}
+public interface JsStmt extends JsNode {
+}

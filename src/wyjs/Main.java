@@ -36,6 +36,7 @@ import wyjs.util.ParseError;
 import wyjs.util.SyntaxError;
 
 public class Main {
+
   public static final int PARSE_ERROR = 1;
   public static final int CONTEXT_ERROR = 2;
   public static final int VERIFICATION_ERROR = 3;
@@ -51,13 +52,13 @@ public class Main {
   static {
     try {
       errout = new PrintStream(System.err, true, "UTF8");
-    } catch(Exception e) {
+    } catch (Exception e) {
       errout = System.err;
     }
 
     // determine version numbering from the MANIFEST attributes
     String versionStr = Main.class.getPackage().getImplementationVersion();
-    if(versionStr != null) {
+    if (versionStr != null) {
       String[] vb = versionStr.split("-");
       String[] pts = vb[0].split("\\.");
       BUILD_NUMBER = Integer.parseInt(vb[1]);
@@ -73,30 +74,28 @@ public class Main {
     }
   }
 
-  public static int run(String[] args) {		
+  public static int run(String[] args) {
     boolean verbose = false;
 
     ArrayList<String> whileypath = new ArrayList<String>();
-    ArrayList<String> bootpath = new ArrayList<String>();		
+    ArrayList<String> bootpath = new ArrayList<String>();
     int fileArgsBegin = 0;
 
     for (int i = 0; i != args.length; ++i) {
       if (args[i].startsWith("-")) {
         String arg = args[i];
-        if(arg.equals("-help")) {
+        if (arg.equals("-help")) {
           usage();
           System.exit(0);
-        } else if (arg.equals("-version")) {					
-          System.out.println("Whiley-to-Java Compiler (wyjc) version " + MAJOR_VERSION + "."
-              + MINOR_VERSION + "." + MINOR_REVISION + " (build "
-              + BUILD_NUMBER + ")");				
+        } else if (arg.equals("-version")) {
+          System.out.println("Whiley-to-Java Compiler (wyjc) version "
+              + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION
+              + " (build " + BUILD_NUMBER + ")");
           System.exit(0);
-        } else if(arg.equals("-wp") || arg.equals("-whileypath")) {
-          Collections.addAll(whileypath, args[++i]
-                                              .split(File.pathSeparator));															
-        } else if(arg.equals("-bp") || arg.equals("-bootpath")) {
-          Collections.addAll(bootpath, args[++i]
-                                            .split(File.pathSeparator));															
+        } else if (arg.equals("-wp") || arg.equals("-whileypath")) {
+          Collections.addAll(whileypath, args[++i].split(File.pathSeparator));
+        } else if (arg.equals("-bp") || arg.equals("-bootpath")) {
+          Collections.addAll(bootpath, args[++i].split(File.pathSeparator));
         } else if (arg.equals("-verbose")) {
           verbose = true;
         } else {
@@ -104,53 +103,53 @@ public class Main {
         }
 
         fileArgsBegin = i + 1;
-      } 
+      }
     }
 
-    if(fileArgsBegin == args.length) {
+    if (fileArgsBegin == args.length) {
       usage();
       return UNKNOWN_ERROR;
     }
 
-    whileypath.add(0,".");
+    whileypath.add(0, ".");
     whileypath.addAll(bootpath);
 
-    try {			
+    try {
 
       try {
         ArrayList<File> files = new ArrayList<File>();
-        for(int i=fileArgsBegin;i!=args.length;++i) {
+        for (int i = fileArgsBegin; i != args.length; ++i) {
           files.add(new File(args[i]));
-        }				
-        compile(files);							
-      } catch (ParseError e) {				
-        if(e.filename() != null) {
+        }
+        compile(files);
+      } catch (ParseError e) {
+        if (e.filename() != null) {
           outputSourceError(e.filename(), e.start(), e.end(), e.getMessage());
         } else {
           System.err.println("syntax error (" + e.getMessage() + ").");
         }
 
-        if(verbose) {
+        if (verbose) {
           e.printStackTrace(errout);
         }
 
         return PARSE_ERROR;
-      } catch (SyntaxError e) {				
-        if(e.filename() != null) {
+      } catch (SyntaxError e) {
+        if (e.filename() != null) {
           outputSourceError(e.filename(), e.start(), e.end(), e.getMessage());
         } else {
           System.err.println("syntax error (" + e.getMessage() + ").");
         }
 
-        if(verbose) {
+        if (verbose) {
           e.printStackTrace(errout);
         }
 
         return CONTEXT_ERROR;
-      } 
-    } catch(Exception e) {			
+      }
+    } catch (Exception e) {
       errout.println("Error: " + e.getMessage());
-      if(verbose) {
+      if (verbose) {
         e.printStackTrace(errout);
       }
       return UNKNOWN_ERROR;
@@ -160,7 +159,7 @@ public class Main {
   }
 
   public static void main(String[] args) throws Exception {
-    System.exit(run(args));			
+    System.exit(run(args));
   }
 
   /**
@@ -170,25 +169,19 @@ public class Main {
   public static void usage() {
     String[][] info = {
         { "version", "Print version information" },
-        { "verbose",
-        "Print detailed information on what the compiler is doing" },				
-        { "Nvc",
-        "Don't check constraints at compile time" }, 
-        { "nrc",
-        "Don't check constraints at runtime\n" } ,				
-        {"whileypath <path>", "Specify where to find whiley (class) files"},
-        {"wp <path>", "Specify where to find whiley (class) files"},
-        {"bootpath <path>",
-        "Specify where to find whiley standard library (class) files"},
-        {"bp <path>", "Specify where to find whiley standard library (class) files"},				
-        { "debug:lexer",
-        "Generate debug information for the lexer" },
-        { "debug:checks",
-        "Generate debug information on generated checks" },
-        { "debug:pcs",
-        "Generate debug information on propagated conditions" },
-        { "debug:vcs",
-        "Generate debug information on verification conditions" }};
+        { "verbose", "Print detailed information on what the compiler is doing" },
+        { "Nvc", "Don't check constraints at compile time" },
+        { "nrc", "Don't check constraints at runtime\n" },
+        { "whileypath <path>", "Specify where to find whiley (class) files" },
+        { "wp <path>", "Specify where to find whiley (class) files" },
+        { "bootpath <path>",
+            "Specify where to find whiley standard library (class) files" },
+        { "bp <path>",
+            "Specify where to find whiley standard library (class) files" },
+        { "debug:lexer", "Generate debug information for the lexer" },
+        { "debug:checks", "Generate debug information on generated checks" },
+        { "debug:pcs", "Generate debug information on propagated conditions" },
+        { "debug:vcs", "Generate debug information on verification conditions" } };
     System.out.println("usage: wjc <options> <source-files>");
     System.out.println("Options:");
 
@@ -212,23 +205,23 @@ public class Main {
 
   /**
    * This method compiles the list of given Whiley files. In this case, the
-   * pipeline is quite simple since compiling to JavaScript is much easier
-   * than compiling to the JVM.
+   * pipeline is quite simple since compiling to JavaScript is much easier than
+   * compiling to the JVM.
    * 
    * @param files
    * @throws IOException
    */
   public static void compile(List<File> files) throws IOException {
     ArrayList<WhileyFile> wyfiles = new ArrayList<WhileyFile>();
-    for(File file : files) {
+    for (File file : files) {
       WhileyLexer lexer = new WhileyLexer(file.getPath());
-      WhileyParser parser = new WhileyParser(file.getPath(),lexer.scan());
+      WhileyParser parser = new WhileyParser(file.getPath(), lexer.scan());
       wyfiles.add(parser.read());
     }
 
     // we'll do the type checking here
 
-    for(WhileyFile wf : wyfiles) {
+    for (WhileyFile wf : wyfiles) {
       translate(wf);
     }
   }
@@ -242,14 +235,17 @@ public class Main {
   }
 
   /**
-   * This method simply reads in the input file, and prints out a
-   * given line of text, with little markers (i.e. '^') placed
-   * underneath a portion of it.  
-   *
-   * @param fileArg - the name of the file whose line to print
-   * @param start - the start position of the offending region.
-   * @param end - the end position of the offending region.
-   * @param message - the message to print about the error
+   * This method simply reads in the input file, and prints out a given line of
+   * text, with little markers (i.e. '^') placed underneath a portion of it.
+   * 
+   * @param fileArg
+   *          - the name of the file whose line to print
+   * @param start
+   *          - the start position of the offending region.
+   * @param end
+   *          - the end position of the offending region.
+   * @param message
+   *          - the message to print about the error
    */
   public static void outputSourceError(String fileArg, int start, int end,
       String message) throws IOException {
@@ -261,23 +257,23 @@ public class Main {
     while (in.ready() && start >= lineText.length()) {
       start -= lineText.length() + 1;
       end -= lineText.length() + 1;
-      lineText = in.readLine();						
-      line = line + 1;			
-    }		
+      lineText = in.readLine();
+      line = line + 1;
+    }
 
     errout.println(fileArg + ":" + line + ": " + message);
-    //errout.println();
-    errout.println(lineText);	
+    // errout.println();
+    errout.println(lineText);
     for (int i = 0; i <= start; ++i) {
       if (lineText.charAt(i) == '\t') {
         errout.print("\t");
       } else {
         errout.print(" ");
       }
-    }				
-    for (int i = start; i <= end; ++i) {		
+    }
+    for (int i = start; i <= end; ++i) {
       errout.print("^");
     }
-    errout.println("");		
+    errout.println("");
   }
 }

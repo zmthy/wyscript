@@ -13,30 +13,31 @@ import wyjs.ast.util.JsFormatter;
 public class JsReturn implements JsStmt {
 
   private final JsExpr value;
-  
+
   /**
    * An empty return statement.
    */
   public JsReturn() {
     this.value = null;
   }
-  
+
   /**
    * A non-empty return statement.
    * 
-   * @param value The value to return.
+   * @param value
+   *          The value to return.
    */
   public JsReturn(JsExpr value) {
     this.value = value;
   }
-  
+
   /**
    * @return If the statement returns a value or not.
    */
   public boolean hasValue() {
     return value == null;
   }
-  
+
   @Override
   public String compile(JsFormatter ws) {
     return "return" + (this.value == null ? "" : " " + value.compile(ws));

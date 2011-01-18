@@ -15,40 +15,42 @@ import wyjs.ast.util.JsFormatter;
 public class JsLine implements JsStmt {
 
   private final JsExpr node;
-  
+
   /**
-   * @param node The node to line terminate.
+   * @param node
+   *          The node to line terminate.
    */
   public JsLine(JsExpr node) {
     this.node = node;
   }
-  
+
   /**
    * @return The node that is line terminated.
    */
   public JsNode getNode() {
     return node;
   }
-  
+
   @Override
   public String compile(JsFormatter ws) {
     String content = node.compile(ws);
     if (content.isEmpty()) {
       return content;
     }
-    
+
     return ws.idt + content + ws.lb;
   }
-  
+
   @Override
   public void collectAssignments(Set<String> assignments) {
     node.collectAssignments(assignments);
   }
-  
+
   /**
    * A helper function to reduce boilerplate.
    * 
-   * @param node The node to line terminate.
+   * @param node
+   *          The node to line terminate.
    * @return The generated line.
    */
   public static JsLine line(JsExpr node) {

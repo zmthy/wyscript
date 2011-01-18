@@ -10,19 +10,20 @@ import wyjs.ast.util.JsFormatter;
  * @author Timothy Jones
  */
 public enum JsUnOp {
-  
+
   Positive, Negative;
-  
+
   /**
    * Makes a new AST node of the given unary operator.
    * 
-   * @param value The value to apply the operation to.
+   * @param value
+   *          The value to apply the operation to.
    * @return An AST node of the operation.
    */
   public JsExpr newNode(JsExpr value) {
     return new UN_OP(value);
   }
-  
+
   /**
    * Converts the unary operator into its Javascript representation.
    * 
@@ -30,16 +31,18 @@ public enum JsUnOp {
    */
   public String compile() {
     switch (this) {
-    case Negative: return "-";
-    default: return "+";
+    case Negative:
+      return "-";
+    default:
+      return "+";
     }
   }
-  
+
   @Override
   public String toString() {
     return compile();
   }
-  
+
   /**
    * The internal nodes for each unary operator.
    * 
@@ -48,14 +51,15 @@ public enum JsUnOp {
   private class UN_OP implements JsExpr {
 
     private final JsExpr value;
-    
+
     /**
-     * @param value The value to apply the operation to.
+     * @param value
+     *          The value to apply the operation to.
      */
     public UN_OP(JsExpr value) {
       this.value = value;
     }
-    
+
     @Override
     public String compile(JsFormatter ws) {
       return JsUnOp.this.toString() + value.compile(ws);
@@ -65,7 +69,7 @@ public enum JsUnOp {
     public void collectAssignments(Set<String> assignments) {
       value.collectAssignments(assignments);
     }
-  
+
   }
 
 }

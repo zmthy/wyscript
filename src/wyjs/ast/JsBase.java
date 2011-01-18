@@ -9,11 +9,11 @@ import wyjs.ast.util.JsFormatter;
 public class JsBase implements JsNode {
 
   private final JsNode base;
-  
+
   public JsBase(List<? extends JsStmt> children) {
     this.base = null;
   }
-  
+
   @Override
   public String compile(JsFormatter ws) {
     return base.compile(ws);

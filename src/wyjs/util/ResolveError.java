@@ -27,11 +27,14 @@ package wyjs.util;
  * @author djp
  * 
  */
+@SuppressWarnings("serial")
 public class ResolveError extends Exception {
-	public ResolveError(String msg) {
-		super(msg);
-	}
-	public ResolveError(String msg, Throwable ex) {
-		super(msg,ex);
-	}
+
+  public ResolveError(String msg) {
+    super(msg);
+  }
+
+  public ResolveError(String msg, Throwable ex) {
+    super(msg, ex);
+  }
 }

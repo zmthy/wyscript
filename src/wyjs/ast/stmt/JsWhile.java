@@ -19,62 +19,72 @@ public class JsWhile implements JsStmt {
   private final String label;
   private final JsExpr condition;
   private final List<JsStmt> body = new ArrayList<JsStmt>();
-  
+
   /**
    * A one statement loop.
    * 
-   * @param condition The loop condition.
-   * @param body The body of the loop.
+   * @param condition
+   *          The loop condition.
+   * @param body
+   *          The body of the loop.
    */
   public JsWhile(JsExpr condition, JsStmt body) {
     this(condition, body, null);
   }
-  
+
   /**
    * A basic loop.
    * 
-   * @param condition The loop condition.
-   * @param body The body of the loop.
+   * @param condition
+   *          The loop condition.
+   * @param body
+   *          The body of the loop.
    */
   public JsWhile(JsExpr condition, List<JsStmt> body) {
     this(condition, body, null);
   }
-  
+
   /**
    * A one statement labelled loop.
    * 
-   * @param condition The loop condition.
-   * @param body The body of the loop.
-   * @param label The loop label.
+   * @param condition
+   *          The loop condition.
+   * @param body
+   *          The body of the loop.
+   * @param label
+   *          The loop label.
    */
   public JsWhile(JsExpr condition, JsStmt body, String label) {
     this(condition, (List<JsStmt>) null, label);
     this.body.add(body);
   }
-  
+
   /**
    * A labelled loop.
    * 
-   * @param condition The loop condition.
-   * @param body The body of the loop.
-   * @param label The loop label.
+   * @param condition
+   *          The loop condition.
+   * @param body
+   *          The body of the loop.
+   * @param label
+   *          The loop label.
    */
   public JsWhile(JsExpr condition, List<JsStmt> body, String label) {
     assert JsRegex.isIdentifier(label);
-    
+
     this.condition = condition;
     this.label = label;
-    
+
     if (body != null) {
       this.body.addAll(body);
     }
   }
-  
+
   @Override
   public String compile(JsFormatter ws) {
-    return ws.idt + (label == null ? "" : label + ":" + ws.s) + "while" +
-        ws.s + "(" + condition.compile(ws) + ")" + ws.s + "{" + ws.ln +
-        JsLists.compile(body, ws.next()) + ws.idt + "}" + ws.ln;
+    return ws.idt + (label == null ? "" : label + ":" + ws.s) + "while" + ws.s
+        + "(" + condition.compile(ws) + ")" + ws.s + "{" + ws.ln
+        + JsLists.compile(body, ws.next()) + ws.idt + "}" + ws.ln;
   }
 
   @Override
