@@ -34,16 +34,15 @@ import wyjs.ast.util.JsFormatter;
 import wyjs.ast.util.JsPrettyFormatter;
 import wyjs.compiler.JsBuilder;
 import wyjs.lang.WhileyFile;
-import wyjs.stages.WhileyLexer;
-import wyjs.stages.WhileyParser;
+import wyjs.stages.Lexer;
+import wyjs.stages.Parser;
 import wyjs.util.ParseError;
 import wyjs.util.SyntaxError;
 
 public class Main {
 
   public static final int PARSE_ERROR = 1;
-  public static final int CONTEXT_ERROR = 2;
-  public static final int VERIFICATION_ERROR = 3;
+  public static final int CONTEXT_ERROR = 2;  
   public static final int RUNTIME_ERROR = 4;
   public static final int UNKNOWN_ERROR = 5;
 
@@ -84,9 +83,7 @@ public class Main {
 
   public static int run(String[] args) {
     boolean verbose = false;
-
-    ArrayList<String> whileypath = new ArrayList<String>();
-    ArrayList<String> bootpath = new ArrayList<String>();
+    
     int fileArgsBegin = 0;
 
     for (int i = 0; i != args.length; ++i) {
@@ -100,10 +97,6 @@ public class Main {
               + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION
               + " (build " + BUILD_NUMBER + ")");
           System.exit(0);
-        } else if (arg.equals("-wp") || arg.equals("-whileypath")) {
-          Collections.addAll(whileypath, args[++i].split(File.pathSeparator));
-        } else if (arg.equals("-bp") || arg.equals("-bootpath")) {
-          Collections.addAll(bootpath, args[++i].split(File.pathSeparator));
         } else if (arg.equals("-verbose")) {
           verbose = true;
         } else {
@@ -118,9 +111,6 @@ public class Main {
       usage();
       return UNKNOWN_ERROR;
     }
-
-    whileypath.add(0, ".");
-    whileypath.addAll(bootpath);
 
     try {
 
@@ -177,20 +167,9 @@ public class Main {
   public static void usage() {
     String[][] info = {
         { "version", "Print version information" },
-        { "verbose", "Print detailed information on what the compiler is doing" },
-        { "Nvc", "Don't check constraints at compile time" },
-        { "nrc", "Don't check constraints at runtime\n" },
-        { "whileypath <path>", "Specify where to find whiley (class) files" },
-        { "wp <path>", "Specify where to find whiley (class) files" },
-        { "bootpath <path>",
-            "Specify where to find whiley standard library (class) files" },
-        { "bp <path>",
-            "Specify where to find whiley standard library (class) files" },
-        { "debug:lexer", "Generate debug information for the lexer" },
-        { "debug:checks", "Generate debug information on generated checks" },
-        { "debug:pcs", "Generate debug information on propagated conditions" },
-        { "debug:vcs", "Generate debug information on verification conditions" } };
-    System.out.println("usage: wjc <options> <source-files>");
+        { "verbose", "Print detailed information on what the compiler is doing" }};
+    
+    System.out.println("usage: wyjs <options> <source-files>");
     System.out.println("Options:");
 
     // first, work out gap information
@@ -221,14 +200,16 @@ public class Main {
    */
   public static void compile(List<File> files) throws IOException {
     ArrayList<WhileyFile> wyfiles = new ArrayList<WhileyFile>();
+    
     for (File file : files) {
-      WhileyLexer lexer = new WhileyLexer(file.getPath());
-      WhileyParser parser = new WhileyParser(file.getPath(), lexer.scan());
+      Lexer lexer = new Lexer(file.getPath());
+      Parser parser = new Parser(file.getPath(), lexer.scan());
       wyfiles.add(parser.read());
     }
 
     // we'll do the type checking here
-
+    new TypeChecker().check(wyfiles); 
+    
     for (WhileyFile wf : wyfiles) {
       translate(wf, true);
     }
