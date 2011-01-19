@@ -32,10 +32,7 @@ public class JsAccess implements JsAssignable {
     this.dot = JsRegex.isIdentifier(prop);
 
     if (!dot) {
-      char escape = prop.contains("'") && !prop.contains("\"") ? '"' : '\'';
-      prop = prop.replace("\\", "\\\\");
-      prop = prop.replace(Character.toString(escape), "\\" + escape);
-      prop = escape + prop + escape;
+      prop = JsRegex.stringify(prop);
     }
     this.prop = new JsLiteral(prop);
   }

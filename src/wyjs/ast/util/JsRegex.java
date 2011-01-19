@@ -11,4 +11,10 @@ public abstract class JsRegex {
         || value.matches("^[+-]*(0x)?\\d*\\.\\d+(e[+-]?\\d+)?");
   }
 
+  public static String stringify(String value) {
+    char quotes = value.contains("'") && !value.contains("\"") ? '"' : '\'';
+    return quotes
+        + value.replace("\\", "\\\\").replace(Character.toString(quotes),
+            "\\" + quotes) + quotes;
+  }
 }

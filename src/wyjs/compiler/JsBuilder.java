@@ -1,7 +1,9 @@
 package wyjs.compiler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import wyjs.ast.JsBase;
 import wyjs.ast.JsNode;
@@ -11,7 +13,9 @@ import wyjs.ast.expr.JsAssign.JsAssignable;
 import wyjs.ast.expr.JsBinOp;
 import wyjs.ast.expr.JsExpr;
 import wyjs.ast.expr.JsInvoke;
+import wyjs.ast.expr.JsList;
 import wyjs.ast.expr.JsLiteral;
+import wyjs.ast.expr.JsObject;
 import wyjs.ast.expr.JsUnOp;
 import wyjs.ast.expr.JsVariable;
 import wyjs.ast.stmt.JsConstant;
@@ -26,11 +30,16 @@ import wyjs.ast.util.JsHelpers;
 import wyjs.lang.Expr;
 import wyjs.lang.Expr.BOp;
 import wyjs.lang.Expr.BinOp;
+import wyjs.lang.Expr.Comprehension;
 import wyjs.lang.Expr.Constant;
+import wyjs.lang.Expr.DictionaryGen;
 import wyjs.lang.Expr.Invoke;
 import wyjs.lang.Expr.ListAccess;
 import wyjs.lang.Expr.NamedConstant;
+import wyjs.lang.Expr.NaryOp;
 import wyjs.lang.Expr.RecordAccess;
+import wyjs.lang.Expr.RecordGen;
+import wyjs.lang.Expr.TupleGen;
 import wyjs.lang.Expr.TypeConst;
 import wyjs.lang.Expr.UOp;
 import wyjs.lang.Expr.UnOp;
@@ -51,6 +60,7 @@ import wyjs.lang.WhileyFile.FunDecl;
 import wyjs.lang.WhileyFile.ImportDecl;
 import wyjs.lang.WhileyFile.Parameter;
 import wyjs.lang.WhileyFile.TypeDecl;
+import wyjs.util.Pair;
 import wyjs.util.SyntaxError;
 
 public class JsBuilder {
@@ -200,19 +210,32 @@ public class JsBuilder {
       return doListAccess(wfile, (ListAccess) expr);
     } else if (expr instanceof UnOp) {
       return doUnOp(wfile, (UnOp) expr);
-      // } else if (expr instanceof NaryOp) {
-      // } else if (expr instanceof Comprehension) {
+    } else if (expr instanceof NaryOp) {
+      return doNaryOp(wfile, (NaryOp) expr);
+    } else if (expr instanceof Comprehension) {
+      return doComprehension(wfile, (Comprehension) expr);
     } else if (expr instanceof RecordAccess) {
       return doRecordAccess(wfile, (RecordAccess) expr);
-      // } else if (expr instanceof DictionaryGen) {
-      // } else if (expr instanceof RecordGen) {
-      // } else if (expr instanceof TupleGen) {
+    } else if (expr instanceof DictionaryGen) {
+      return doDictionaryGen(wfile, (DictionaryGen) expr);
+    } else if (expr instanceof RecordGen) {
+      return doRecordGen(wfile, (RecordGen) expr);
+    } else if (expr instanceof TupleGen) {
+      return doTupleGen(wfile, (TupleGen) expr);
     } else if (expr instanceof Invoke) {
       return doInvoke(wfile, (Invoke) expr);
     }
 
     throw new SyntaxError("Unrecognised expression " + expr, wfile.filename, 0,
         0);
+  }
+
+  public List<JsExpr> doExprs(WhileyFile wfile, List<? extends Expr> exprs) {
+    List<JsExpr> js = new ArrayList<JsExpr>();
+    for (Expr expr : exprs) {
+      js.add(doExpr(wfile, expr));
+    }
+    return js;
   }
 
   public JsExpr doVariable(WhileyFile wfile, Variable expr) {
@@ -324,21 +347,58 @@ public class JsBuilder {
     }
   }
 
+  public JsExpr doNaryOp(WhileyFile wfile, NaryOp expr) {
+    List<JsExpr> args = doExprs(wfile, expr.arguments);
+
+    switch (expr.nop) {
+    case LISTGEN:
+      return new JsList(args);
+    case SETGEN:
+      return JsHelpers.newSet(args);
+      // case SUBLIST:
+    }
+
+    throw new SyntaxError("Unrecognised operator " + expr.nop, wfile.filename,
+        0, 0);
+  }
+
+  public JsExpr doComprehension(WhileyFile wfile, Comprehension expr) {
+    throw new SyntaxError("Comprehensions not yet supported.", wfile.filename,
+        0, 0);
+  }
+
   public JsExpr doRecordAccess(WhileyFile wfile, RecordAccess expr) {
     return new JsAccess(doExpr(wfile, expr.lhs), expr.name);
   }
 
-  public JsExpr doInvoke(WhileyFile wfile, Invoke expr) {
-    List<JsExpr> arguments = new ArrayList<JsExpr>();
+  public JsExpr doDictionaryGen(WhileyFile wfile, DictionaryGen expr) {
+    List<JsExpr> keys = new ArrayList<JsExpr>(), values = new ArrayList<JsExpr>();
 
-    for (Expr argument : expr.arguments) {
-      arguments.add(doExpr(wfile, argument));
+    for (Pair<Expr, Expr> pair : expr.pairs) {
+      keys.add(doExpr(wfile, pair.first()));
+      values.add(doExpr(wfile, pair.second()));
     }
 
+    return JsHelpers.newMap(keys, values);
+  }
+
+  public JsExpr doRecordGen(WhileyFile wfile, RecordGen expr) {
+    Map<String, JsExpr> fields = new HashMap<String, JsExpr>();
+    for (String name : expr.fields.keySet()) {
+      fields.put(name, doExpr(wfile, expr.fields.get(name)));
+    }
+    return new JsObject(fields);
+  }
+
+  public JsExpr doTupleGen(WhileyFile wfile, TupleGen expr) {
+    return new JsList(doExprs(wfile, expr.fields));
+  }
+
+  public JsExpr doInvoke(WhileyFile wfile, Invoke expr) {
     JsExpr function = expr.receiver == null ? new JsVariable(expr.name)
         : new JsAccess(doExpr(wfile, expr.receiver), expr.name);
 
-    return new JsInvoke(function, arguments);
+    return new JsInvoke(function, doExprs(wfile, expr.arguments));
   }
 
 }

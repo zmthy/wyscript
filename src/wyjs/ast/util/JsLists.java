@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import wyjs.ast.JsNode;
 import wyjs.ast.expr.JsExpr;
-import wyjs.ast.stmt.JsStmt;
 
 public abstract class JsLists {
 
@@ -32,22 +32,22 @@ public abstract class JsLists {
     return out;
   }
 
-  public static String compile(List<? extends JsStmt> nodes, JsFormatter ws) {
+  public static String compile(List<? extends JsNode> nodes, JsFormatter ws) {
     return compile(nodes, ws, "");
   }
 
-  public static String compile(List<? extends JsStmt> nodes, JsFormatter ws,
+  public static String compile(List<? extends JsNode> nodes, JsFormatter ws,
       String sep) {
     if (nodes == null || nodes.isEmpty()) {
       return "";
     }
-
-    String out = "";
-    int length = nodes.size();
-    for (int i = 0; i < length; ++i) {
-      out += nodes.get(i).compile(ws) + (i < length - 1 ? sep : "");
+    
+    List<String> values = new ArrayList<String>();
+    for (JsNode node : nodes) {
+      values.add(node.compile(ws));
     }
-    return out;
+
+    return join(values, sep);
   }
 
   public static String compileParams(List<String> params, JsFormatter ws) {
