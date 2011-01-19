@@ -3,6 +3,7 @@ package wyjs.ast;
 import java.util.List;
 import java.util.Set;
 
+import wyjs.ast.expr.JsInvoke;
 import wyjs.ast.stmt.JsStmt;
 import wyjs.ast.util.JsFormatter;
 
@@ -11,7 +12,7 @@ public class JsBase implements JsNode {
   private final JsNode base;
 
   public JsBase(List<? extends JsStmt> children) {
-    this.base = null;
+    this.base = JsInvoke.cl(children);
   }
 
   @Override
