@@ -7,6 +7,10 @@ import wyjs.ast.expr.JsVariable;
 
 public abstract class JsHelpers {
 
+  public static JsInvoke assertion(JsExpr v) {
+    return new JsInvoke(new JsVariable("$assert"), v);
+  }
+  
   public static JsInvoke debug(JsExpr m) {
     return new JsInvoke(new JsVariable("$debug"), m);
   }

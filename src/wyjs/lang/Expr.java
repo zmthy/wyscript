@@ -24,8 +24,7 @@ import wyjs.util.*;
 
 public interface Expr extends SyntacticElement {
 
-  public interface LVal extends Expr {
-  }
+  public interface LVal extends Expr {}
 
   public static class Variable extends SyntacticElement.Impl implements Expr,
       LVal {

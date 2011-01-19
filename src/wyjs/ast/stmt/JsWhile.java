@@ -60,7 +60,9 @@ public class JsWhile implements JsStmt {
    * @param label The loop label.
    */
   public JsWhile(JsExpr condition, List<JsStmt> body, String label) {
-    assert JsRegex.isIdentifier(label);
+    if (label != null) {
+      assert JsRegex.isIdentifier(label);
+    }
 
     this.condition = condition;
     this.label = label;

@@ -15,7 +15,9 @@ import wyjs.ast.expr.JsLiteral;
 import wyjs.ast.expr.JsUnOp;
 import wyjs.ast.expr.JsVariable;
 import wyjs.ast.stmt.JsConstant;
+import wyjs.ast.stmt.JsFor;
 import wyjs.ast.stmt.JsFunctionStmt;
+import wyjs.ast.stmt.JsIfElse;
 import wyjs.ast.stmt.JsLine;
 import wyjs.ast.stmt.JsReturn;
 import wyjs.ast.stmt.JsStmt;
@@ -34,9 +36,13 @@ import wyjs.lang.Expr.UOp;
 import wyjs.lang.Expr.UnOp;
 import wyjs.lang.Expr.Variable;
 import wyjs.lang.Stmt;
+import wyjs.lang.Stmt.Assert;
 import wyjs.lang.Stmt.Assign;
 import wyjs.lang.Stmt.Debug;
+import wyjs.lang.Stmt.For;
+import wyjs.lang.Stmt.IfElse;
 import wyjs.lang.Stmt.Return;
+import wyjs.lang.Stmt.Skip;
 import wyjs.lang.Stmt.While;
 import wyjs.lang.WhileyFile;
 import wyjs.lang.WhileyFile.ConstDecl;
@@ -106,14 +112,18 @@ public class JsBuilder {
   public JsStmt doStmt(WhileyFile wfile, Stmt stmt) {
     if (stmt instanceof Assign) {
       return doAssign(wfile, (Assign) stmt);
-    // } else if (stmt instanceof Assert) {
+    } else if (stmt instanceof Assert) {
+      return doAssert(wfile, (Assert) stmt);
     } else if (stmt instanceof Return) {
       return doReturn(wfile, (Return) stmt);
     } else if (stmt instanceof While) {
       return doWhile(wfile, (While) stmt);
-    // } else if (stmt instanceof For) {
-    // } else if (stmt instanceof IfElse) {
-    // } else if (stmt instanceof Skip) {
+    } else if (stmt instanceof For) {
+      return doFor(wfile, (For) stmt);
+    } else if (stmt instanceof IfElse) {
+      return doIfElse(wfile, (IfElse) stmt);
+    } else if (stmt instanceof Skip) {
+      return doSkip(wfile, (Skip) stmt);
     } else if (stmt instanceof Debug) {
       return doDebug(wfile, (Debug) stmt);
     }
@@ -133,20 +143,44 @@ public class JsBuilder {
     return new JsLine(new JsAssign((JsAssignable) lhs, doExpr(wfile, stmt.rhs)));
   }
 
+  public JsStmt doAssert(WhileyFile wfile, Assert stmt) {
+    return new JsLine(JsHelpers.assertion(doExpr(wfile, stmt.expr)));
+  }
+
   public JsStmt doReturn(WhileyFile wfile, Return stmt) {
     return new JsReturn(doExpr(wfile, stmt.expr));
   }
-  
+
   public JsStmt doWhile(WhileyFile wfile, While stmt) {
-    List<JsStmt> body = stmt.body.isEmpty() ? null : new ArrayList<JsStmt>();
-    
-    for (Stmt statement : stmt.body) {
+    return new JsWhile(doExpr(wfile, stmt.condition), collectBody(wfile,
+        stmt.body));
+  }
+
+  public JsStmt doFor(WhileyFile wfile, For stmt) {
+    return new JsFor(stmt.variable, doExpr(wfile, stmt.source), collectBody(
+        wfile, stmt.body));
+  }
+
+  public JsStmt doIfElse(WhileyFile wfile, IfElse stmt) {
+    return new JsIfElse(doExpr(wfile, stmt.condition), collectBody(wfile,
+        stmt.trueBranch), collectBody(wfile, stmt.falseBranch));
+  }
+
+  private List<JsStmt> collectBody(WhileyFile wfile, List<Stmt> statements) {
+    List<JsStmt> body = statements.isEmpty() ? null : new ArrayList<JsStmt>();
+
+    for (Stmt statement : statements) {
       body.add(doStmt(wfile, statement));
     }
-    
-    return new JsWhile(doExpr(wfile, stmt.condition), body);
+
+    return body;
   }
-  
+
+  public JsStmt doSkip(WhileyFile wfile, Skip stmt) {
+    throw new SyntaxError("No Javascript equivalent to skip.", wfile.filename,
+        0, 0);
+  }
+
   public JsStmt doDebug(WhileyFile wfile, Debug stmt) {
     return new JsLine(JsHelpers.debug(doExpr(wfile, stmt.expr)));
   }
