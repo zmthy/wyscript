@@ -66,8 +66,7 @@ public abstract class Type {
 	private static Union T_UNION(NonUnion... bounds) {
 		return get(new Union(bounds));
 	}
-	
-	
+		
 	public static Process T_PROCESS(Type element) {
 		return get(new Process(element));
 	}

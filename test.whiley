@@ -1,3 +1,3 @@
-int f(bool x):
-    x = [2.2]    
-    return x[1]
+(int,int) f(bool x):
+    x = (1,2.2)    
+    return x

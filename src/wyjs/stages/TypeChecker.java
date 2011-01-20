@@ -504,6 +504,8 @@ public class TypeChecker {
 				return resolve((DictionaryGen) e, environment);
 			} else if (e instanceof Access) {
 				return resolve((Access) e, environment);
+			} else if (e instanceof TupleGen) {
+				return resolve((TupleGen) e, environment);
 			} else {
 				syntaxError("unknown expression encountered", filename, e);
 			}
@@ -681,6 +683,17 @@ public class TypeChecker {
 		checkSubtype(edt.key,idx,ra.index);
 		
 		return edt.value;
+	}
+	
+	protected Type resolve(TupleGen rg, Environment environment) {
+		HashMap<String,Type> types = new HashMap<String,Type>();
+		// FIXME: add proper support for tuple types.
+		int idx=0;
+		for(Expr e : rg.fields) {
+			Type t = resolve(e,environment);
+			types.put("$" + idx++,t);
+		}
+		return Type.T_RECORD(types);
 	}
 	
 	protected Type resolve(UnresolvedType t) {
