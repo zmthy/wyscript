@@ -207,7 +207,7 @@ public class Main {
     PrintStream out = new PrintStream(fout);
 
     // Comment out below as doesn't work yet!
-    // out.println(builder.build(wf).compile(pp ? pretty : bare));
+    out.println(builder.build(wf).compile(pp ? pretty : bare));
 
     out.close();
   }
