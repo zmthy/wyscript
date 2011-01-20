@@ -379,16 +379,121 @@ public class TypeChecker {
 		}
 
 		
-		// Second, propagate types through all expressions 
-		/*
-		
+		// Second, propagate types through all expressions 				
 		for (Stmt s : fd.statements) {
-			blk.addAll(resolve(s, 0));
+			resolve(s, environment);
 		}
 
-		*/
-
 		currentFunDecl = null;		
+	}
+	
+	public void resolve(Stmt stmt, HashMap<String,Type> environment) {
+		try {
+			if (stmt instanceof Assign) {
+				resolve((Assign) stmt, environment);
+			} else if (stmt instanceof Assert) {
+				resolve((Assert) stmt, environment);
+			} else if (stmt instanceof Return) {
+				resolve((Return) stmt, environment);
+			} else if (stmt instanceof Debug) {
+				resolve((Debug) stmt, environment);
+			} else if (stmt instanceof IfElse) {
+				resolve((IfElse) stmt, environment);
+			} else if (stmt instanceof While) {
+				resolve((While) stmt, environment);
+			} else if (stmt instanceof For) {
+				resolve((For) stmt, environment);
+			} else if (stmt instanceof Skip) {
+				resolve((Skip) stmt, environment);
+			} else {
+				syntaxError("unknown statement encountered: "
+						+ stmt.getClass().getName(), filename, stmt);
+			}
+		} catch (SyntaxError sex) {
+			throw sex;
+		} catch (Exception ex) {			
+			syntaxError("internal failure", filename, stmt, ex);
+		}		
+	}
+	
+	protected void resolve(Assign s, HashMap<String,Type> environment) {
+		
+		Type rhs_t = resolve(s.rhs,environment);
+		
+		if(s.lhs instanceof Variable) {
+			Variable v = (Variable) s.lhs;
+			environment.put(v.var, rhs_t);
+		} else {
+			Type lhs_t = resolve(s.lhs,environment);
+			checkSubtype(lhs_t,rhs_t,s);
+		}
+	}
+
+	protected void resolve(Assert s, HashMap<String,Type> environment) {
+		Type t = resolve(s.expr,environment);
+		checkSubtype(Type.T_BOOL,t,s);
+	}
+
+	protected void resolve(Return s, HashMap<String,Type> environment) {
+
+		if (s.expr != null) {
+			Type t = resolve(s.expr,environment);
+			TypeAttr ta = currentFunDecl.attribute(TypeAttr.class);
+			Type.Fun ft = (Type.Fun) ta.type;
+			checkSubtype(ft.ret,t,s); 			
+		} 
+	}
+
+	protected void resolve(Skip s, HashMap<String,Type> environment) {
+		// TODO: remove skip statement?
+	}
+
+	protected void resolve(Debug s, HashMap<String,Type> environment) {
+		resolve(s.expr, environment);
+		// TO DO ... check type is a string?
+	}
+
+	protected Type resolve(Expr e, HashMap<String,Type> environment) {
+		try {
+			if (e instanceof Constant) {
+				return resolve((Constant) e, environment);
+			} else if (e instanceof Variable) {
+				return resolve((Variable) e, environment);
+			} else if (e instanceof BinOp) {
+				return resolve((BinOp) e, environment);
+			}else {
+				syntaxError("unknown expression encountered: "
+						+ e.getClass().getName(), filename, e);
+			}
+		} catch (SyntaxError se) {
+			throw se;
+		} catch (Exception ex) {
+			syntaxError("internal failure", filename, e, ex);
+		}
+		return null;
+	}
+
+	protected Type resolve(Constant c, HashMap<String,Type> environment) {
+		Object v = c.value;
+		if(v instanceof Boolean) {
+			return Type.T_BOOL;
+		} else if(v instanceof Integer) {
+			return Type.T_INT;
+		} else if(v instanceof Double) {
+			return Type.T_REAL;
+		} 
+		syntaxError("unknown constant encountered: "
+				+ c.getClass().getName(), filename, c);
+		return null;
+	}
+
+	protected Type resolve(Variable v, HashMap<String,Type> environment) throws ResolveError {
+		Type v_t = environment.get(v.var);
+		if(v_t != null) {
+			return v_t;
+		}
+		syntaxError("variable not defined", filename, v);
+		return null;
 	}
 	
 	protected Type resolve(UnresolvedType t) {
@@ -462,7 +567,21 @@ public class TypeChecker {
 		syntaxError("unknown type encountered", filename, t);
 		return null;		
 	}
-		
+
+	/**
+	 * Check whether t1 :> t2; that is, whether t2 is a subtype of t1.
+	 * 
+	 * @param t1
+	 * @param t2
+	 * @param elem
+	 */
+	public void checkSubtype(Type t1, Type t2, SyntacticElement elem) {
+		if (!Type.isSubtype(t1, t2)) {
+			syntaxError("expecting type " + t1 + ", got type " + t2, filename,
+					elem);
+		}
+	}
+	
 	/**
 	 * A TypeAttr provides a way of attaching a type to a syntacticElement
 	 * 

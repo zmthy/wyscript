@@ -10,7 +10,7 @@
     <manifest file="tmp/MANIFEST.MF">
       <attribute name="Built-By" value="${user.name}"/>
       <attribute name="Main-Class" value="wyjs.Main"/>
-      <attribute name="Implementation-Version" value="${version}-${build.number}"/>
+      <attribute name="Implementation-Version" value="${version}"/>
     </manifest>
     <jar destfile="lib/wyjs.jar" basedir="src" includes="wyjs/**/*.class" manifest="tmp/MANIFEST.MF"/>
     <delete dir="tmp"/>

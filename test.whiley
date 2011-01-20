@@ -1,4 +1,3 @@
-define nat as blah
-
-int f(nat x):
+int f():
+    x = 1
     return x

@@ -39,8 +39,7 @@ public class Main {
   public static PrintStream errout;
   public static final int MAJOR_VERSION;
   public static final int MINOR_VERSION;
-  public static final int MINOR_REVISION;
-  public static final int BUILD_NUMBER;
+  public static final int MINOR_REVISION;  
 
   private static final JsBuilder builder = new JsBuilder();
   private static final JsFormatter bare = new JsBareFormatter(),
@@ -57,8 +56,7 @@ public class Main {
     String versionStr = Main.class.getPackage().getImplementationVersion();
     if (versionStr != null) {
       String[] vb = versionStr.split("-");
-      String[] pts = vb[0].split("\\.");
-      BUILD_NUMBER = Integer.parseInt(vb[1]);
+      String[] pts = vb[0].split("\\.");      
       MAJOR_VERSION = Integer.parseInt(pts[0]);
       MINOR_VERSION = Integer.parseInt(pts[1]);
       MINOR_REVISION = Integer.parseInt(pts[2]);
@@ -66,8 +64,7 @@ public class Main {
       System.err.println("WARNING: version numbering unavailable");
       MAJOR_VERSION = 0;
       MINOR_VERSION = 0;
-      MINOR_REVISION = 0;
-      BUILD_NUMBER = 0;
+      MINOR_REVISION = 0;      
     }
   }
 
@@ -84,8 +81,7 @@ public class Main {
           System.exit(0);
         } else if (arg.equals("-version")) {
           System.out.println("Whiley-to-Java Compiler (wyjc) version "
-              + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION
-              + " (build " + BUILD_NUMBER + ")");
+              + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION);
           System.exit(0);
         } else if (arg.equals("-verbose")) {
           verbose = true;
@@ -210,7 +206,8 @@ public class Main {
     FileOutputStream fout = new FileOutputStream(filename);
     PrintStream out = new PrintStream(fout);
 
-    out.println(builder.build(wf).compile(pp ? pretty : bare));
+    // Comment out below as doesn't work yet!
+    // out.println(builder.build(wf).compile(pp ? pretty : bare));
 
     out.close();
   }
