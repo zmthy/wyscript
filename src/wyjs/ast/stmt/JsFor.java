@@ -82,7 +82,7 @@ public class JsFor implements JsStmt {
     }
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     String[][] assignments = { { "c", collection.compile(ws) }, { "i", "0" },
         { "l", "$c.length" } };
@@ -98,7 +98,7 @@ public class JsFor implements JsStmt {
         + JsLists.compile(body, ws.next()) + ws.idt + "}" + ws.ln;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     assignments.add("$c");
     assignments.add("$i");

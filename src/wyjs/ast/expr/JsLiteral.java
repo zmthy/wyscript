@@ -59,12 +59,12 @@ public class JsLiteral implements JsExpr {
     return literal;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return literal;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
   }
 

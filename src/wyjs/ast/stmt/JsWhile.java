@@ -72,14 +72,14 @@ public class JsWhile implements JsStmt {
     }
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return ws.idt + (label == null ? "" : label + ":" + ws.s) + "while" + ws.s
         + "(" + condition.compile(ws) + ")" + ws.s + "{" + ws.ln
         + JsLists.compile(body, ws.next()) + ws.idt + "}" + ws.ln;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     condition.collectAssignments(assignments);
     for (JsStmt stmt : body) {

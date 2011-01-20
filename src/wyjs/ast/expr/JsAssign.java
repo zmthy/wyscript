@@ -23,12 +23,12 @@ public class JsAssign implements JsExpr {
     this.rhs = rhs;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return lhs.compile(ws) + ws.s + "=" + ws.s + rhs.compile(ws);
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     String lhs = this.lhs.getVar();
     if (lhs != null) {

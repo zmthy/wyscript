@@ -45,12 +45,12 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
     assert name != null;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return ws.idt + super.compile(ws) + ws.ln;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
   }
 

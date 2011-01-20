@@ -32,7 +32,7 @@ public class JsIfElse implements JsStmt {
     }
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return "if" + ws.s + "(" + condition.compile(ws) + ")" + ws.s + "{" + ws.ln
         + JsLists.compile(ifBody, ws.next()) + ws.idt + "}" + ws.s + "else"
@@ -40,7 +40,7 @@ public class JsIfElse implements JsStmt {
         + "}" + ws.ln;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     condition.collectAssignments(assignments);
     for (JsStmt stmt : ifBody) {

@@ -29,12 +29,12 @@ public class JsContinue implements JsStmt {
     this.label = label;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return ws.idt + "continue" + (label == null ? "" : ws.ss + label) + ws.ln;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
   }
 

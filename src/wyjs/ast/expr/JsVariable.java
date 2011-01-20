@@ -19,7 +19,7 @@ public class JsVariable extends JsLiteral implements JsAssignable {
     super(name);
   }
 
-  @Override
+  
   public String getVar() {
     return getValue();
   }

@@ -30,7 +30,7 @@ public class JsNew extends JsInvoke {
     super(value, args);
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return "new" + ws.ss + super.compile(ws);
   }

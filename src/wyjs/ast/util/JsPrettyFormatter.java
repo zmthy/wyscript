@@ -16,7 +16,7 @@ public class JsPrettyFormatter extends JsFormatter {
     this.prev = old;
   }
 
-  @Override
+  
   public JsFormatter next() {
     if (next == null) {
       return next = new JsPrettyFormatter(this, idt + in);
@@ -25,7 +25,7 @@ public class JsPrettyFormatter extends JsFormatter {
     return next;
   }
 
-  @Override
+  
   public JsFormatter prev() {
     return prev;
   }

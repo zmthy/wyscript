@@ -53,12 +53,12 @@ public class JsInvoke implements JsExpr {
     }
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return value.compile(ws) + JsLists.compileArgs(args, ws);
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     value.collectAssignments(assignments);
   }

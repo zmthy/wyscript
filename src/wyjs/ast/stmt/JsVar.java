@@ -25,7 +25,7 @@ public class JsVar implements JsStmt {
     }
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     if (vars.isEmpty()) {
       return "";
@@ -34,7 +34,7 @@ public class JsVar implements JsStmt {
     return ws.idt + "var" + ws.ss + JsLists.join(vars, "," + ws.s) + ws.ln;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
   }
 

@@ -24,13 +24,13 @@ public class JsConstant implements JsStmt {
     this.value = value;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return ws.idt + "const" + ws.ss + name + ws.s + "=" + ws.s
         + value.compile(ws) + ws.ln;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
   }
 

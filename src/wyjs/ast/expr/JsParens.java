@@ -20,12 +20,12 @@ public class JsParens implements JsExpr {
     this.value = value;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return "(" + value.compile(ws) + ")";
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     value.collectAssignments(assignments);
   }

@@ -62,17 +62,17 @@ public class JsAccess implements JsAssignable {
     this.dot = false;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return value.compile(ws) + (dot ? "." : "[") + prop.compile(ws)
         + (dot ? "" : "]");
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
   }
 
-  @Override
+  
   public String getVar() {
     return null;
   }

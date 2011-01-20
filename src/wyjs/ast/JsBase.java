@@ -25,12 +25,12 @@ public class JsBase implements JsNode {
     this.base = JsInvoke.cl(children);
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return base.compile(ws);
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     base.collectAssignments(assignments);
   }

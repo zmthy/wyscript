@@ -63,7 +63,7 @@ public enum JsBinOp {
     throw new RuntimeException("Unrecognised binary operator."); 
   }
 
-  @Override
+  
   public String toString() {
     return compile();
   }
@@ -86,13 +86,13 @@ public enum JsBinOp {
       this.rhs = rhs;
     }
 
-    @Override
+    
     public String compile(JsFormatter ws) {
       return lhs.compile(ws) + ws.s + JsBinOp.this.compile() + ws.s
           + rhs.compile(ws);
     }
 
-    @Override
+    
     public void collectAssignments(Set<String> assignments) {
       lhs.collectAssignments(assignments);
       rhs.collectAssignments(assignments);

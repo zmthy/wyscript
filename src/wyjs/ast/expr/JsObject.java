@@ -35,7 +35,7 @@ public class JsObject implements JsExpr {
     }
   }
   
-  @Override
+  
   public String compile(JsFormatter ws) {
     if (values.isEmpty()) {
       return "{}";
@@ -53,7 +53,7 @@ public class JsObject implements JsExpr {
     return "{" + ws.s + JsLists.join(fields, "," + ws.s) + ws.s + "}";
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     for (JsExpr expr : values.values()) {
       expr.collectAssignments(assignments);

@@ -43,7 +43,7 @@ public enum JsUnOp {
     throw new RuntimeException("Unrecognised unary operator.");
   }
 
-  @Override
+  
   public String toString() {
     return compile(new JsBareFormatter());
   }
@@ -64,12 +64,12 @@ public enum JsUnOp {
       this.value = value;
     }
 
-    @Override
+    
     public String compile(JsFormatter ws) {
       return JsUnOp.this.compile(ws) + value.compile(ws);
     }
 
-    @Override
+    
     public void collectAssignments(Set<String> assignments) {
       value.collectAssignments(assignments);
     }

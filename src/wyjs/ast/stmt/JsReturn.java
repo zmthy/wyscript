@@ -37,12 +37,12 @@ public class JsReturn implements JsStmt {
     return value == null;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     return "return" + (this.value == null ? "" : " " + value.compile(ws));
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     value.collectAssignments(assignments);
   }

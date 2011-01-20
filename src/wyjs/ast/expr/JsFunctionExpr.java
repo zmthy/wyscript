@@ -40,7 +40,7 @@ public class JsFunctionExpr extends JsFunction implements JsExpr {
     super(null, params, body);
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
   }
 

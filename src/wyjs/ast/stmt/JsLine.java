@@ -31,7 +31,7 @@ public class JsLine implements JsStmt {
     return node;
   }
 
-  @Override
+  
   public String compile(JsFormatter ws) {
     String content = node.compile(ws);
     if (content.isEmpty()) {
@@ -41,7 +41,7 @@ public class JsLine implements JsStmt {
     return ws.idt + content + ws.lb;
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     node.collectAssignments(assignments);
   }

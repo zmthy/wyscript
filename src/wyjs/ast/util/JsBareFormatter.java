@@ -6,12 +6,12 @@ public class JsBareFormatter extends JsFormatter {
     super("", ";", "", "");
   }
 
-  @Override
+  
   public JsFormatter next() {
     return this;
   }
 
-  @Override
+  
   public JsFormatter prev() {
     return this;
   }

@@ -32,7 +32,7 @@ public class JsList implements JsExpr {
     }
   }
   
-  @Override
+  
   public String compile(JsFormatter ws) {
     if (values.isEmpty()) {
       return "[]";
@@ -41,7 +41,7 @@ public class JsList implements JsExpr {
     return "[" + ws.s + JsLists.compile(values, ws, "," + ws.s) + ws.s + "]";
   }
 
-  @Override
+  
   public void collectAssignments(Set<String> assignments) {
     for (JsExpr expr : values) {
       expr.collectAssignments(assignments);
