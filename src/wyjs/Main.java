@@ -23,6 +23,7 @@ import java.util.*;
 
 import wyjs.ast.util.JsBareFormatter;
 import wyjs.ast.util.JsFormatter;
+import wyjs.ast.util.JsLists;
 import wyjs.ast.util.JsPrettyFormatter;
 import wyjs.compiler.JsBuilder;
 import wyjs.lang.WhileyFile;
@@ -143,7 +144,8 @@ public class Main {
   }
 
   public static void main(String[] args) throws Exception {
-    System.exit(run(args));
+    // System.exit(run(args));
+    compile(JsLists.wrap(new File("test.whiley")));
   }
 
   /**

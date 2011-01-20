@@ -117,7 +117,7 @@ public class JsBuilder {
       body.add(doStmt(wfile, statement));
     }
 
-    return new JsFunctionStmt(decl.name);
+    return new JsFunctionStmt(decl.name, parameters, body);
   }
 
   public JsStmt doStmt(WhileyFile wfile, Stmt stmt) {

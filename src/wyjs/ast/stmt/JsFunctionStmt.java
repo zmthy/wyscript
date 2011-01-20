@@ -45,14 +45,11 @@ public class JsFunctionStmt extends JsFunction implements JsStmt {
     assert name != null;
   }
 
-  
   public String compile(JsFormatter ws) {
     return ws.idt + super.compile(ws) + ws.ln;
   }
 
-  
-  public void collectAssignments(Set<String> assignments) {
-  }
+  public void collectAssignments(Set<String> assignments) {}
 
   /**
    * A helper function for reducing boilerplate.

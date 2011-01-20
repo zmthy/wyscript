@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import wyjs.ast.expr.JsInvoke;
-import wyjs.ast.expr.JsLiteral;
-import wyjs.ast.stmt.JsLine;
 import wyjs.ast.stmt.JsStmt;
 import wyjs.ast.util.JsFormatter;
 
@@ -21,7 +19,7 @@ public class JsBase implements JsNode {
     FileReader reader = new FileReader(file);
     char[] cbuf = new char[(int) file.length()];
     reader.read(cbuf);
-    children.add(new JsLine(new JsLiteral(new String(cbuf))));
+    // children.add(0, new JsLine(new JsLiteral(new String(cbuf))));
     this.base = JsInvoke.cl(children);
   }
 

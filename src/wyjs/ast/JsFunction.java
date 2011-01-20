@@ -82,7 +82,7 @@ public abstract class JsFunction implements JsNode {
     }
   }
 
-  
+  @Override
   public String compile(JsFormatter ws) {
     JsFormatter next = ws.next();
     return fn

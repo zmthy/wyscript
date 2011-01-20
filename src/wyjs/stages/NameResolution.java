@@ -399,7 +399,7 @@ public class NameResolution {
 			// This case corresponds to a user-defined type. This will be
 			// defined in some module (possibly ours), and we need to identify
 			// what module that is here, and save it for future use.
-			UnresolvedType.Named dt = (UnresolvedType.Named) t;						
+			// UnresolvedType.Named dt = (UnresolvedType.Named) t;						
 			// FIXME: needed for namespacing
 			//ModuleID mid = loader.resolve(dt.name, imports);
 			ModuleID mid = srcfile.module;
