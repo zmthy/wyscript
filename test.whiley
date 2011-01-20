@@ -1,3 +1,5 @@
 int f(int x):
-    x = x + 2
-    return x
+    if x < 2.03:
+        return 1
+    else:    
+        return 2

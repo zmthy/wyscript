@@ -366,7 +366,7 @@ public class TypeChecker {
 	}
 	
 	protected void resolve(FunDecl fd) {				
-		HashMap<String,Type> environment = new HashMap<String,Type>();
+		Environment environment = new Environment();
 		currentFunDecl = fd;
 		
 		// First, initialise typing environment		
@@ -381,60 +381,69 @@ public class TypeChecker {
 		
 		// Second, propagate types through all expressions 				
 		for (Stmt s : fd.statements) {
-			resolve(s, environment);
+			environment = resolve(s, environment);
 		}
 
 		currentFunDecl = null;		
 	}
 	
-	public void resolve(Stmt stmt, HashMap<String,Type> environment) {
+	public Environment resolve(Stmt stmt, Environment environment) {
+		if(environment == null) {
+			syntaxError("unreachable code",filename,stmt);
+		}
 		try {
 			if (stmt instanceof Assign) {
-				resolve((Assign) stmt, environment);
+				return resolve((Assign) stmt, environment);
 			} else if (stmt instanceof Assert) {
-				resolve((Assert) stmt, environment);
+				return resolve((Assert) stmt, environment);
 			} else if (stmt instanceof Return) {
-				resolve((Return) stmt, environment);
+				return resolve((Return) stmt, environment);
 			} else if (stmt instanceof Debug) {
-				resolve((Debug) stmt, environment);
+				return resolve((Debug) stmt, environment);
 			} else if (stmt instanceof IfElse) {
-				resolve((IfElse) stmt, environment);
+				return resolve((IfElse) stmt, environment);
 			} else if (stmt instanceof While) {
-				resolve((While) stmt, environment);
+				return resolve((While) stmt, environment);
 			} else if (stmt instanceof For) {
-				resolve((For) stmt, environment);
+				return resolve((For) stmt, environment);
 			} else if (stmt instanceof Skip) {
-				resolve((Skip) stmt, environment);
-			} else {
-				syntaxError("unknown statement encountered: "
-						+ stmt.getClass().getName(), filename, stmt);
-			}
-		} catch (SyntaxError sex) {
-			throw sex;
+				return resolve((Skip) stmt, environment);
+			} 
+		} catch (SyntaxError se) {
+			throw se;
 		} catch (Exception ex) {			
 			syntaxError("internal failure", filename, stmt, ex);
-		}		
+		}
+		
+		syntaxError("unknown statement encountered: "
+				+ stmt.getClass().getName(), filename, stmt);
+		
+		return null;
 	}
 	
-	protected void resolve(Assign s, HashMap<String,Type> environment) {
+	protected Environment resolve(Assign s, Environment environment) {
 		
 		Type rhs_t = resolve(s.rhs,environment);
 		
 		if(s.lhs instanceof Variable) {
 			Variable v = (Variable) s.lhs;
+			environment = new Environment(environment);
 			environment.put(v.var, rhs_t);
 		} else {
 			Type lhs_t = resolve(s.lhs,environment);
 			checkSubtype(lhs_t,rhs_t,s);
 		}
+		
+		return environment;
 	}
 
-	protected void resolve(Assert s, HashMap<String,Type> environment) {
+	protected Environment resolve(Assert s, Environment environment) {
 		Type t = resolve(s.expr,environment);
 		checkSubtype(Type.T_BOOL,t,s);
+		return environment;
 	}
 
-	protected void resolve(Return s, HashMap<String,Type> environment) {
+	protected Environment resolve(Return s, Environment environment) {
 
 		if (s.expr != null) {
 			Type t = resolve(s.expr,environment);
@@ -442,18 +451,41 @@ public class TypeChecker {
 			Type.Fun ft = (Type.Fun) ta.type;
 			checkSubtype(ft.ret,t,s); 			
 		} 
+		
+		return null;
 	}
 
-	protected void resolve(Skip s, HashMap<String,Type> environment) {
+	protected Environment resolve(Skip s, Environment environment) {
 		// TODO: remove skip statement?
+		return environment;
 	}
 
-	protected void resolve(Debug s, HashMap<String,Type> environment) {
+	protected Environment resolve(Debug s, Environment environment) {
 		resolve(s.expr, environment);
 		// TO DO ... check type is a string?
+		return environment;
 	}
 
-	protected Type resolve(Expr e, HashMap<String,Type> environment) {
+	protected Environment resolve(IfElse s, Environment environment) {
+		// TODO: update to allow retyping by type tests
+		Type t = resolve(s.condition,environment);
+		checkSubtype(Type.T_BOOL,t,s.condition);
+		
+		Environment trueEnv = environment;
+		Environment falseEnv = environment;
+		
+		for(Stmt stmt : s.trueBranch) {
+			trueEnv = resolve(stmt,trueEnv);
+		}
+		
+		for(Stmt stmt : s.falseBranch) {
+			falseEnv = resolve(stmt,falseEnv);	
+		}
+						
+		return join(trueEnv,falseEnv);
+	}
+	
+	protected Type resolve(Expr e, Environment environment) {
 		try {
 			if (e instanceof Constant) {
 				return resolve((Constant) e, environment);
@@ -473,7 +505,7 @@ public class TypeChecker {
 		return null;
 	}
 
-	protected Type resolve(Constant c, HashMap<String,Type> environment) {
+	protected Type resolve(Constant c, Environment environment) {
 		Object v = c.value;
 		if(v instanceof Boolean) {
 			return Type.T_BOOL;
@@ -487,7 +519,7 @@ public class TypeChecker {
 		return null;
 	}
 
-	protected Type resolve(Variable v, HashMap<String,Type> environment) throws ResolveError {
+	protected Type resolve(Variable v, Environment environment) throws ResolveError {
 		Type v_t = environment.get(v.var);
 		if(v_t != null) {
 			return v_t;
@@ -496,7 +528,7 @@ public class TypeChecker {
 		return null;
 	}
 	
-	protected Type resolve(BinOp bop, HashMap<String,Type> environment) throws ResolveError {
+	protected Type resolve(BinOp bop, Environment environment) throws ResolveError {
 		Type lhs_t = resolve(bop.lhs,environment);
 		Type rhs_t = resolve(bop.rhs,environment);
 		Type lub = Type.leastUpperBound(lhs_t,rhs_t);
@@ -504,14 +536,30 @@ public class TypeChecker {
 		// FIXME: really need to add conversions somehow
 		
 		switch(bop.op) {
-			case ADD:
+			case ADD:			
+			{
+				if (Type.isSubtype(Type.T_SET(Type.T_ANY), lhs_t)
+						|| Type.isSubtype(Type.T_SET(Type.T_ANY), rhs_t)) {
+					checkSubtype(Type.T_SET(Type.T_ANY),lub,bop);
+					// need to update operation
+					bop.op = BOp.UNION;
+					return lub;
+				}
+			}
 			case SUB:
 			case DIV:
-			case MUL:		
-			{
-				Type tmp = Type.leastUpperBound(Type.T_REAL,lub);
-				checkSubtype(tmp,Type.T_REAL,bop);
+			case MUL:				
+			{				
+				checkSubtype(Type.T_REAL,lub,bop);
 				return lub;
+			}
+			case LT:
+			case LTEQ:
+			case GT:
+			case GTEQ:
+			{			
+				checkSubtype(Type.T_REAL,lub,bop);
+				return Type.T_BOOL;
 			}
 		}
 				
@@ -547,7 +595,7 @@ public class TypeChecker {
 		} else if (t instanceof UnresolvedType.Tuple) {
 			// At the moment, a tuple is compiled down to a wyil record.
 			UnresolvedType.Tuple tt = (UnresolvedType.Tuple) t;
-			HashMap<String,Type> types = new HashMap<String,Type>();			
+			Environment types = new Environment();			
 			int idx=0;
 			for (UnresolvedType e : tt.types) {
 				String name = "$" + idx++;
@@ -606,6 +654,23 @@ public class TypeChecker {
 		}
 	}
 	
+	public static Environment join(Environment e1, Environment e2) {
+		if(e1 == null) { return e2; }
+		if(e2 == null) { return e1; }
+		
+		Environment r = new Environment();
+		for(Map.Entry<String,Type> k1 : e1.entrySet()) {
+			String name = k1.getKey();
+			Type t1 = k1.getValue();
+			Type t2 = e2.get(name);
+			if(t2 != null) {
+				r.put(name, Type.leastUpperBound(t1,t2));
+			}
+		}
+		
+		return r;
+	}
+	
 	/**
 	 * A TypeAttr provides a way of attaching a type to a syntacticElement
 	 * 
@@ -616,6 +681,15 @@ public class TypeChecker {
 		public final Type type;
 		public TypeAttr(Type t) {
 			this.type = t;
+		}
+	}
+	
+	public static class Environment extends HashMap<String,Type> {
+		public Environment() {
+			super();
+		}
+		public Environment(Map<String,Type> init) {
+			super(init);
 		}
 	}
 }

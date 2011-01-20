@@ -29,7 +29,7 @@ public interface Expr extends SyntacticElement {
   public static class Variable extends SyntacticElement.Impl implements Expr,
       LVal {
 
-    public final String var;
+    public String var;
 
     public Variable(String var, Attribute... attributes) {
       super(attributes);
@@ -43,7 +43,7 @@ public interface Expr extends SyntacticElement {
 
   public static class NamedConstant extends Variable {
 
-    public final ModuleID mid;
+    public ModuleID mid;
 
     public NamedConstant(String var, ModuleID mid, Attribute... attributes) {
       super(var, attributes);
@@ -57,7 +57,7 @@ public interface Expr extends SyntacticElement {
 
   public static class Constant extends SyntacticElement.Impl implements Expr {
 
-    public final Object value;
+    public Object value;
 
     public Constant(Object val, Attribute... attributes) {
       super(attributes);
@@ -71,7 +71,7 @@ public interface Expr extends SyntacticElement {
 
   public static class TypeConst extends SyntacticElement.Impl implements Expr {
 
-    public final UnresolvedType type;
+    public UnresolvedType type;
 
     public TypeConst(UnresolvedType val, Attribute... attributes) {
       super(attributes);
@@ -81,9 +81,9 @@ public interface Expr extends SyntacticElement {
 
   public static class BinOp extends SyntacticElement.Impl implements Expr {
 
-    public final BOp op;
-    public final Expr lhs;
-    public final Expr rhs;
+    public BOp op;
+    public Expr lhs;
+    public Expr rhs;
 
     public BinOp(BOp op, Expr lhs, Expr rhs, Attribute... attributes) {
       super(attributes);
@@ -108,8 +108,8 @@ public interface Expr extends SyntacticElement {
   public static class ListAccess extends SyntacticElement.Impl implements Expr,
       LVal {
 
-    public final Expr src;
-    public final Expr index;
+    public Expr src;
+    public Expr index;
 
     public ListAccess(Expr src, Expr index, Attribute... attributes) {
       super(attributes);
@@ -134,8 +134,8 @@ public interface Expr extends SyntacticElement {
 
   public static class UnOp extends SyntacticElement.Impl implements Expr {
 
-    public final UOp op;
-    public final Expr mhs;
+    public UOp op;
+    public Expr mhs;
 
     public UnOp(UOp op, Expr mhs, Attribute... attributes) {
       super(attributes);
@@ -150,7 +150,7 @@ public interface Expr extends SyntacticElement {
 
   public static class NaryOp extends SyntacticElement.Impl implements Expr {
 
-    public final NOp nop;
+    public NOp nop;
     public final ArrayList<Expr> arguments;
 
     public NaryOp(NOp nop, Collection<Expr> arguments, Attribute... attributes) {
@@ -176,10 +176,10 @@ public interface Expr extends SyntacticElement {
   public static class Comprehension extends SyntacticElement.Impl implements
       Expr {
 
-    public final COp cop;
-    public final Expr value;
+    public COp cop;
+    public Expr value;
     public final ArrayList<Pair<String, Expr>> sources;
-    public final Expr condition;
+    public Expr condition;
 
     public Comprehension(COp cop, Expr value,
         Collection<Pair<String, Expr>> sources, Expr condition,
@@ -200,8 +200,8 @@ public interface Expr extends SyntacticElement {
   public static class RecordAccess extends SyntacticElement.Impl implements
       LVal {
 
-    public final Expr lhs;
-    public final String name;
+    public Expr lhs;
+    public String name;
 
     public RecordAccess(Expr lhs, String name, Attribute... attributes) {
       super(attributes);
@@ -249,16 +249,16 @@ public interface Expr extends SyntacticElement {
   public static class Invoke extends SyntacticElement.Impl implements Expr,
       Stmt {
 
-    public final String name;
-    public final Expr receiver;
-    public final List<Expr> arguments;
+    public String name;
+    public Expr receiver;
+    public final ArrayList<Expr> arguments;
 
     public Invoke(String name, Expr receiver, List<Expr> arguments,
         Attribute... attributes) {
       super(attributes);
       this.name = name;
       this.receiver = receiver;
-      this.arguments = arguments;
+      this.arguments = new ArrayList<Expr>(arguments);
     }
   }
 
