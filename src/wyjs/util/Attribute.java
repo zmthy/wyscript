@@ -18,6 +18,8 @@
 
 package wyjs.util;
 
+import wyjs.lang.*;
+
 public interface Attribute {
 
   public static class Source implements Attribute {
@@ -35,4 +37,12 @@ public interface Attribute {
     }
   }
 
+  public static final class Module implements Attribute {
+		public final ModuleID module;
+		
+		public Module(ModuleID module) {
+			this.module = module;
+		}
+	}
+	
 }

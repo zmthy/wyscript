@@ -193,7 +193,7 @@ public class Main {
       wyfiles.add(parser.read());
     }
 
-    // we'll do the type checking here
+    new NameResolution().resolve(wyfiles);    
     new TypeChecker().check(wyfiles); 
     
     for (WhileyFile wf : wyfiles) {
