@@ -18,40 +18,28 @@
 
 package wyjs;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 import wyjs.ast.util.JsBareFormatter;
 import wyjs.ast.util.JsFormatter;
 import wyjs.ast.util.JsPrettyFormatter;
 import wyjs.compiler.JsBuilder;
 import wyjs.lang.WhileyFile;
-import wyjs.stages.WhileyLexer;
-import wyjs.stages.WhileyParser;
-import wyjs.util.ParseError;
-import wyjs.util.SyntaxError;
+import wyjs.stages.*;
+import wyjs.util.*;
 
 public class Main {
 
   public static final int PARSE_ERROR = 1;
-  public static final int CONTEXT_ERROR = 2;
-  public static final int VERIFICATION_ERROR = 3;
+  public static final int CONTEXT_ERROR = 2;  
   public static final int RUNTIME_ERROR = 4;
   public static final int UNKNOWN_ERROR = 5;
 
   public static PrintStream errout;
   public static final int MAJOR_VERSION;
   public static final int MINOR_VERSION;
-  public static final int MINOR_REVISION;
-  public static final int BUILD_NUMBER;
+  public static final int MINOR_REVISION;  
 
   private static final JsBuilder builder = new JsBuilder();
   private static final JsFormatter bare = new JsBareFormatter(),
@@ -68,8 +56,7 @@ public class Main {
     String versionStr = Main.class.getPackage().getImplementationVersion();
     if (versionStr != null) {
       String[] vb = versionStr.split("-");
-      String[] pts = vb[0].split("\\.");
-      BUILD_NUMBER = Integer.parseInt(vb[1]);
+      String[] pts = vb[0].split("\\.");      
       MAJOR_VERSION = Integer.parseInt(pts[0]);
       MINOR_VERSION = Integer.parseInt(pts[1]);
       MINOR_REVISION = Integer.parseInt(pts[2]);
@@ -77,16 +64,13 @@ public class Main {
       System.err.println("WARNING: version numbering unavailable");
       MAJOR_VERSION = 0;
       MINOR_VERSION = 0;
-      MINOR_REVISION = 0;
-      BUILD_NUMBER = 0;
+      MINOR_REVISION = 0;      
     }
   }
 
   public static int run(String[] args) {
     boolean verbose = false;
-
-    ArrayList<String> whileypath = new ArrayList<String>();
-    ArrayList<String> bootpath = new ArrayList<String>();
+    
     int fileArgsBegin = 0;
 
     for (int i = 0; i != args.length; ++i) {
@@ -97,13 +81,8 @@ public class Main {
           System.exit(0);
         } else if (arg.equals("-version")) {
           System.out.println("Whiley-to-Java Compiler (wyjc) version "
-              + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION
-              + " (build " + BUILD_NUMBER + ")");
+              + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION);
           System.exit(0);
-        } else if (arg.equals("-wp") || arg.equals("-whileypath")) {
-          Collections.addAll(whileypath, args[++i].split(File.pathSeparator));
-        } else if (arg.equals("-bp") || arg.equals("-bootpath")) {
-          Collections.addAll(bootpath, args[++i].split(File.pathSeparator));
         } else if (arg.equals("-verbose")) {
           verbose = true;
         } else {
@@ -118,9 +97,6 @@ public class Main {
       usage();
       return UNKNOWN_ERROR;
     }
-
-    whileypath.add(0, ".");
-    whileypath.addAll(bootpath);
 
     try {
 
@@ -177,20 +153,9 @@ public class Main {
   public static void usage() {
     String[][] info = {
         { "version", "Print version information" },
-        { "verbose", "Print detailed information on what the compiler is doing" },
-        { "Nvc", "Don't check constraints at compile time" },
-        { "nrc", "Don't check constraints at runtime\n" },
-        { "whileypath <path>", "Specify where to find whiley (class) files" },
-        { "wp <path>", "Specify where to find whiley (class) files" },
-        { "bootpath <path>",
-            "Specify where to find whiley standard library (class) files" },
-        { "bp <path>",
-            "Specify where to find whiley standard library (class) files" },
-        { "debug:lexer", "Generate debug information for the lexer" },
-        { "debug:checks", "Generate debug information on generated checks" },
-        { "debug:pcs", "Generate debug information on propagated conditions" },
-        { "debug:vcs", "Generate debug information on verification conditions" } };
-    System.out.println("usage: wjc <options> <source-files>");
+        { "verbose", "Print detailed information on what the compiler is doing" }};
+    
+    System.out.println("usage: wyjs <options> <source-files>");
     System.out.println("Options:");
 
     // first, work out gap information
@@ -221,14 +186,16 @@ public class Main {
    */
   public static void compile(List<File> files) throws IOException {
     ArrayList<WhileyFile> wyfiles = new ArrayList<WhileyFile>();
+    
     for (File file : files) {
-      WhileyLexer lexer = new WhileyLexer(file.getPath());
-      WhileyParser parser = new WhileyParser(file.getPath(), lexer.scan());
+      Lexer lexer = new Lexer(file.getPath());
+      Parser parser = new Parser(file.getPath(), lexer.scan());
       wyfiles.add(parser.read());
     }
 
     // we'll do the type checking here
-
+    new TypeChecker().check(wyfiles); 
+    
     for (WhileyFile wf : wyfiles) {
       translate(wf, true);
     }
@@ -239,7 +206,8 @@ public class Main {
     FileOutputStream fout = new FileOutputStream(filename);
     PrintStream out = new PrintStream(fout);
 
-    out.println(builder.build(wf).compile(pp ? pretty : bare));
+    // Comment out below as doesn't work yet!
+    // out.println(builder.build(wf).compile(pp ? pretty : bare));
 
     out.close();
   }

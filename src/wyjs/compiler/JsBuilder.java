@@ -34,7 +34,7 @@ import wyjs.lang.Expr.Comprehension;
 import wyjs.lang.Expr.Constant;
 import wyjs.lang.Expr.DictionaryGen;
 import wyjs.lang.Expr.Invoke;
-import wyjs.lang.Expr.ListAccess;
+import wyjs.lang.Expr.Access;
 import wyjs.lang.Expr.NamedConstant;
 import wyjs.lang.Expr.NaryOp;
 import wyjs.lang.Expr.RecordAccess;
@@ -206,8 +206,8 @@ public class JsBuilder {
       return doTypeConst(wfile, (TypeConst) expr);
     } else if (expr instanceof BinOp) {
       return doBinOp(wfile, (BinOp) expr);
-    } else if (expr instanceof ListAccess) {
-      return doListAccess(wfile, (ListAccess) expr);
+    } else if (expr instanceof Access) {
+      return doListAccess(wfile, (Access) expr);
     } else if (expr instanceof UnOp) {
       return doUnOp(wfile, (UnOp) expr);
     } else if (expr instanceof NaryOp) {
@@ -315,7 +315,7 @@ public class JsBuilder {
     }
   }
 
-  public JsExpr doListAccess(WhileyFile wfile, ListAccess expr) {
+  public JsExpr doListAccess(WhileyFile wfile, Access expr) {
     return new JsAccess(doExpr(wfile, expr.src), doExpr(wfile, expr.index));
   }
 
@@ -350,7 +350,7 @@ public class JsBuilder {
   public JsExpr doNaryOp(WhileyFile wfile, NaryOp expr) {
     List<JsExpr> args = doExprs(wfile, expr.arguments);
 
-    switch (expr.nop) {
+    switch (expr.op) {
     case LISTGEN:
       return new JsList(args);
     case SETGEN:
@@ -358,7 +358,7 @@ public class JsBuilder {
       // case SUBLIST:
     }
 
-    throw new SyntaxError("Unrecognised operator " + expr.nop, wfile.filename,
+    throw new SyntaxError("Unrecognised operator " + expr.op, wfile.filename,
         0, 0);
   }
 
