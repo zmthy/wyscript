@@ -933,7 +933,30 @@ public abstract class Type {
 		} 		
 		return null;	
 	}
-	
+
+	/**
+	 * The effective dictionary type returns the most precise dictionary type
+	 * which is a super type of the actual type. If the actual type is a list,
+	 * then this is treated as a dictionary whose key type is an int.
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public static Type.Dictionary effectiveDictionaryType(Type t) {
+
+		// TODO: add support for union types here
+		if(t instanceof Type.Dictionary) {
+			return (Type.Dictionary) t;
+		} else if(t instanceof Type.List) {
+			Type.List tl = (Type.List) t;
+			return Type.T_DICTIONARY(Type.T_INT, tl.element);
+		} else if(t instanceof Type.Named) {
+			Type.Named nt = (Type.Named) t;
+			return effectiveDictionaryType(nt.type);
+		} 		
+		
+		return null;	
+	}
 	
 	private static Type commonType(Collection<? extends Type> types) {		
 		Type type = types.iterator().next();

@@ -1,3 +1,3 @@
 int f(bool x):
-    x = {field:1}    
-    return x.field
+    x = [2.2]    
+    return x[1]

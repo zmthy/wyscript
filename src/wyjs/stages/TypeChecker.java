@@ -448,7 +448,7 @@ public class TypeChecker {
 			Type t = resolve(s.expr,environment);
 			TypeAttr ta = currentFunDecl.attribute(TypeAttr.class);
 			Type.Fun ft = (Type.Fun) ta.type;
-			checkSubtype(ft.ret,t,s); 			
+			checkSubtype(ft.ret,t,s.expr); 			
 		} 
 		
 		return null;
@@ -500,6 +500,10 @@ public class TypeChecker {
 				return resolve((RecordGen) e, environment);
 			} else if (e instanceof RecordAccess) {
 				return resolve((RecordAccess) e, environment);
+			} else if (e instanceof DictionaryGen) {
+				return resolve((DictionaryGen) e, environment);
+			} else if (e instanceof Access) {
+				return resolve((Access) e, environment);
 			} else {
 				syntaxError("unknown expression encountered", filename, e);
 			}
@@ -649,6 +653,34 @@ public class TypeChecker {
 			syntaxError("no such field in type: " + ert,filename,ra);
 		}
 		return t;
+	}
+	
+	protected Type resolve(DictionaryGen rg, Environment environment) {
+		Type keyType = Type.T_VOID;
+		Type valueType = Type.T_VOID;		
+		
+		for (Pair<Expr, Expr> p : rg.pairs) {
+			Type kt = resolve(p.first(), environment);
+			Type vt = resolve(p.second(), environment);
+			keyType = Type.leastUpperBound(keyType,kt);
+			valueType = Type.leastUpperBound(valueType,vt);
+		}
+		
+		return Type.T_DICTIONARY(keyType,valueType);
+	}
+	
+	protected Type resolve(Access ra, Environment environment) {
+		Type src = resolve(ra.src,environment);
+		Type idx = resolve(ra.index,environment);
+		Type.Dictionary edt = Type.effectiveDictionaryType(src);
+		
+		if(edt == null) {
+			syntaxError("expected dictionary or list type, got " + src,filename,ra.src);
+		}
+		
+		checkSubtype(edt.key,idx,ra.index);
+		
+		return edt.value;
 	}
 	
 	protected Type resolve(UnresolvedType t) {
