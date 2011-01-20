@@ -1,4 +1,6 @@
-int f([int] xs):
+define intlist as [int]
+
+int f(intlist xs):
     a = 0
     i = 0
     while i < |xs|:
