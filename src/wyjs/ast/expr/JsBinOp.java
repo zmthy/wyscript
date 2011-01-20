@@ -69,17 +69,6 @@ public enum JsBinOp {
   }
 
   /**
-   * A helper function for generating an add node.
-   * 
-   * @param lhs The left hand side of the operation.
-   * @param rhs The right hand side of the operation.
-   * @return An AST node of the operation.
-   */
-  public static JsExpr add(JsExpr lhs, JsExpr rhs) {
-    return ADD.newNode(lhs, rhs);
-  }
-
-  /**
    * The internal nodes for each binary operator.
    * 
    * @author Timothy Jones
@@ -109,6 +98,25 @@ public enum JsBinOp {
       rhs.collectAssignments(assignments);
     }
 
+  }
+  
+  /**
+   * A helper function for generating an add node.
+   * 
+   * @param lhs The left hand side of the operation.
+   * @param rhs The right hand side of the operation.
+   * @return An AST node of the operation.
+   */
+  public static JsExpr add(JsExpr lhs, JsExpr rhs) {
+    return ADD.newNode(lhs, rhs);
+  }
+  
+  public static JsExpr eq(JsExpr lhs, JsExpr rhs) {
+    return EQ.newNode(lhs, rhs);
+  }
+  
+  public static JsExpr iof(JsExpr lhs, JsExpr rhs) {
+    return IOF.newNode(lhs, rhs);
   }
 
 }

@@ -108,5 +108,9 @@ public class JsFor implements JsStmt {
       stmt.collectAssignments(assignments);
     }
   }
+  
+  public static JsFor fora(String var, JsExpr collection, JsStmt body) {
+    return new JsFor(var, collection, body);
+  }
 
 }

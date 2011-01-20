@@ -54,5 +54,16 @@ public class JsAssign implements JsExpr {
     public String getVar();
 
   }
+  
+  /**
+   * A helper function to reduce boilerplate.
+   * 
+   * @param a The assignable.
+   * @param v The value.
+   * @return An assign node.
+   */
+  public static JsAssign ass(JsAssignable a, JsExpr v) {
+    return new JsAssign(a, v);
+  }
 
 }

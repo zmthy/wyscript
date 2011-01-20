@@ -59,5 +59,9 @@ public class JsObject implements JsExpr {
       expr.collectAssignments(assignments);
     }
   }
+  
+  public static JsObject obj() {
+    return new JsObject();
+  }
 
 }
