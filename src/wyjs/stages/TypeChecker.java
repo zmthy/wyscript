@@ -484,6 +484,34 @@ public class TypeChecker {
 		return join(trueEnv,falseEnv);
 	}
 	
+	protected Environment resolve(For s, Environment environment) {		
+		// check variable not already defined
+		if(environment.containsKey(s.variable)) {
+			syntaxError(s.variable + " is already defined",filename,s);
+		}
+		
+		// setup initial environment and check source is a collection
+		Environment bodyEnv = new Environment(environment);
+		Type src_t = resolve(s.source,environment);
+		checkSubtype(Type.T_SET(Type.T_ANY),src_t,s.source);
+		// FIXME: following is broken
+		Type.SetList sl = (Type.SetList) src_t;
+		bodyEnv.put(s.variable, sl.element());
+			
+		// Now, iterate until a fixed point is reached
+		Environment oldEnv;
+		Environment startEnv = bodyEnv; 
+		do {
+			oldEnv = bodyEnv;
+			for(Stmt stmt : s.body) {
+				bodyEnv = resolve(stmt,bodyEnv);
+			}
+			bodyEnv = join(bodyEnv,startEnv);
+		} while(!oldEnv.equals(bodyEnv));
+				
+		return join(bodyEnv,environment);
+	}
+	
 	protected Type resolve(Expr e, Environment environment) {
 		try {
 			if (e instanceof Constant) {

@@ -1,3 +1,5 @@
-(int,int) f(bool x):
-    x = (1,2.2)    
+int f([int] xs):
+    a = 0
+    for x in xs:
+        a = a + x
     return x
