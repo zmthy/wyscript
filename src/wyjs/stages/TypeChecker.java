@@ -496,6 +496,10 @@ public class TypeChecker {
 				return resolve((BinOp) e, environment);
 			} else if (e instanceof NaryOp) {
 				return resolve((NaryOp) e, environment);
+			} else if (e instanceof RecordGen) {
+				return resolve((RecordGen) e, environment);
+			} else if (e instanceof RecordAccess) {
+				return resolve((RecordAccess) e, environment);
 			} else {
 				syntaxError("unknown expression encountered", filename, e);
 			}
@@ -551,7 +555,7 @@ public class TypeChecker {
 		Type lhs_t = resolve(bop.lhs,environment);
 		Type rhs_t = resolve(bop.rhs,environment);		
 		
-		// FIXME: really need to add conversions somehow
+		// FIXME: really need to add coercions somehow
 		
 		switch(bop.op) {
 			case ADD:			
@@ -621,6 +625,30 @@ public class TypeChecker {
 				return Type.T_LIST(lub);
 			}
 		}
+	}
+	
+	protected Type resolve(RecordGen rg, Environment environment) {
+		HashMap<String,Type> types = new HashMap<String,Type>();
+		
+		for (Map.Entry<String, Expr> f : rg.fields.entrySet()) {
+			Type t = resolve(f.getValue(), environment);
+			types.put(f.getKey(), t);
+		}
+		
+		return Type.T_RECORD(types);
+	}
+	
+	protected Type resolve(RecordAccess ra, Environment environment) {
+		Type src = resolve(ra.lhs,environment);
+		Type.Record ert = Type.effectiveRecordType(src);
+		if(ert == null) {
+			syntaxError("expected record type, got " + src,filename,ra.lhs);
+		}
+		Type t = ert.types.get(ra.name);
+		if(t == null) {
+			syntaxError("no such field in type: " + ert,filename,ra);
+		}
+		return t;
 	}
 	
 	protected Type resolve(UnresolvedType t) {
