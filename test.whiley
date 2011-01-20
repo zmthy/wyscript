@@ -1,5 +1,5 @@
-int f(int x):
-    if x < 2.03:
+int f(bool x):
+    if x && x < 10:
         return 1
     else:    
         return 2

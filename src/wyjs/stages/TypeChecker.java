@@ -530,8 +530,7 @@ public class TypeChecker {
 	
 	protected Type resolve(BinOp bop, Environment environment) throws ResolveError {
 		Type lhs_t = resolve(bop.lhs,environment);
-		Type rhs_t = resolve(bop.rhs,environment);
-		Type lub = Type.leastUpperBound(lhs_t,rhs_t);
+		Type rhs_t = resolve(bop.rhs,environment);		
 		
 		// FIXME: really need to add conversions somehow
 		
@@ -540,25 +539,35 @@ public class TypeChecker {
 			{
 				if (Type.isSubtype(Type.T_SET(Type.T_ANY), lhs_t)
 						|| Type.isSubtype(Type.T_SET(Type.T_ANY), rhs_t)) {
-					checkSubtype(Type.T_SET(Type.T_ANY),lub,bop);
+					checkSubtype(Type.T_SET(Type.T_ANY),lhs_t,bop.lhs);
+					checkSubtype(Type.T_SET(Type.T_ANY),rhs_t,bop.rhs);					
 					// need to update operation
 					bop.op = BOp.UNION;
-					return lub;
+					return Type.leastUpperBound(lhs_t,rhs_t);
 				}
 			}
 			case SUB:
 			case DIV:
 			case MUL:				
 			{				
-				checkSubtype(Type.T_REAL,lub,bop);
-				return lub;
+				checkSubtype(Type.T_REAL,lhs_t,bop.lhs);
+				checkSubtype(Type.T_REAL,rhs_t,bop.rhs);
+				return Type.leastUpperBound(lhs_t,rhs_t);
 			}
 			case LT:
 			case LTEQ:
 			case GT:
 			case GTEQ:
 			{			
-				checkSubtype(Type.T_REAL,lub,bop);
+				checkSubtype(Type.T_REAL,lhs_t,bop.lhs);
+				checkSubtype(Type.T_REAL,rhs_t,bop.rhs);				
+				return Type.T_BOOL;
+			}
+			case AND:
+			case OR:			
+			{			
+				checkSubtype(Type.T_BOOL,lhs_t,bop.lhs);
+				checkSubtype(Type.T_BOOL,rhs_t,bop.rhs);
 				return Type.T_BOOL;
 			}
 		}
