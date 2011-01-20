@@ -34,7 +34,7 @@ public class JsLine implements JsStmt {
   
   public String compile(JsFormatter ws) {
     String content = node.compile(ws);
-    if (content.isEmpty()) {
+    if (content.length() == 0) {
       return content;
     }
 

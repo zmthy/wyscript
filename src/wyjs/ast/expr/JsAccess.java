@@ -25,7 +25,7 @@ public class JsAccess implements JsAssignable {
    * @param prop The name of the property to access.
    */
   public JsAccess(JsExpr value, String prop) {
-    assert !prop.isEmpty();
+    assert prop.length() != 0;
     this.value = value;
 
     // Whether the property name is a valid identifier.
