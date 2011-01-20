@@ -76,6 +76,10 @@ public class JsAccess implements JsAssignable {
   public String getVar() {
     return null;
   }
+  
+  public static JsAccess acc(JsExpr value, JsExpr props) {
+    return new JsAccess(value, props);
+  }
 
   /**
    * A helper function for building accesses.

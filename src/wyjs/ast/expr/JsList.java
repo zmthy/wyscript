@@ -47,5 +47,9 @@ public class JsList implements JsExpr {
       expr.collectAssignments(assignments);
     }
   }
+  
+  public static JsList list() {
+    return new JsList();
+  }
 
 }

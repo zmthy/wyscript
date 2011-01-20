@@ -1,5 +1,6 @@
 package wyjs.compiler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +66,7 @@ import wyjs.util.SyntaxError;
 
 public class JsBuilder {
 
-  public JsNode build(WhileyFile wfile) {
+  public JsNode build(WhileyFile wfile) throws IOException {
     List<JsStmt> nodes = new ArrayList<JsStmt>();
     for (Decl decl : wfile.declarations) {
       nodes.add(doDecl(wfile, decl));

@@ -19,18 +19,25 @@ public class JsIfElse implements JsStmt {
   private final List<JsStmt> ifBody = new ArrayList<JsStmt>(),
       elseBody = new ArrayList<JsStmt>();
 
-  public JsIfElse(JsExpr condition, List<JsStmt> ifBody, List<JsStmt> elseBody) {
+  public JsIfElse(JsExpr condition, List<? extends JsStmt> ifBody,
+      List<? extends JsStmt> elseBody) {
     this.condition = condition;
-    this.ifBody.addAll(ifBody);
-    this.elseBody.addAll(elseBody);
+
+    if (ifBody != null) {
+      this.ifBody.addAll(ifBody);
+    }
+
+    if (elseBody != null) {
+      this.elseBody.addAll(elseBody);
+    }
   }
 
   @Override
   public String compile(JsFormatter ws) {
     return "if" + ws.s + "(" + condition.compile(ws) + ")" + ws.s + "{" + ws.ln
         + JsLists.compile(ifBody, ws.next()) + ws.idt + "}" + ws.s + "else"
-        + ws.s + "{" + ws.ln + JsLists.compile(elseBody, ws.next()) + ws.idt + "}"
-        + ws.ln;
+        + ws.s + "{" + ws.ln + JsLists.compile(elseBody, ws.next()) + ws.idt
+        + "}" + ws.ln;
   }
 
   @Override
@@ -42,6 +49,15 @@ public class JsIfElse implements JsStmt {
     for (JsStmt stmt : elseBody) {
       stmt.collectAssignments(assignments);
     }
+  }
+
+  public static JsIfElse ife(JsExpr condition, JsStmt body) {
+    return new JsIfElse(condition, JsLists.wrap(body), null);
+  }
+
+  public static JsIfElse ife(JsExpr condition, List<? extends JsStmt> ifBody,
+      List<? extends JsStmt> elseBody) {
+    return new JsIfElse(condition, ifBody, elseBody);
   }
 
 }

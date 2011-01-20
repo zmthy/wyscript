@@ -2,6 +2,7 @@ package wyjs.ast.expr;
 
 import java.util.Set;
 
+import wyjs.ast.util.JsBareFormatter;
 import wyjs.ast.util.JsFormatter;
 
 /**
@@ -11,7 +12,7 @@ import wyjs.ast.util.JsFormatter;
  */
 public enum JsUnOp {
 
-  NOT, NEG;
+  NOT, NEG, TYPEOF;
 
   /**
    * Makes a new AST node of the given unary operator.
@@ -28,12 +29,14 @@ public enum JsUnOp {
    * 
    * @return The unary operator as it would appear in Javascript.
    */
-  public String compile() {
+  public String compile(JsFormatter ws) {
     switch (this) {
     case NOT:
       return "!";
     case NEG:
       return "-";
+    case TYPEOF:
+      return "typeof" + ws.ss;
     }
     
     // We can't reach this, but need to satisfy the compiler.
@@ -42,7 +45,7 @@ public enum JsUnOp {
 
   @Override
   public String toString() {
-    return compile();
+    return compile(new JsBareFormatter());
   }
 
   /**
@@ -63,7 +66,7 @@ public enum JsUnOp {
 
     @Override
     public String compile(JsFormatter ws) {
-      return JsUnOp.this.toString() + value.compile(ws);
+      return JsUnOp.this.compile(ws) + value.compile(ws);
     }
 
     @Override
@@ -71,6 +74,10 @@ public enum JsUnOp {
       value.collectAssignments(assignments);
     }
 
+  }
+  
+  public static JsExpr tof(JsExpr value) {
+    return TYPEOF.newNode(value);
   }
 
 }

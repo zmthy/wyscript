@@ -52,7 +52,7 @@ public class JsLine implements JsStmt {
    * @param node The node to line terminate.
    * @return The generated line.
    */
-  public static JsLine line(JsExpr node) {
+  public static JsLine ln(JsExpr node) {
     return new JsLine(node);
   }
 
