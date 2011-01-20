@@ -512,6 +512,25 @@ public class TypeChecker {
 		return join(bodyEnv,environment);
 	}
 	
+	protected Environment resolve(While s, Environment environment) {				
+		// setup initial environment and check source is a collection
+		Type src_t = resolve(s.condition,environment);
+		checkSubtype(Type.T_BOOL,src_t,s.condition);
+			
+		// Now, iterate until a fixed point is reached
+		Environment oldEnv;
+		Environment startEnv = environment; 
+		do {
+			oldEnv = environment;
+			for(Stmt stmt : s.body) {
+				environment = resolve(stmt,environment);
+			}
+			environment = join(environment,startEnv);
+		} while(!oldEnv.equals(environment));
+				
+		return environment;
+	}
+	
 	protected Type resolve(Expr e, Environment environment) {
 		try {
 			if (e instanceof Constant) {
