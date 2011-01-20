@@ -493,7 +493,9 @@ public class TypeChecker {
 				return resolve((Variable) e, environment);
 			} else if (e instanceof BinOp) {
 				return resolve((BinOp) e, environment);
-			}else {
+			} else if (e instanceof NaryOp) {
+				return resolve((NaryOp) e, environment);
+			} else {
 				syntaxError("unknown expression encountered: "
 						+ e.getClass().getName(), filename, e);
 			}
@@ -575,6 +577,34 @@ public class TypeChecker {
 		syntaxError("unknown binary expression encountered: "
 				+ bop.getClass().getName(), filename, bop);
 		return null;
+	}
+	
+	protected Type resolve(NaryOp nop, Environment environment) {
+		if(nop.op == NOp.SUBLIST) {			
+			Expr src = nop.arguments.get(0);
+			Expr start = nop.arguments.get(1);
+			Expr end = nop.arguments.get(2);
+			Type src_t = resolve(src,environment);
+			Type start_t = resolve(start,environment);
+			Type end_t = resolve(end,environment);
+			checkSubtype(Type.T_LIST(Type.T_ANY),src_t,src);
+			checkSubtype(Type.T_INT,start_t,start);
+			checkSubtype(Type.T_INT,end_t,end);
+			return src_t;
+		} else {
+			// Must be a set or list generator
+			Type lub = Type.T_VOID;
+			for(Expr e : nop.arguments) {
+				Type t = resolve(e,environment);
+				lub = Type.leastUpperBound(lub,t);
+			}
+			
+			if(nop.op == NOp.SETGEN) {
+				return Type.T_SET(lub);
+			} else {
+				return Type.T_LIST(lub);
+			}
+		}
 	}
 	
 	protected Type resolve(UnresolvedType t) {

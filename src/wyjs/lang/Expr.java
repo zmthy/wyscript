@@ -150,18 +150,18 @@ public interface Expr extends SyntacticElement {
 
   public static class NaryOp extends SyntacticElement.Impl implements Expr {
 
-    public NOp nop;
+    public NOp op;
     public final ArrayList<Expr> arguments;
 
     public NaryOp(NOp nop, Collection<Expr> arguments, Attribute... attributes) {
       super(attributes);
-      this.nop = nop;
+      this.op = nop;
       this.arguments = new ArrayList<Expr>(arguments);
     }
 
     public NaryOp(NOp nop, Attribute attribute, Expr... arguments) {
       super(attribute);
-      this.nop = nop;
+      this.op = nop;
       this.arguments = new ArrayList<Expr>();
       for (Expr a : arguments) {
         this.arguments.add(a);

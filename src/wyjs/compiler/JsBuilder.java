@@ -350,7 +350,7 @@ public class JsBuilder {
   public JsExpr doNaryOp(WhileyFile wfile, NaryOp expr) {
     List<JsExpr> args = doExprs(wfile, expr.arguments);
 
-    switch (expr.nop) {
+    switch (expr.op) {
     case LISTGEN:
       return new JsList(args);
     case SETGEN:
@@ -358,7 +358,7 @@ public class JsBuilder {
       // case SUBLIST:
     }
 
-    throw new SyntaxError("Unrecognised operator " + expr.nop, wfile.filename,
+    throw new SyntaxError("Unrecognised operator " + expr.op, wfile.filename,
         0, 0);
   }
 

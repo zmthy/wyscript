@@ -1,5 +1,4 @@
-int f(bool x):
-    if x && x < 10:
-        return 1
-    else:    
-        return 2
+{int} f(bool x):
+    x = { 1 }
+    x = x + {2}
+    return x
