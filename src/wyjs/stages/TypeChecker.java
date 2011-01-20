@@ -496,6 +496,30 @@ public class TypeChecker {
 		return null;
 	}
 	
+	protected Type resolve(BinOp bop, HashMap<String,Type> environment) throws ResolveError {
+		Type lhs_t = resolve(bop.lhs,environment);
+		Type rhs_t = resolve(bop.rhs,environment);
+		Type lub = Type.leastUpperBound(lhs_t,rhs_t);
+		
+		// FIXME: really need to add conversions somehow
+		
+		switch(bop.op) {
+			case ADD:
+			case SUB:
+			case DIV:
+			case MUL:		
+			{
+				Type tmp = Type.leastUpperBound(Type.T_REAL,lub);
+				checkSubtype(tmp,Type.T_REAL,bop);
+				return lub;
+			}
+		}
+				
+		syntaxError("unknown binary expression encountered: "
+				+ bop.getClass().getName(), filename, bop);
+		return null;
+	}
+	
 	protected Type resolve(UnresolvedType t) {
 		if (t instanceof UnresolvedType.Any) {
 			return Type.T_ANY;
