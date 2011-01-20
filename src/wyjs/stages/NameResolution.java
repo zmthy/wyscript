@@ -28,9 +28,8 @@ import wyjs.lang.Stmt;
 import wyjs.lang.Stmt.*;
 import wyjs.lang.Expr.*;
 
-public class NameResolution {
-	private String filename;
-	private ModuleID module;
+public class NameResolution {	
+	private WhileyFile srcfile;
 	
 	public void resolve(List<WhileyFile> wyfiles) {
 		for(WhileyFile wf : wyfiles) {
@@ -41,11 +40,10 @@ public class NameResolution {
 	public void resolve(WhileyFile wf) {
 		ArrayList<PkgID> imports = new ArrayList<PkgID>();
 		
-		module = wf.module;
-		filename = wf.filename;
+		srcfile = wf;		
 		
-		imports.add(module.pkg().append(module.module()));
-		imports.add(module.pkg().append("*"));
+		imports.add(srcfile.module.pkg().append(srcfile.module.module()));
+		imports.add(srcfile.module.pkg().append("*"));
 		imports.add(new PkgID(new String[]{"whiley","lang"}).append("*"));
 						
 		for(Decl d : wf.declarations) {			
@@ -61,7 +59,7 @@ public class NameResolution {
 					resolve((ConstDecl)d,imports);					
 				}
 			} catch(ResolveError ex) {
-				syntaxError(ex.getMessage(),filename,d);
+				syntaxError(ex.getMessage(),srcfile.filename,d);
 			}
 		}				
 	}
@@ -75,7 +73,7 @@ public class NameResolution {
 			resolve(td.type, imports);				
 		} catch (ResolveError e) {												
 			// Ok, we've hit a resolution error.
-			syntaxError(e.getMessage(), filename,  td);			
+			syntaxError(e.getMessage(), srcfile.filename,  td);			
 		}
 	}	
 	
@@ -89,7 +87,7 @@ public class NameResolution {
 				environment.add(p.name());
 			} catch (ResolveError e) {												
 				// Ok, we've hit a resolution error.
-				syntaxError(e.getMessage(), filename, p, e);
+				syntaxError(e.getMessage(), srcfile.filename, p, e);
 			}
 		}
 		
@@ -98,7 +96,7 @@ public class NameResolution {
 			resolve(fd.ret, imports);
 		} catch (ResolveError e) {
 			// Ok, we've hit a resolution error.
-			syntaxError(e.getMessage(), filename, fd.ret);
+			syntaxError(e.getMessage(), srcfile.filename, fd.ret);
 		}
 		
 		List<Stmt> stmts = fd.statements;
@@ -129,11 +127,11 @@ public class NameResolution {
 				resolve((Invoke)s, environment, imports);
 			} else {
 				syntaxError("unknown statement encountered: "
-						+ s.getClass().getName(), filename, s);				
+						+ s.getClass().getName(), srcfile.filename, s);				
 			}
 		} catch (ResolveError e) {
 			// Ok, we've hit a resolution error.
-			syntaxError(e.getMessage(), filename, s);			
+			syntaxError(e.getMessage(), srcfile.filename, s);			
 		}
 	}	
 
@@ -149,7 +147,7 @@ public class NameResolution {
 					Variable v = (Variable) e;
 					environment.add(v.var);
 				} else {
-					syntaxError("variable expected",filename,e);
+					syntaxError("variable expected",srcfile.filename,e);
 				}
 			}
 		} else {
@@ -211,7 +209,7 @@ public class NameResolution {
 		
 		if (environment.contains(s.variable)) {
 			syntaxError("variable " + s.variable + " is alreaded defined",
-					filename, s);
+					srcfile.filename, s);
 		}
 		environment = new HashSet<String>(environment);
 		environment.add(s.variable);
@@ -251,14 +249,14 @@ public class NameResolution {
 				resolve((TypeConst) e, environment, imports);
 			} else {				
 				syntaxError("unknown expression encountered: "
-							+ e.getClass().getName(), filename, e);								
+							+ e.getClass().getName(), srcfile.filename, e);								
 			}
 		} catch(ResolveError re) {
-			syntaxError(re.getMessage(),filename,e,re);			
+			syntaxError(re.getMessage(),srcfile.filename,e,re);			
 		} catch(SyntaxError se) {
 			throw se;
 		} catch(Exception ex) {
-			syntaxError("internal failure", filename, e, ex);			
+			syntaxError("internal failure", srcfile.filename, e, ex);			
 		}	
 	}
 	
@@ -271,7 +269,7 @@ public class NameResolution {
 		
 		// FIXME: needed for proper namespacing
 		//ModuleID mid = loader.resolve(ivk.name,imports);		
-		ModuleID mid = module;
+		ModuleID mid = srcfile.module;
 		Expr target = ivk.receiver;
 		
 		if(target != null) {
@@ -289,17 +287,21 @@ public class NameResolution {
 			// This variable access may correspond with a constant definition
 			// in some module. Therefore, we must determine which module this
 			// is, and then store that information for future use.
-			//try {
-				// FIXME: needed for constants
-				//ModuleID mid = loader.resolve(v.var, imports);
-				//v.attributes().add(new Attributes.Module(mid));
-			//} catch(ResolveError err) {
-				// In this case, we may still be OK if this is a method, and the
-				// this receiver contains a field with the appropriate name. At
-				// this point in time, we cannot be sure whether or not this is
-				// the case and we must wait until ModuleBuilder to determine
-				// this.								
-			//}
+									
+			// FIXME: needed for proper namespacing
+			//ModuleID mid = loader.resolve(v.var, imports);
+			//v.attributes().add(new Attributes.Module(mid));
+			
+			for(Decl d : srcfile.declarations) {
+				if(d instanceof ConstDecl) {
+					ConstDecl cd = (ConstDecl) d;
+					if(cd.name().equals(v.var)) {
+						// The following indicates that this is a constant
+						v.attributes().add(new Attribute.Module(srcfile.module));
+						break;
+					}
+				}
+			}
 		} 
 	}
 	
@@ -400,7 +402,7 @@ public class NameResolution {
 			UnresolvedType.Named dt = (UnresolvedType.Named) t;						
 			// FIXME: needed for namespacing
 			//ModuleID mid = loader.resolve(dt.name, imports);
-			ModuleID mid = module;
+			ModuleID mid = srcfile.module;
 			t.attributes().add(new Attribute.Module(mid));
 		} else if(t instanceof UnresolvedType.Union) {
 			UnresolvedType.Union ut = (UnresolvedType.Union) t;

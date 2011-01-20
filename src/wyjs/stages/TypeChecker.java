@@ -581,8 +581,13 @@ public class TypeChecker {
   protected Type resolve(Variable v, Environment environment)
       throws ResolveError {
     Type v_t = environment.get(v.var);
-    if (v_t != null) {
-      return v_t;
+    if (v_t != null) { return v_t; }
+    // Not a variable, but could be a constant
+    Attribute.Module mattr = v.attribute(Attribute.Module.class);
+    if(mattr != null) {
+    	Expr constant = constants.get(new NameID(mattr.module,v.var));
+    	System.err.println("Warning: constant not inlined");
+    	return resolve(constant,environment);
     }
     syntaxError("variable not defined", filename, v);
     return null;
