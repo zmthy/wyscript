@@ -415,8 +415,7 @@ public class TypeChecker {
 			syntaxError("internal failure", filename, stmt, ex);
 		}
 		
-		syntaxError("unknown statement encountered: "
-				+ stmt.getClass().getName(), filename, stmt);
+		syntaxError("unknown statement encountered", filename, stmt);
 		
 		return null;
 	}
@@ -491,13 +490,14 @@ public class TypeChecker {
 				return resolve((Constant) e, environment);
 			} else if (e instanceof Variable) {
 				return resolve((Variable) e, environment);
+			} else if (e instanceof UnOp) {
+				return resolve((UnOp) e, environment);
 			} else if (e instanceof BinOp) {
 				return resolve((BinOp) e, environment);
 			} else if (e instanceof NaryOp) {
 				return resolve((NaryOp) e, environment);
 			} else {
-				syntaxError("unknown expression encountered: "
-						+ e.getClass().getName(), filename, e);
+				syntaxError("unknown expression encountered", filename, e);
 			}
 		} catch (SyntaxError se) {
 			throw se;
@@ -516,8 +516,7 @@ public class TypeChecker {
 		} else if(v instanceof Double) {
 			return Type.T_REAL;
 		} 
-		syntaxError("unknown constant encountered: "
-				+ c.getClass().getName(), filename, c);
+		syntaxError("unknown constant encountered", filename, c);
 		return null;
 	}
 
@@ -527,6 +526,24 @@ public class TypeChecker {
 			return v_t;
 		}
 		syntaxError("variable not defined", filename, v);
+		return null;
+	}
+	
+	protected Type resolve(UnOp uop, Environment environment) throws ResolveError {
+		Type t = resolve(uop.mhs,environment);
+		switch(uop.op) {
+			case LENGTHOF:
+				checkSubtype(Type.T_SET(Type.T_ANY), t, uop.mhs);
+				Type.SetList sl = (Type.SetList) t;
+				return sl.element();
+			case NEG:
+				checkSubtype(Type.T_REAL,t,uop.mhs);
+				return t;
+			case NOT:
+				checkSubtype(Type.T_BOOL,t,uop.mhs);
+				return t;
+		}
+		syntaxError("unknown unary expression encountered", filename, uop);
 		return null;
 	}
 	
@@ -574,8 +591,7 @@ public class TypeChecker {
 			}
 		}
 				
-		syntaxError("unknown binary expression encountered: "
-				+ bop.getClass().getName(), filename, bop);
+		syntaxError("unknown binary expression encountered", filename, bop);
 		return null;
 	}
 	
@@ -687,6 +703,21 @@ public class TypeChecker {
 	 * @param elem
 	 */
 	public void checkSubtype(Type t1, Type t2, SyntacticElement elem) {
+		
+		// FIXME: the following special case is used because Type.isSubtype does
+		// not consider a set to be a subtype of a list. In the source language,
+		// however, this does make sense --- but it requires us to insert
+		// coercions.
+		
+		if (Type.isSubtype(Type.T_SET(Type.T_ANY), t1)
+				&& Type.isSubtype(Type.T_LIST(Type.T_ANY), t2)) {
+			// FIXME: following is broken because of named types.
+			Type.Set ts1 = (Type.Set) t1;
+			Type.List ts2 = (Type.List) t2;
+			t1 = ts1.element;
+			t2 = ts2.element;
+		}
+			
 		if (!Type.isSubtype(t1, t2)) {
 			syntaxError("expecting type " + t1 + ", got type " + t2, filename,
 					elem);
