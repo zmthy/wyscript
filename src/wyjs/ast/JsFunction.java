@@ -81,8 +81,7 @@ public abstract class JsFunction implements JsNode {
       collectVars();
     }
   }
-
-  @Override
+  
   public String compile(JsFormatter ws) {
     JsFormatter next = ws.next();
     return fn
