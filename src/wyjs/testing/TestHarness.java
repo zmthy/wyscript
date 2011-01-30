@@ -3,15 +3,19 @@ package wyjs.testing;
 import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import wyjs.Main;
 
@@ -116,15 +120,17 @@ public class TestHarness {
       Context cxt = Context.enter();
       Scriptable scope = cxt.initStandardObjects();
       
-      StringBuffer sysout = new StringBuffer();
-      StringBuffer syserr = new StringBuffer();
+      OutputStream out = new ByteArrayOutputStream(); 
+      Object sysout = Context.javaToJS(new PrintStream(out), scope);
+      OutputStream err = new ByteArrayOutputStream();
+      Object syserr = Context.javaToJS(new PrintStream(err), scope);
       
-      scope.put("sysout", scope, sysout);
-      scope.put("syserr", scope, syserr);
+      ScriptableObject.putConstProperty(scope, "sysout", sysout);
+      ScriptableObject.putConstProperty(scope, "syserr", syserr);
       cxt.evaluateReader(scope, file, name, 1, null);
       
-      System.err.println(syserr);
-      return sysout.toString();
+      System.err.println(err);
+      return out.toString();
     } catch (Exception ex) {
       ex.printStackTrace();
       fail("Problem running compiled test");
