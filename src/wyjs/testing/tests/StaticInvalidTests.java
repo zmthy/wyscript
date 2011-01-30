@@ -8,7 +8,7 @@ import wyjs.testing.TestHarness;
 public class StaticInvalidTests extends TestHarness {
 
   public StaticInvalidTests() {
-    super("tests/base/invalid", "tests/base/invalid", "sysout");
+    super("tests/invalid", "tests/invalid", "sysout");
   }
 
   @Test

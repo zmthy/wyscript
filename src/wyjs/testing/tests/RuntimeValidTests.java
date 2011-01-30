@@ -8,7 +8,7 @@ import wyjs.testing.TestHarness;
 public class RuntimeValidTests extends TestHarness {
 
   public RuntimeValidTests() {
-    super("tests/base/valid", "tests/base/valid", "sysout");
+    super("tests/valid", "tests/valid", "sysout");
   }
 
   @Test
