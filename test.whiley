@@ -1,5 +1,5 @@
-define CONST as 123
-
 int f():
-    x = CONST
-    return x
+    return 1
+
+int main([int] args):
+    f()

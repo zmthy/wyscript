@@ -45,4 +45,12 @@ public interface Attribute {
 		}
 	}
 	
+  
+  public static final class FunType implements Attribute {
+	  public final Type.Fun type;
+	  
+	  public FunType(Type.Fun type) {
+		  this.type = type;
+	  }
+  }
 }
