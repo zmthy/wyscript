@@ -10,16 +10,37 @@ import java.util.List;
 import java.util.Map;
 
 import wyjs.lang.Expr;
-import wyjs.lang.Expr.*;
+import wyjs.lang.Expr.Access;
+import wyjs.lang.Expr.BOp;
+import wyjs.lang.Expr.BinOp;
+import wyjs.lang.Expr.Constant;
+import wyjs.lang.Expr.DictionaryGen;
+import wyjs.lang.Expr.Invoke;
+import wyjs.lang.Expr.NOp;
+import wyjs.lang.Expr.NaryOp;
+import wyjs.lang.Expr.RecordAccess;
+import wyjs.lang.Expr.RecordGen;
+import wyjs.lang.Expr.TupleGen;
+import wyjs.lang.Expr.UnOp;
+import wyjs.lang.Expr.Variable;
 import wyjs.lang.ModuleID;
 import wyjs.lang.NameID;
-import wyjs.lang.PkgID;
 import wyjs.lang.Stmt;
-import wyjs.lang.Stmt.*;
+import wyjs.lang.Stmt.Assert;
+import wyjs.lang.Stmt.Assign;
+import wyjs.lang.Stmt.Debug;
+import wyjs.lang.Stmt.For;
+import wyjs.lang.Stmt.IfElse;
+import wyjs.lang.Stmt.Return;
+import wyjs.lang.Stmt.Skip;
+import wyjs.lang.Stmt.While;
 import wyjs.lang.Type;
 import wyjs.lang.UnresolvedType;
 import wyjs.lang.WhileyFile;
-import wyjs.lang.WhileyFile.*;
+import wyjs.lang.WhileyFile.ConstDecl;
+import wyjs.lang.WhileyFile.Decl;
+import wyjs.lang.WhileyFile.FunDecl;
+import wyjs.lang.WhileyFile.TypeDecl;
 import wyjs.util.Attribute;
 import wyjs.util.Pair;
 import wyjs.util.ResolveError;
@@ -703,7 +724,7 @@ public class TypeChecker {
 	protected List<Type.Fun> lookupMethod(NameID nid) throws ResolveError {
 		List<Type.Fun> matches = functions.get(nid);
 		if (matches == null) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		} else {
 			return matches;
 		}
