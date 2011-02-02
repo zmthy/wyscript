@@ -589,8 +589,7 @@ public class TypeChecker {
     // Not a variable, but could be a constant
     Attribute.Module mattr = v.attribute(Attribute.Module.class);
     if(mattr != null) {
-    	Expr constant = constants.get(new NameID(mattr.module,v.var));
-    	System.err.println("Warning: constant not inlined");
+    	Expr constant = constants.get(new NameID(mattr.module,v.var));    	
     	return resolve(constant,environment);
     }
     syntaxError("variable not defined", filename, v);
