@@ -2,4 +2,4 @@ int f():
     return 1
 
 int main([int] args):
-    f()
+    x = 1 + f()

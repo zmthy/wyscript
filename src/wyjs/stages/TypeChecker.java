@@ -409,7 +409,8 @@ public class TypeChecker {
       } else if (stmt instanceof Skip) {
         return resolve((Skip) stmt, environment);
       } else if (stmt instanceof Invoke) {
-    	  return resolve((Invoke) stmt, environment);
+    	  resolve((Invoke) stmt, environment);
+    	  return environment;
       }
     } catch (SyntaxError se) {
       throw se;
@@ -533,116 +534,6 @@ public class TypeChecker {
     return environment;
   }
 
-  protected Environment resolve(Invoke ivk, Environment environment) {
-		
-		ArrayList<Type> types = new ArrayList<Type>();
-				
-		for (Expr arg : ivk.arguments) {
-			Type arg_t = resolve(arg, environment);			
-			types.add(arg_t);
-		}
-		
-		try {
-			// FIXME: when putting name spacing back in, we'll need to fix this.			
-			ModuleID mid = ivk.attribute(Attribute.Module.class).module;
-			NameID nid = new NameID(mid,ivk.name);
-			Type.Fun funtype = bindFunction(nid, types, ivk);
-			// now, udpate the invoke
-			ivk.attributes().add(new Attribute.FunType(funtype));
-			return environment;
-		} catch (ResolveError ex) {
-			syntaxError(ex.getMessage(), filename, ivk);
-			return null; // unreachable
-		}
-  }
-  
-  /**
-	 * Bind function is responsible for determining the true type of a method or
-	 * function being invoked. To do this, it must find the function/method
-	 * with the most precise type that matches the argument types.
-	 * 	 * 
-	 * @param nid
-	 * @param receiver
-	 * @param paramTypes
-	 * @param elem
-	 * @return
-	 * @throws ResolveError
-	 */
-	protected Type.Fun bindFunction(NameID nid, List<Type> paramTypes,
-			SyntacticElement elem) throws ResolveError {
-		Type receiver = null; // dummy
-		Type.Fun target = Type.T_FUN(null,Type.T_ANY,paramTypes);
-		Type.Fun candidate = null;				
-		
-		List<Type.Fun> targets = lookupMethod(nid); 
-		
-		for (Type.Fun ft : targets) {			
-			Type funrec = ft.receiver;			
-			if (receiver == funrec
-					|| (receiver != null && funrec != null && Type.isSubtype(
-							funrec, receiver))) {
-				// receivers match up OK ...
-				if (ft.params.size() == paramTypes.size()						
-						&& Type.isSubtype(ft, target)
-						&& (candidate == null || Type.isSubtype(candidate, ft))) {
-					// This declaration is a candidate. Now, we need to see if
-					// our
-					// candidate type signature is as precise as possible.
-					if (candidate == null) {
-						candidate = ft;
-					} else if (Type.isSubtype(candidate, ft)) {
-						candidate = ft;
-					}
-				}
-			}
-		}				
-		
-		// Check whether we actually found something. If not, print a useful
-		// error message.
-		if(candidate == null) {
-			String msg = "no match for " + nid.name() + parameterString(paramTypes);
-			boolean firstTime = true;
-			int count = 0;
-			for(Type.Fun ft : targets) {
-				if(firstTime) {
-					msg += "\n\tfound: " + nid.name() +  parameterString(ft.params);
-				} else {
-					msg += "\n\tand: " + nid.name() +  parameterString(ft.params);
-				}				
-				if(++count < targets.size()) {
-					msg += ",";
-				}
-			}
-			
-			syntaxError(msg + "\n",filename,elem);
-		}
-		
-		return candidate;
-	}
-	
-	private String parameterString(List<Type> paramTypes) {
-		String paramStr = "(";
-		boolean firstTime = true;
-		for (Type t : paramTypes) {
-			if (!firstTime) {
-				paramStr += ",";
-			}
-			firstTime = false;
-			paramStr += Type.toShortString(t);
-		}
-		return paramStr + ")";
-	}
-
-	protected List<Type.Fun> lookupMethod(NameID nid)
-			throws ResolveError {		
-		List<Type.Fun> matches = functions.get(nid);		
-		if(matches == null) {
-			return Collections.EMPTY_LIST;
-		} else {
-			return matches;
-		}
-	}
-  
   protected Type resolve(Expr e, Environment environment) {
     try {
       if (e instanceof Constant) {
@@ -651,6 +542,8 @@ public class TypeChecker {
         return resolve((Variable) e, environment);
       } else if (e instanceof UnOp) {
         return resolve((UnOp) e, environment);
+      } else if (e instanceof Invoke) {
+        return resolve((Invoke) e, environment);
       } else if (e instanceof BinOp) {
         return resolve((BinOp) e, environment);
       } else if (e instanceof NaryOp) {
@@ -704,6 +597,119 @@ public class TypeChecker {
     return null;
   }
 
+  protected Type resolve(Invoke ivk, Environment environment) {
+
+		ArrayList<Type> types = new ArrayList<Type>();
+
+		for (Expr arg : ivk.arguments) {
+			Type arg_t = resolve(arg, environment);
+			types.add(arg_t);
+		}
+
+		try {
+			// FIXME: when putting name spacing back in, we'll need to fix this.
+			ModuleID mid = ivk.attribute(Attribute.Module.class).module;
+			NameID nid = new NameID(mid, ivk.name);
+			Type.Fun funtype = bindFunction(nid, types, ivk);
+			// now, udpate the invoke
+			ivk.attributes().add(new Attribute.FunType(funtype));
+			return funtype.ret;
+		} catch (ResolveError ex) {
+			syntaxError(ex.getMessage(), filename, ivk);
+			return null; // unreachable
+		}
+	}
+
+	/**
+	 * Bind function is responsible for determining the true type of a method or
+	 * function being invoked. To do this, it must find the function/method with
+	 * the most precise type that matches the argument types. *
+	 * 
+	 * @param nid
+	 * @param receiver
+	 * @param paramTypes
+	 * @param elem
+	 * @return
+	 * @throws ResolveError
+	 */
+	protected Type.Fun bindFunction(NameID nid, List<Type> paramTypes,
+			SyntacticElement elem) throws ResolveError {
+		Type receiver = null; // dummy
+		Type.Fun target = Type.T_FUN(null, Type.T_ANY, paramTypes);
+		Type.Fun candidate = null;
+
+		List<Type.Fun> targets = lookupMethod(nid);
+
+		for (Type.Fun ft : targets) {
+			Type funrec = ft.receiver;
+			if (receiver == funrec
+					|| (receiver != null && funrec != null && Type.isSubtype(
+							funrec, receiver))) {
+				// receivers match up OK ...
+				if (ft.params.size() == paramTypes.size()
+						&& Type.isSubtype(ft, target)
+						&& (candidate == null || Type.isSubtype(candidate, ft))) {
+					// This declaration is a candidate. Now, we need to see if
+					// our
+					// candidate type signature is as precise as possible.
+					if (candidate == null) {
+						candidate = ft;
+					} else if (Type.isSubtype(candidate, ft)) {
+						candidate = ft;
+					}
+				}
+			}
+		}
+
+		// Check whether we actually found something. If not, print a useful
+		// error message.
+		if (candidate == null) {
+			String msg = "no match for " + nid.name()
+					+ parameterString(paramTypes);
+			boolean firstTime = true;
+			int count = 0;
+			for (Type.Fun ft : targets) {
+				if (firstTime) {
+					msg += "\n\tfound: " + nid.name()
+							+ parameterString(ft.params);
+				} else {
+					msg += "\n\tand: " + nid.name()
+							+ parameterString(ft.params);
+				}
+				if (++count < targets.size()) {
+					msg += ",";
+				}
+			}
+
+			syntaxError(msg + "\n", filename, elem);
+		}
+
+		return candidate;
+	}
+
+	private String parameterString(List<Type> paramTypes) {
+		String paramStr = "(";
+		boolean firstTime = true;
+		for (Type t : paramTypes) {
+			if (!firstTime) {
+				paramStr += ",";
+			}
+			firstTime = false;
+			paramStr += Type.toShortString(t);
+		}
+		return paramStr + ")";
+	}
+
+	protected List<Type.Fun> lookupMethod(NameID nid) throws ResolveError {
+		List<Type.Fun> matches = functions.get(nid);
+		if (matches == null) {
+			return Collections.EMPTY_LIST;
+		} else {
+			return matches;
+		}
+	}
+  
+  
   protected Type resolve(UnOp uop, Environment environment) throws ResolveError {
     Type t = resolve(uop.mhs, environment);
     switch (uop.op) {
