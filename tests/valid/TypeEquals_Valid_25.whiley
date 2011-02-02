@@ -7,7 +7,7 @@ string f(src e):
         return "int"
 
 void main([string] args):
-    out->println(f([1]))
-    out->println(f([[1]]))
-    out->println(f([[[1]]]))
-    out->println(f(1))
+    println(f([1]))
+    println(f([[1]]))
+    println(f([[[1]]]))
+    println(f(1))

@@ -9,6 +9,6 @@ string f(int x):
     return ""
 
 void main([string] args):
-    out->println(f(1))
-    out->println(f(2))
-    out->println(f(3))
+    println(f(1))
+    println(f(2))
+    println(f(3))

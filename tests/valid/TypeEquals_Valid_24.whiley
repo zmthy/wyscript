@@ -7,6 +7,6 @@ string f(src e):
         return "int"
 
 void main([string] args):
-    out->println(f([1,2,3]))
-    out->println(f([[1],[2]]))
-    out->println(f(1))
+    println(f([1,2,3]))
+    println(f([[1],[2]]))
+    println(f(1))

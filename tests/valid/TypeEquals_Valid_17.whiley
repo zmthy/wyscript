@@ -16,5 +16,5 @@ SyntaxError syntaxError(string errorMessage):
     return {msg: errorMessage}
 
 void main([string] args):
-    out->println(f(0))
-    out->println(f(1))
+    println(f(0))
+    println(f(1))

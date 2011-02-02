@@ -4,4 +4,4 @@ define btup as {byte op, byte index}
     return [b.op,b.index]
 
 void main([string] args):
-    out->println(str(f({op:1,index:2})))
+    println(str(f({op:1,index:2})))

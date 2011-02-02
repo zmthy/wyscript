@@ -6,4 +6,4 @@ void main([string] args):
     
     // we're forced to used this here since out is now a local
     // variable.
-    this->out->println(str(out))
+    this->println(str(out))

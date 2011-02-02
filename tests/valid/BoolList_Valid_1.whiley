@@ -1,7 +1,7 @@
 void main([string] args):
     ls = [true,false,true]
-    out->println(str(ls))
+    println(str(ls))
     x = ls[0]
-    out->println(str(x))
+    println(str(x))
     ls[0] = false
-    out->println(str(ls))
+    println(str(ls))

@@ -9,5 +9,5 @@ string f(int i):
     return str(arr1) + str(arr2)
 
 void main([string] args):
-    out->println(f(2))
-    out->println(f(3))
+    println(f(2))
+    println(f(3))

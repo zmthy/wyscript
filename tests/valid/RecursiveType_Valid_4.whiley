@@ -2,4 +2,4 @@ define expr as int | {int op, expr left, expr right}
 
 void main([string] args):
     e = {op:1,left:1,right:2}
-    out->println(str(e))
+    println(str(e))

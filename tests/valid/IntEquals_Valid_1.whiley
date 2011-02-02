@@ -5,6 +5,6 @@ string f(int x, real y):
         return "NOT EQUAL"
 
 void main([string] args):
-    out->println(f(1,4.0))
-    out->println(f(1,4.2))
-    out->println(f(0,0))
+    println(f(1,4.0))
+    println(f(1,4.2))
+    println(f(0,0))

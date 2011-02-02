@@ -5,4 +5,4 @@ string f(int x, int y):
     return str(g(x))
 
 void main([string] args):
-     out->println(f(1,2))
+     println(f(1,2))

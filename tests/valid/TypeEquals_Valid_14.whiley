@@ -8,6 +8,6 @@ int f(expr e):
     
 void main([string] args):
     x = f({err:"Hello World"})
-    out->println(str(x))
+    println(str(x))
     x = f({op:1,lhs:{err:"Gotcha"}})
-    out->println(str(x))
+    println(str(x))

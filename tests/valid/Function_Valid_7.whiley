@@ -6,4 +6,4 @@ string g(fcode f):
 
 void main([string] args):
     x = 1
-    out->println(g(x))
+    println(g(x))

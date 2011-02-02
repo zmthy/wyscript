@@ -14,4 +14,4 @@ expr parse(string input):
 
 void main([string] args):
     e = parse("Hello")
-    out->println(str(e))
+    println(str(e))

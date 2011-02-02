@@ -10,4 +10,4 @@ int f(int i, [nlist] xs):
 
 void main([string] args):
     x = f(2, [2,3,4])    
-    out->println(str(x))
+    println(str(x))

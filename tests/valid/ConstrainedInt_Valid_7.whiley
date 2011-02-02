@@ -10,4 +10,4 @@ string g(int x, nat z):
     return f(z)
 
 void main([string] args):
-    out->println(g(1,3))
+    println(g(1,3))

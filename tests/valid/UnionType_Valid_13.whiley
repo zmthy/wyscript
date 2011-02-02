@@ -13,5 +13,5 @@ string f(byteCode b):
 
 void main([string] args):
     b = {op:0,index:1}
-    out->println(f(b))
+    println(f(b))
 

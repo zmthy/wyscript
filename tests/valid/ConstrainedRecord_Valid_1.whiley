@@ -9,5 +9,5 @@ define UNIT as {unitCode op}
 
 void main([string] args):
     bytes = f({op:NOP})
-    out->println(str(bytes))
+    println(str(bytes))
 

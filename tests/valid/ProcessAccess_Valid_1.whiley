@@ -9,7 +9,7 @@ int Ptype::get():
 
 void main([string] args):
     p = spawn {mode:1,rest:2}
-    out->println(str(*p))
+    println(str(*p))
     x = p->get()
-    out->println(str(*p))
-    out->println(str(x))
+    println(str(*p))
+    println(str(x))

@@ -8,4 +8,4 @@ string f(fr4nat x):
 
 void main([string] args):
     y = 1
-    out->println(f(g(y)))
+    println(f(g(y)))

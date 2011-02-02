@@ -10,7 +10,7 @@ int f(intlist x):
 
 void main([string] args):
     x = f([1,2,3])
-    out->println(str(x))
+    println(str(x))
     x = f(123)
-    out->println(str(x))
+    println(str(x))
 

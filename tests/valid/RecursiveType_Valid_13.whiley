@@ -7,6 +7,6 @@ Value init():
 void main([string] args):
     v = init()
     if v ~= [Expr]:
-        out->println("GOT LIST")
+        println("GOT LIST")
     else:
-        out->println(str(v))
+        println(str(v))

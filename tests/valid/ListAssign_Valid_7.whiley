@@ -9,4 +9,4 @@ void main([string] args):
     else:
         x = [[1],[2,3],[5]]
     x[0] = 1
-    out->println(f(x))
+    println(f(x))

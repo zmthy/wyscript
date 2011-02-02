@@ -8,5 +8,5 @@ string g({int} ys):
     return f(ys ∪ {1})
 
 void main([string] args):
-    out->println(g({}))
-    out->println(g({2}))
+    println(g({}))
+    println(g({2}))

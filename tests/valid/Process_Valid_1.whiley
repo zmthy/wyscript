@@ -4,9 +4,9 @@ define pState as process state
 void pState::send(int x, System sys):
     this->x = x
     assert this->x == x
-    sys->out->println(str(*this))
-    sys->out->println("sent")
-    sys->out->println(str(x))
+    sys->println(str(*this))
+    sys->println("sent")
+    sys->println(str(x))
 
 void main([string] args):
     ps = spawn {x:1,y:2}

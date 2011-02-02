@@ -5,4 +5,4 @@ point f(point x):
 
 void main([string] args):
     p = f({x:1,y:1})
-    out->println(str(p))
+    println(str(p))

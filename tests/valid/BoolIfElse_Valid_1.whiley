@@ -5,5 +5,5 @@ string f(bool b):
         return "FALSE"
 
 void main([string] args):
-    out->println(f(true))
-    out->println(f(false))
+    println(f(true))
+    println(f(false))

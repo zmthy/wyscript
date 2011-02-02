@@ -10,4 +10,4 @@ expr f(posExpr e1):
 
 void main([string] args):
     e = f({lhs:{lhs:1,rhs:2},rhs:1})
-    out->println(str(e))
+    println(str(e))

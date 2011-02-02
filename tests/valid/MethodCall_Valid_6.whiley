@@ -7,4 +7,4 @@ int get():
     return 1
 
 void main([string] args):
-    out->println(str(this->f(this,1)))
+    println(str(this->f(this,1)))

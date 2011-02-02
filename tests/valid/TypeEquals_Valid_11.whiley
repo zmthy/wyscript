@@ -7,5 +7,5 @@ string getMessage(imsg m):
         return str(m)
 
 void main([string] args):
-    out->println(getMessage({msg:"HELLO WORLD"}))
-    out->println(getMessage(1))
+    println(getMessage({msg:"HELLO WORLD"}))
+    println(getMessage(1))

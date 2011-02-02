@@ -2,10 +2,10 @@
 define IntList as int|[int]
 
 void f(int y):
-    out->println(str(y))
+    println(str(y))
 
 void g([int] z):
-    out->println(str(z))
+    println(str(z))
 
 void main([string] args):
     x = 123

@@ -3,4 +3,4 @@ void main([string] args):
      assert arr[0] < |arr|
      assert arr[1] < |arr|
      assert arr[2] == |arr|
-     out->println(str(arr[0]))
+     println(str(arr[0]))

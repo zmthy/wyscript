@@ -5,4 +5,4 @@ int get():
     return 123
 
 void main([string] args):
-    out->println(str(this->f(this)))
+    println(str(this->f(this)))

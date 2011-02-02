@@ -6,7 +6,7 @@ tac2tb f(tac2ta x):
 
 void main([string] args):
     x = {f1:2,f2:3}
-    out->println(str(x))
+    println(str(x))
     x.f1 = 1
     y = f(x)
-    out->println(str(y))
+    println(str(y))

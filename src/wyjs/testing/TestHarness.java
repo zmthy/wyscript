@@ -192,7 +192,7 @@ public class TestHarness {
     }
   }
 
-  static public class StreamGrabber extends Thread {
+  public static class StreamGrabber extends Thread {
 
     private InputStream input;
     private StringBuffer buffer;

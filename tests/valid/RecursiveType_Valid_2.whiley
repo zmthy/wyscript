@@ -3,4 +3,4 @@ define expr as int | binop
 
 void main([string] args):
     e = 123
-    out->println(str(e))
+    println(str(e))

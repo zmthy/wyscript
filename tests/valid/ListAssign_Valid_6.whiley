@@ -4,6 +4,6 @@ string f([int] a):
 
 void main([string] args):
      b = [1,2,3]
-     out->println(str(b))
-     out->println(f(b))
-     out->println(str(b))
+     println(str(b))
+     println(f(b))
+     println(str(b))

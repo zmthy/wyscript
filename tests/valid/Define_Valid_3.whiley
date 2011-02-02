@@ -3,4 +3,4 @@ define odd as { 1,3,5 }
 
 void main([string] args):
     y = 1
-    out->println(str(y))
+    println(str(y))

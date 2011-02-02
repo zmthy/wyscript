@@ -9,4 +9,4 @@ string g(int x, int z):
     return f(z)
 
 void main([string] args):
-    out->println(g(1,2))
+    println(g(1,2))

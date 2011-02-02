@@ -6,5 +6,5 @@ string f(int|null x):
 
 void main([string] args):
     x = null
-    out->println(f(x))
-    out->println(f(1))
+    println(f(x))
+    println(f(1))

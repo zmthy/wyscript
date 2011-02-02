@@ -9,5 +9,5 @@ int sum(posintlist ls):
 
 void main([string] args):
     c = sum([1,2,3,4,5,6,7])
-    out->println(str(c))
+    println(str(c))
     

@@ -1,4 +1,4 @@
 void main([string] args):
     arr = [1,2,3]
     assert |arr| == 3
-    out->println(str(arr[0]))
+    println(str(arr[0]))

@@ -32,7 +32,7 @@ Value evaluate(Expr e):
         return 0
 
 public void main([string] args):
-    out->println(str(evaluate(1)))
-    out->println(str(evaluate({src: [112,212,342], index:0})))
-    out->println(str(evaluate({src: [112312,289712,31231242], index:2})))
-    out->println(str(evaluate([1,2,3])))
+    println(str(evaluate(1)))
+    println(str(evaluate({src: [112,212,342], index:0})))
+    println(str(evaluate({src: [112312,289712,31231242], index:2})))
+    println(str(evaluate([1,2,3])))

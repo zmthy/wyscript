@@ -3,4 +3,4 @@ int f(byte b):
 
 void main([string] args):
     b = f(10)
-    out->println(str(b))
+    println(str(b))

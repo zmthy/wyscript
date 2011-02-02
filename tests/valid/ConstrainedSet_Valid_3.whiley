@@ -5,4 +5,4 @@ string f(posints x):
 
 void main([string] args):
     xs = {1,2,3}
-    out->println(f(xs))
+    println(f(xs))

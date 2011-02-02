@@ -13,4 +13,4 @@ state parseTerm(state st):
 void main([string] args):
     st = {input:"  Hello",pos:0}
     st = parseTerm(st)
-    out->println(str(st))
+    println(str(st))

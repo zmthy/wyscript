@@ -12,4 +12,4 @@ define nat as int
 
 void main([string] args):
     rs = extract([-2,-3,1,2,-23,3,2345,4,5])
-    out->println(str(rs))
+    println(str(rs))

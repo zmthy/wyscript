@@ -3,5 +3,5 @@
 
 void main([string] args):
     bytes = f(0)
-    out->println(str(bytes))
+    println(str(bytes))
 

@@ -5,4 +5,4 @@ string f({int} xs):
 void main([string] args):
     ys = {1,2,3}
     zs = {z | z in ys, z > 1}
-    out->println(f(zs))
+    println(f(zs))

@@ -1,2 +1,2 @@
 void main([string] args):
-     out->println(str(1))
+     println(str(1))

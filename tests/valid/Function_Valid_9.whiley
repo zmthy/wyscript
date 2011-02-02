@@ -12,7 +12,7 @@ string f({int} xs):
 
 
 void main([string] args):
-    out->println(f(1.0))
-    out->println(f(1))
-    out->println(f([1,2,3]))
-    out->println(f({1,2,3}))
+    println(f(1.0))
+    println(f(1))
+    println(f([1,2,3]))
+    println(f({1,2,3}))

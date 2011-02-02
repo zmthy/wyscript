@@ -11,7 +11,7 @@ anat btoa(bnat x):
 
 void main([string] args):
     x = 1
-    out->println(str(atob(x)))
-    out->println(str(btoa(x)))
+    println(str(atob(x)))
+    println(str(btoa(x)))
     
     

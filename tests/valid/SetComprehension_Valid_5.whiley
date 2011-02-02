@@ -6,5 +6,5 @@ define nnint as [[int]]
 void main([string] args):
     iis = [[1,2,3],[3,4,5]]
     is = flattern(iis)
-    out->println(str(is))
+    println(str(is))
 

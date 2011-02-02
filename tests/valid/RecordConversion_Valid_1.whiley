@@ -6,4 +6,4 @@ string f(realtup t):
 
 void main([string] args):
     t = {op:1}
-    out->println(f(t))
+    println(f(t))

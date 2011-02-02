@@ -12,5 +12,5 @@ string f(expr e):
 
 void main([string] args):
     e = {1,2,3,4}
-    out->println(f(e))
+    println(f(e))
  

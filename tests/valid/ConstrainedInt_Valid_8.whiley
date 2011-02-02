@@ -7,4 +7,4 @@ string f(code x):
     return str(y)
 
 void main([string] args):
-    out->println(f({op:1,payload:[1]}))
+    println(f({op:1,payload:[1]}))

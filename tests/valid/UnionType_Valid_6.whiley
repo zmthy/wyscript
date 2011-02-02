@@ -9,4 +9,4 @@ string f(msgType m):
 
 void main([string] args):
     x = {op:11,data:[]}
-    out->println(f(x))
+    println(f(x))

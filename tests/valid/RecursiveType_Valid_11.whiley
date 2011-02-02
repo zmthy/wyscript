@@ -9,6 +9,6 @@ int f(Expr e):
 
 void main([string] args):
     v = f([1,2,3])
-    out->println(str(v))
+    println(str(v))
     v = f(1.234)
-    out->println(str(v))
+    println(str(v))

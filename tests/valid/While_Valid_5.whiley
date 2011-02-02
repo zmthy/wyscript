@@ -9,6 +9,6 @@
 
 void main([string] args):
     rs = extract([1,2,3,4,5,6,7])
-    out->println(str(rs))
+    println(str(rs))
     rs = extract([])
-    out->println(str(rs))
+    println(str(rs))

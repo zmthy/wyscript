@@ -6,5 +6,5 @@ int sum({nat} xs):
 
 void main([string] args):
     z = sum({1,2,3,4,5})
-    out->println(str(z))
+    println(str(z))
     

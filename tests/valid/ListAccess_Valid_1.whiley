@@ -6,4 +6,4 @@ void f([int] x):
 void main([string] args):
     arr = [1,2,3]
     f(arr)
-    out->println(str(arr[0]))
+    println(str(arr[0]))

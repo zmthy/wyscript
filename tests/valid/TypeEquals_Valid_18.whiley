@@ -7,4 +7,4 @@ string f(real e):
         return "realreal"
 
 void main([string] args):
-    out->println(f(1))
+    println(f(1))

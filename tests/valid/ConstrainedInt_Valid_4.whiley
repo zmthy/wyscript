@@ -5,4 +5,4 @@ nat f():
     return 1
 
 void main([string] args):
-    out->println(str(f()))
+    println(str(f()))

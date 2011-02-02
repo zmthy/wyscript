@@ -8,6 +8,6 @@ string f(tup t):
         return "NO MATCH"
 
 void main([string] args):
-    out->println(f({lhs:[0],p:0}))
-    out->println(f({lhs:[1],p:0}))
-    out->println(f({lhs:[],p:0}))
+    println(f({lhs:[0],p:0}))
+    println(f({lhs:[1],p:0}))
+    println(f({lhs:[],p:0}))

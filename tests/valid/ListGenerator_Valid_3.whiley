@@ -3,4 +3,4 @@ string f([int] x):
 
 void main([string] args):
      arr = []
-     out->println(f(arr))
+     println(f(arr))

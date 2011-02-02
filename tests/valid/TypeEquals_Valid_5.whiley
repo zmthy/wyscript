@@ -9,7 +9,7 @@ string f(expr e):
         return "NEGATIVE: " + str(e)
 
 void main([string] args):
-    out->println(f(-1))
-    out->println(f(1))
-    out->println(f(1234))
+    println(f(-1))
+    println(f(1))
+    println(f(1234))
  

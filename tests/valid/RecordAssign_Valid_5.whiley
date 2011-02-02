@@ -6,6 +6,6 @@ bytes f(int a):
     return bs
 
 void main([string] args):
-    out->println(str(f(1)))
-    out->println(str(f(2)))
-    out->println(str(f(9)))
+    println(str(f(1)))
+    println(str(f(2)))
+    println(str(f(9)))

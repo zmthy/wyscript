@@ -11,6 +11,6 @@ int f(expr e):
 
 void main([string] args):
     x = f(1)
-    out->println(str(x))
+    println(str(x))
     x = f({x:4,y:10})   
-    out->println(str(x))
+    println(str(x))

@@ -8,7 +8,7 @@ string f(msgType m):
 
 void main([string] args):
     x = {op:1,data:[1,2,3]}
-    out->println(f(x))
+    println(f(x))
     list = x.data
-    out->println(str(list))
+    println(str(list))
     

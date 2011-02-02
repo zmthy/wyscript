@@ -6,4 +6,4 @@ string f(cr1nat x):
     return str(y)
 
 void main([string] args):
-    out->println(f(9))
+    println(f(9))

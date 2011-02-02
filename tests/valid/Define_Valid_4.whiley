@@ -6,4 +6,4 @@ string f(codeOp x):
     return str(y)
 
 void main([string] args):
-    out->println(f(1))
+    println(f(1))
