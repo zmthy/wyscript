@@ -64,7 +64,7 @@ public class TestHarness {
 
   protected void parserFailTest(String name) {
     name = srcPath + File.separatorChar + name + ".whiley";
-    
+
     if (compile("-wp", "lib/wyrt.jar", name) != Main.PARSE_ERROR) {
       fail("Test parsed when it shouldn't have!");
     }
@@ -72,7 +72,7 @@ public class TestHarness {
 
   protected void contextFailTest(String name) {
     name = srcPath + File.separatorChar + name + ".whiley";
-    
+
     if (compile("-wp", "lib/wyrt.jar", name) != Main.CONTEXT_ERROR) {
       fail("Test compiled when it shouldn't have!");
     }
@@ -80,7 +80,7 @@ public class TestHarness {
 
   protected void verificationFailTest(String name) {
     name = srcPath + File.separatorChar + name + ".whiley";
-    
+
     if (compile("-wp", "lib/wyrt.jar", "-V", name) != Main.CONTEXT_ERROR) {
       fail("Test compiled when it shouldn't have!");
     }
@@ -88,7 +88,7 @@ public class TestHarness {
 
   protected void verificationRunTest(String name) {
     String fullName = srcPath + File.separatorChar + name + ".whiley";
-    
+
     if (compile("-wp", "lib/wyrt.jar", "-V", fullName) != 0) {
       fail("couldn't compile test!");
     } else {
@@ -119,16 +119,16 @@ public class TestHarness {
       Reader file = new FileReader(new File(path + "/" + name + ".js"));
       Context cxt = Context.enter();
       Scriptable scope = cxt.initStandardObjects();
-      
-      OutputStream out = new ByteArrayOutputStream(); 
+
+      OutputStream out = new ByteArrayOutputStream();
       Object sysout = Context.javaToJS(new PrintStream(out), scope);
       OutputStream err = new ByteArrayOutputStream();
       Object syserr = Context.javaToJS(new PrintStream(err), scope);
-      
+
       ScriptableObject.putConstProperty(scope, "sysout", sysout);
       ScriptableObject.putConstProperty(scope, "syserr", syserr);
       cxt.evaluateReader(scope, file, name, 1, null);
-      
+
       System.err.println(err);
       return out.toString();
     } catch (Exception ex) {
@@ -137,7 +137,7 @@ public class TestHarness {
     } finally {
       Context.exit();
     }
-    
+
     return null;
   }
 
@@ -155,11 +155,11 @@ public class TestHarness {
       BufferedReader outReader = new BufferedReader(new StringReader(output));
       BufferedReader refReader =
           new BufferedReader(new FileReader(new File(referenceFile)));
-      
+
       while (refReader.ready() && outReader.ready()) {
         String a = refReader.readLine();
         String b = outReader.readLine();
-        
+
         if (a.equals(b)) {
           continue;
         } else {
@@ -168,13 +168,13 @@ public class TestHarness {
           throw new Error("Output doesn't match reference");
         }
       }
-      
+
       String l1 = outReader.readLine();
       String l2 = refReader.readLine();
       if (l1 == null && l2 == null) {
         return;
       }
-      
+
       do {
         l1 = outReader.readLine();
         l2 = refReader.readLine();
@@ -184,7 +184,7 @@ public class TestHarness {
           System.err.println(" > " + l2);
         }
       } while (l1 != null && l2 != null);
-      
+
       fail("Files do not match");
     } catch (Exception ex) {
       ex.printStackTrace();

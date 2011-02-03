@@ -1,20 +1,20 @@
 // This file is part of the Whiley-to-Java Compiler (wyjc).
 //
-// The Whiley-to-Java Compiler is free software; you can redistribute 
-// it and/or modify it under the terms of the GNU General Public 
-// License as published by the Free Software Foundation; either 
+// The Whiley-to-Java Compiler is free software; you can redistribute
+// it and/or modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
 //
-// The Whiley-to-Java Compiler is distributed in the hope that it 
-// will be useful, but WITHOUT ANY WARRANTY; without even the 
-// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-// PURPOSE.  See the GNU General Public License for more details.
+// The Whiley-to-Java Compiler is distributed in the hope that it
+// will be useful, but WITHOUT ANY WARRANTY; without even the
+// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public 
-// License along with the Whiley-to-Java Compiler. If not, see 
+// You should have received a copy of the GNU General Public
+// License along with the Whiley-to-Java Compiler. If not, see
 // <http://www.gnu.org/licenses/>
 //
-// Copyright 2010, David James Pearce. 
+// Copyright 2010, David James Pearce.
 
 package wyjs.stages;
 
@@ -130,8 +130,9 @@ public class Parser {
     }
 
     // Now, figure out module name from filename
-    String name = filename.substring(
-        filename.lastIndexOf(File.separatorChar) + 1, filename.length() - 7);
+    String name =
+        filename.substring(filename.lastIndexOf(File.separatorChar) + 1,
+            filename.length() - 7);
 
     return new WhileyFile(new ModuleID(pkg, name), filename, decls);
   }
@@ -239,8 +240,7 @@ public class Parser {
       matchEndLine();
       return new TypeDecl(modifiers, t, name.text, sourceAttr(start, end - 1));
 
-    } catch (Exception e) {
-    }
+    } catch (Exception e) {}
 
     // Ok, failed parsing type constructor. So, backtrack and try for
     // expression.
@@ -325,9 +325,9 @@ public class Parser {
       return parseInvokeStmt();
     } else if (token instanceof NewLine || token instanceof Comment) {
       return parseSkip();
-    } else if(token.text.equals("extern")) {			
-		return parseExtern(indent);
-	} else {
+    } else if (token.text.equals("extern")) {
+      return parseExtern(indent);
+    } else {
       int start = index;
       Expr t = parseTupleExpression();
       if (t instanceof Expr.Invoke) {
@@ -492,28 +492,27 @@ public class Parser {
   }
 
   private Stmt parseExtern(int indent) {
-		int start = index;
-		matchKeyword("extern");
-		Token tok = tokens.get(index++);
-		if(!tok.text.equals("js")) {
-			syntaxError("unsupported extern language: " + tok,tok);
-		}		
-		match(Colon.class);
-		// int end = index;
-		matchEndLine();		
-		String javascript = "";
-		while (tokens.get(index) instanceof Tabs
-				&& ((Tabs) tokens.get(index)).ntabs == indent + 1) {
-			match(Tabs.class);
-			Lexer.Strung js = match(Lexer.Strung.class);
-			javascript = javascript + "\n" + js.string;
-			matchEndLine();		
-		} 								
-		
-		return new Stmt.ExternJS(javascript,sourceAttr(start,index-1));		
-  }	
-	
-  
+    int start = index;
+    matchKeyword("extern");
+    Token tok = tokens.get(index++);
+    if (!tok.text.equals("js")) {
+      syntaxError("unsupported extern language: " + tok, tok);
+    }
+    match(Colon.class);
+    // int end = index;
+    matchEndLine();
+    String javascript = "";
+    while (tokens.get(index) instanceof Tabs
+        && ((Tabs) tokens.get(index)).ntabs == indent + 1) {
+      match(Tabs.class);
+      Lexer.Strung js = match(Lexer.Strung.class);
+      javascript = javascript + "\n" + js.string;
+      matchEndLine();
+    }
+
+    return new Stmt.ExternJS(javascript, sourceAttr(start, index - 1));
+  }
+
   private Expr parseCondition() {
     checkNotEof();
     int start = index;
@@ -545,8 +544,7 @@ public class Parser {
       Expr.Comprehension sc = parseQuantifierSet();
       return new Expr.Comprehension(Expr.COp.NONE, null, sc.sources,
           sc.condition, sourceAttr(start, index - 1));
-    } else if (index < tokens.size()
-        && tokens.get(index) instanceof Lexer.Some) {
+    } else if (index < tokens.size() && tokens.get(index) instanceof Lexer.Some) {
       match(Lexer.Some.class);
       skipWhiteSpace();
 
@@ -744,17 +742,21 @@ public class Parser {
             // In this case, no end of the slice has been provided.
             // Therefore, it is taken to be the length of the source
             // expression.
-            end = new Expr.UnOp(Expr.UOp.LENGTHOF, lhs,
-                lhs.attribute(Attribute.Source.class));
+            end =
+                new Expr.UnOp(Expr.UOp.LENGTHOF, lhs,
+                    lhs.attribute(Attribute.Source.class));
           } else {
             end = parseAddSubExpression();
           }
           match(RightSquare.class);
-          lhs = new Expr.NaryOp(Expr.NOp.SUBLIST, sourceAttr(start, index - 1),
-              lhs, rhs, end);
+          lhs =
+              new Expr.NaryOp(Expr.NOp.SUBLIST, sourceAttr(start, index - 1),
+                  lhs, rhs, end);
         } else {
           match(RightSquare.class);
-          lhs = new Expr.Access(Expr.LOp.LISTACCESS,lhs, rhs, sourceAttr(start, index - 1));
+          lhs =
+              new Expr.Access(Expr.LOp.LISTACCESS, lhs, rhs, sourceAttr(start,
+                  index - 1));
         }
       } else {
         match(Dot.class);
@@ -804,12 +806,11 @@ public class Parser {
       return new Expr.Variable(matchIdentifier().text, sourceAttr(start,
           index - 1));
     } else if (token instanceof Lexer.Char) {
-    	char val = match(Lexer.Char.class).value;
-    	return new Expr.Constant(new Character(val), sourceAttr(start,
-					index - 1));
+      char val = match(Lexer.Char.class).value;
+      return new Expr.Constant(new Character(val), sourceAttr(start, index - 1));
     } else if (token instanceof Int) {
-    	int val = match(Int.class).value;
-    	return new Expr.Constant(val, sourceAttr(start, index - 1));
+      int val = match(Int.class).value;
+      return new Expr.Constant(val, sourceAttr(start, index - 1));
     } else if (token instanceof Real) {
       double val = match(Real.class).value;
       return new Expr.Constant(val, sourceAttr(start, index - 1));
@@ -832,37 +833,37 @@ public class Parser {
       return new Expr.UnOp(Expr.UOp.NOT, parseTerm(), sourceAttr(start,
           index - 1));
     } else if (token instanceof AddressOf) {
-    	return parseFunVal();
+      return parseFunVal();
     }
     syntaxError("unrecognised term.", token);
     return null;
   }
 
   private Expr parseFunVal() {
-	  int start = index;
-	  match(AddressOf.class);
-	  String funName = matchIdentifier().text;
-	  ArrayList<UnresolvedType> paramTypes = new ArrayList<UnresolvedType>();
-	  	  
-	  if(tokens.get(index) instanceof LeftBrace) {
-		// parse parameter types
-		match(LeftBrace.class);
-		boolean firstTime=true;
-		while(index < tokens.size() && !(tokens.get(index) instanceof RightBrace)) {
-			if(!firstTime) {
-				match(Comma.class);
-			}
-			firstTime=false;
-			UnresolvedType ut = parseType();
-			paramTypes.add(ut);
-		}
-		match(RightBrace.class);
-	  }
-	  
-	  return new Expr.FunConst(funName, paramTypes, sourceAttr(start,
-	          index - 1));
+    int start = index;
+    match(AddressOf.class);
+    String funName = matchIdentifier().text;
+    ArrayList<UnresolvedType> paramTypes = new ArrayList<UnresolvedType>();
+
+    if (tokens.get(index) instanceof LeftBrace) {
+      // parse parameter types
+      match(LeftBrace.class);
+      boolean firstTime = true;
+      while (index < tokens.size()
+          && !(tokens.get(index) instanceof RightBrace)) {
+        if (!firstTime) {
+          match(Comma.class);
+        }
+        firstTime = false;
+        UnresolvedType ut = parseType();
+        paramTypes.add(ut);
+      }
+      match(RightBrace.class);
+    }
+
+    return new Expr.FunConst(funName, paramTypes, sourceAttr(start, index - 1));
   }
-  
+
   private Expr parseListVal() {
     int start = index;
     ArrayList<Expr> exprs = new ArrayList<Expr>();
@@ -1138,7 +1139,8 @@ public class Parser {
     // Now, attempt to look for union or intersection types.
     if (index < tokens.size() && tokens.get(index) instanceof Bar) {
       // this is a union type
-      ArrayList<UnresolvedType.NonUnion> types = new ArrayList<UnresolvedType.NonUnion>();
+      ArrayList<UnresolvedType.NonUnion> types =
+          new ArrayList<UnresolvedType.NonUnion>();
       types.add((UnresolvedType.NonUnion) t);
       while (index < tokens.size() && tokens.get(index) instanceof Bar) {
         match(Bar.class);
@@ -1148,19 +1150,20 @@ public class Parser {
       }
       return new UnresolvedType.Union(types, sourceAttr(start, index - 1));
     } else if (index < tokens.size() && tokens.get(index) instanceof LeftBrace) {
-    	// this is a function type
-    	match(LeftBrace.class);
-    	ArrayList<UnresolvedType> types = new ArrayList<UnresolvedType>();
-    	boolean firstTime=true;
-    	while(index < tokens.size() && !(tokens.get(index) instanceof RightBrace)) {
-    		if(!firstTime) {
-    			match(Comma.class);
-    		}
-    		firstTime=false;
-    		types.add(parseType());
-    	}
-    	match(RightBrace.class);
-    	return new UnresolvedType.Fun(t,types);
+      // this is a function type
+      match(LeftBrace.class);
+      ArrayList<UnresolvedType> types = new ArrayList<UnresolvedType>();
+      boolean firstTime = true;
+      while (index < tokens.size()
+          && !(tokens.get(index) instanceof RightBrace)) {
+        if (!firstTime) {
+          match(Comma.class);
+        }
+        firstTime = false;
+        types.add(parseType());
+      }
+      match(RightBrace.class);
+      return new UnresolvedType.Fun(t, types);
     } else {
       return t;
     }
@@ -1193,11 +1196,11 @@ public class Parser {
     } else if (token.text.equals("bool")) {
       matchKeyword("bool");
       t = new UnresolvedType.Bool(sourceAttr(start, index - 1));
-    } else if (token.text.equals("char")) {    
-    	matchKeyword("char");
-    	t = new UnresolvedType.Char(sourceAttr(start, index - 1));
+    } else if (token.text.equals("char")) {
+      matchKeyword("char");
+      t = new UnresolvedType.Char(sourceAttr(start, index - 1));
     } else if (token instanceof LeftBrace) {
-    	match(LeftBrace.class);
+      match(LeftBrace.class);
       skipWhiteSpace();
       ArrayList<UnresolvedType> types = new ArrayList<UnresolvedType>();
       types.add(parseType());
@@ -1214,7 +1217,7 @@ public class Parser {
         token = tokens.get(index);
       }
       match(RightBrace.class);
-      return new UnresolvedType.Tuple(types,sourceAttr(start, index - 1));
+      return new UnresolvedType.Tuple(types, sourceAttr(start, index - 1));
     } else if (token instanceof LeftCurly) {
       match(LeftCurly.class);
       skipWhiteSpace();
@@ -1233,7 +1236,8 @@ public class Parser {
         t = new UnresolvedType.Dictionary(t, v, sourceAttr(start, index - 1));
       } else {
         // record type
-        HashMap<String, UnresolvedType> types = new HashMap<String, UnresolvedType>();
+        HashMap<String, UnresolvedType> types =
+            new HashMap<String, UnresolvedType>();
         Token n = matchIdentifier();
         if (types.containsKey(n)) {
           syntaxError("duplicate tuple key", n);
@@ -1283,11 +1287,11 @@ public class Parser {
    * token.text.equals("bool") || token.text.equals("real") ||
    * token.text.equals("?") || token.text.equals("*") ||
    * token.text.equals("process"); } else if (token instanceof LeftBrace) { //
-   * Left brace is a difficult situation, since it can represent the // start of
-   * a tuple expression or the start of a typle lval. int tmp = index;
-   * match(LeftBrace.class); boolean r = isTypeStart(); index = tmp; return r; }
-   * else { return token instanceof LeftCurly || token instanceof LeftSquare; }
-   * }
+   * Left brace is a difficult situation, since it can represent the // start
+   * of a tuple expression or the start of a typle lval. int tmp = index;
+   * match(LeftBrace.class); boolean r = isTypeStart(); index = tmp; return r;
+   * } else { return token instanceof LeftCurly || token instanceof
+   * LeftSquare; } }
    */
 
   private void skipWhiteSpace() {

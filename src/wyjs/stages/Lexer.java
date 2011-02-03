@@ -1,20 +1,20 @@
 // This file is part of the Whiley-to-Java Compiler (wyjc).
 //
-// The Whiley-to-Java Compiler is free software; you can redistribute 
-// it and/or modify it under the terms of the GNU General Public 
-// License as published by the Free Software Foundation; either 
+// The Whiley-to-Java Compiler is free software; you can redistribute
+// it and/or modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
 //
-// The Whiley-to-Java Compiler is distributed in the hope that it 
-// will be useful, but WITHOUT ANY WARRANTY; without even the 
-// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-// PURPOSE.  See the GNU General Public License for more details.
+// The Whiley-to-Java Compiler is distributed in the hope that it
+// will be useful, but WITHOUT ANY WARRANTY; without even the
+// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public 
-// License along with the Whiley-to-Java Compiler. If not, see 
+// You should have received a copy of the GNU General Public
+// License along with the Whiley-to-Java Compiler. If not, see
 // <http://www.gnu.org/licenses/>
 //
-// Copyright 2010, David James Pearce. 
+// Copyright 2010, David James Pearce.
 
 package wyjs.stages;
 
@@ -368,9 +368,10 @@ public class Lexer {
   }
 
   public static final String[] keywords = { "true", "false", "null", "int",
-      "real", "char", "bool", "process", "void", "if", "while", "else", "where",
-      "requires", "ensures", "as", "for", "assert", "debug", "print", "return",
-      "define", "function", "import", "package", "public", "extern", "spawn" };
+      "real", "char", "bool", "process", "void", "if", "while", "else",
+      "where", "requires", "ensures", "as", "for", "assert", "debug", "print",
+      "return", "define", "function", "import", "package", "public", "extern",
+      "spawn" };
 
   public Token scanIdentifier() {
     int start = pos;
@@ -471,12 +472,12 @@ public class Lexer {
 
   public static class Char extends Token {
 
-	  public final char value;
+    public final char value;
 
-	  public Char(char c, String text, int pos) {
-		  super(text, pos);
-		  value = c;
-	  }
+    public Char(char c, String text, int pos) {
+      super(text, pos);
+      value = c;
+    }
   }
 
   public static class Identifier extends Token {
@@ -808,6 +809,7 @@ public class Lexer {
   }
 
   public static class AddressOf extends Token {
+
     public AddressOf(String text, int pos) {
       super(text, pos);
     }
