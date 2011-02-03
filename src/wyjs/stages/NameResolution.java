@@ -21,6 +21,7 @@ package wyjs.stages;
 import java.util.*;
 
 import static wyjs.util.SyntaxError.*;
+import wyjs.*;
 import wyjs.util.*;
 import wyjs.lang.*;
 import wyjs.lang.Module.*;
@@ -30,6 +31,11 @@ import wyjs.lang.Expr.*;
 
 public class NameResolution {	
 	private Module srcfile;
+	private ModuleLoader loader;
+	
+	public NameResolution(ModuleLoader loader) {
+		this.loader = loader;
+	}
 	
 	public void resolve(List<Module> wyfiles) {
 		for(Module wf : wyfiles) {
@@ -42,8 +48,8 @@ public class NameResolution {
 		
 		srcfile = wf;		
 		
-		imports.add(srcfile.module.pkg().append(srcfile.module.module()));
-		imports.add(srcfile.module.pkg().append("*"));
+		imports.add(srcfile.id().pkg().append(srcfile.id().module()));
+		imports.add(srcfile.id().pkg().append("*"));
 		imports.add(new PkgID(new String[]{"whiley","lang"}).append("*"));
 						
 		for(Decl d : wf.declarations) {			
@@ -274,12 +280,8 @@ public class NameResolution {
 			resolve(target,environment,imports);
 		}
 
-		if(!environment.contains(ivk.name)) {
-			// FIXME: needed for proper namespacing
-			//ModuleID mid = loader.resolve(ivk.name,imports);		
-			ModuleID mid = srcfile.module;
-			
-			// Ok, resolve the module for this invoke
+		if(!environment.contains(ivk.name)) {			
+			ModuleID mid = loader.resolve(ivk.name,imports);					
 			ivk.attributes().add(new Attribute.Module(mid));		
 		}
 	}
@@ -293,19 +295,8 @@ public class NameResolution {
 			// is, and then store that information for future use.
 									
 			// FIXME: needed for proper namespacing
-			//ModuleID mid = loader.resolve(v.var, imports);
-			//v.attributes().add(new Attributes.Module(mid));
-			
-			for(Decl d : srcfile.declarations) {
-				if(d instanceof ConstDecl) {
-					ConstDecl cd = (ConstDecl) d;
-					if(cd.name().equals(v.var)) {
-						// The following indicates that this is a constant
-						v.attributes().add(new Attribute.Module(srcfile.module));
-						break;
-					}
-				}
-			}
+			ModuleID mid = loader.resolve(v.var, imports);
+			v.attributes().add(new Attribute.Module(mid));			
 		} 
 	}
 	
@@ -317,7 +308,7 @@ public class NameResolution {
 				FunDecl cd = (FunDecl) d;
 				if(cd.name().equals(v.name)) {
 					// The following indicates that this is a constant
-					v.attributes().add(new Attribute.Module(srcfile.module));
+					v.attributes().add(new Attribute.Module(srcfile.id()));
 					break;
 				}
 			}
@@ -418,10 +409,8 @@ public class NameResolution {
 			// This case corresponds to a user-defined type. This will be
 			// defined in some module (possibly ours), and we need to identify
 			// what module that is here, and save it for future use.
-			// UnresolvedType.Named dt = (UnresolvedType.Named) t;						
-			// FIXME: needed for namespacing
-			//ModuleID mid = loader.resolve(dt.name, imports);
-			ModuleID mid = srcfile.module;
+			UnresolvedType.Named dt = (UnresolvedType.Named) t;						
+			ModuleID mid = loader.resolve(dt.name, imports);			
 			t.attributes().add(new Attribute.Module(mid));
 		} else if(t instanceof UnresolvedType.Union) {
 			UnresolvedType.Union ut = (UnresolvedType.Union) t;

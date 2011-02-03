@@ -72,6 +72,8 @@ public class Main {
   public static int run(String[] args) {
     boolean verbose = false;
     
+    ArrayList<String> whileypath = new ArrayList<String>();
+	ArrayList<String> bootpath = new ArrayList<String>();	
     int fileArgsBegin = 0;
 
     for (int i = 0; i != args.length; ++i) {
@@ -84,10 +86,18 @@ public class Main {
           System.out.println("Whiley-to-Java Compiler (wyjc) version "
               + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION);
           System.exit(0);
+        } else if (arg.equals("-wp") || arg.equals("-whileypath")) {
+        	Collections.addAll(whileypath, args[++i]
+        	                                    .split(File.pathSeparator));
+        } else if (arg.equals("-bp") || arg.equals("-bootpath")) {
+        	Collections.addAll(bootpath, args[++i]
+        	                                  .split(File.pathSeparator));
         } else if (arg.equals("-verbose")) {
-          verbose = true;
+        	verbose = true;
+        } else if (arg.equals("-verbose")) {
+        	verbose = true;
         } else {
-          throw new RuntimeException("Unknown option: " + args[i]);
+        	throw new RuntimeException("Unknown option: " + args[i]);
         }
 
         fileArgsBegin = i + 1;
@@ -99,6 +109,9 @@ public class Main {
       return UNKNOWN_ERROR;
     }
 
+    whileypath.add(0,".");
+	whileypath.addAll(bootpath);
+    
     try {
 
       try {
@@ -106,7 +119,7 @@ public class Main {
         for (int i = fileArgsBegin; i != args.length; ++i) {
           files.add(new File(args[i]));
         }
-        compile(files);
+        compile(files,whileypath);
         
       } catch (ParseError e) {
         if (e.filename() != null) {
@@ -186,17 +199,20 @@ public class Main {
    * @param files
    * @throws IOException
    */
-  public static void compile(List<File> files) throws IOException {
+  public static void compile(List<File> files, List<String> whileypath) throws IOException {
     ArrayList<Module> wyfiles = new ArrayList<Module>();
+    ModuleLoader loader = new ModuleLoader(whileypath);
     
     for (File file : files) {
       Lexer lexer = new Lexer(file.getPath());
       Parser parser = new Parser(file.getPath(), lexer.scan());
-      wyfiles.add(parser.read());
+      Module module = parser.read();
+      wyfiles.add(module);
+      loader.register(module);
     }
 
-    new NameResolution().resolve(wyfiles);    
-    new TypeChecker().check(wyfiles); 
+    new NameResolution(loader).resolve(wyfiles);    
+    new TypeChecker(loader).check(wyfiles); 
     
     for (Module wf : wyfiles) {
       translate(wf, true);

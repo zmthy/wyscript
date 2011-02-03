@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import wyjs.ModuleLoader;
 import wyjs.lang.Expr;
 import wyjs.lang.Expr.*;
 import wyjs.lang.ModuleID;
@@ -27,7 +28,7 @@ import wyjs.util.SyntacticElement;
 import wyjs.util.SyntaxError;
 
 public class TypeChecker {
-
+  private ModuleLoader loader;
   private HashSet<ModuleID> modules;
   private HashMap<NameID, Module> filemap;
   private HashMap<NameID, List<Type.Fun>> functions;
@@ -36,6 +37,11 @@ public class TypeChecker {
   private HashMap<NameID, UnresolvedType> unresolved;
   private String filename;
   private FunDecl currentFunDecl;    
+  
+  public TypeChecker(ModuleLoader loader) {
+		this.loader = loader;
+  }
+	
   
   public void check(List<Module> files) {
 		modules = new HashSet<ModuleID>();
@@ -47,7 +53,7 @@ public class TypeChecker {
 
 		// now, init data
 		for (Module f : files) {
-			modules.add(f.module);
+			modules.add(f.id());
 		}
 
 		// Stage 1 ... resolve and check types of all named types + constants
@@ -59,7 +65,7 @@ public class TypeChecker {
 			filename = f.filename;
 			for (Module.Decl d : f.declarations) {
 				if (d instanceof FunDecl) {
-					partResolve(f.module, (FunDecl) d);
+					partResolve(f.id(), (FunDecl) d);
 				}
 			}
 		}
@@ -88,7 +94,7 @@ public class TypeChecker {
       for (Decl d : f.declarations) {
         if (d instanceof ConstDecl) {
           ConstDecl cd = (ConstDecl) d;
-          NameID key = new NameID(f.module, cd.name());
+          NameID key = new NameID(f.id(), cd.name());
           exprs.put(key, cd.constant);
           filemap.put(key, f);
         }
@@ -130,7 +136,11 @@ public class TypeChecker {
     Expr value = constants.get(key);
     if (value != null) {
       return value;
-    } else if (visited.contains(key)) {
+    } else if (!modules.contains(key.module())) {
+		// indicates a non-local key
+		Module mi = loader.loadModule(key.module());
+		return mi.constant(key.name()).constant;
+	} else if (visited.contains(key)) {
       // this indicates a cyclic definition.
       syntaxError("cyclic constant definition encountered",
           filemap.get(key).filename, exprs.get(key));
@@ -195,7 +205,7 @@ public class TypeChecker {
       for (Decl d : f.declarations) {
         if (d instanceof TypeDecl) {
           TypeDecl td = (TypeDecl) d;
-          NameID key = new NameID(f.module, td.name());
+          NameID key = new NameID(f.id(), td.name());
           declOrder.add(key);
           unresolved.put(key, td.type);
           srcs.put(key, d);
@@ -242,7 +252,13 @@ public class TypeChecker {
       return cached;
     } else if (t != null) {
       return t;
-    }
+    } else if (!modules.contains(key.module())) {
+		// indicates a non-local key which we can resolve immediately
+		Module mi = loader.loadModule(key.module());
+		Module.TypeDecl td = mi.type(key.name());
+		// FIXME: need to resolve the type somehow?
+		return td.type;
+	}
 
     // following is needed to terminate any recursion
     cache.put(key, Type.T_RECURSIVE(key, null));

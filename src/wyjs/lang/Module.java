@@ -21,21 +21,63 @@ package wyjs.lang;
 import java.util.ArrayList;
 import java.util.List;
 
+import wyjs.ModuleLoader;
 import wyjs.util.Attribute;
 import wyjs.util.SyntacticElement;
 
-public class Module {
-
-  public final ModuleID module;
+public class Module extends ModuleLoader.Skeleton {
+  
   public final String filename;
   public final ArrayList<Decl> declarations;
 
-  public Module(ModuleID module, String filename, List<Decl> decls) {
-    this.module = module;
+  public Module(ModuleID mid, String filename, List<Decl> decls) {
+	  super(mid);    
     this.filename = filename;
     this.declarations = new ArrayList<Decl>(decls);
   }
 
+  public boolean hasName(String name) {
+	  for(Decl d : declarations) {
+		  if(d instanceof ConstDecl) {
+			  ConstDecl cd = (ConstDecl) d;
+			  if(cd.name().equals(name)) {
+				  return true;
+			  }
+		  } else if(d instanceof TypeDecl) {
+			  TypeDecl cd = (TypeDecl) d;
+			  if(cd.name().equals(name)) {
+				  return true;
+			  }
+		  }
+	  }
+	  return false;
+  }
+  
+  public ConstDecl constant(String name) {
+	  for(Decl d : declarations) {
+		  if(d instanceof ConstDecl) {
+			  ConstDecl cd = (ConstDecl) d;
+			  if(cd.name().equals(name)) {
+				  return cd;
+			  }
+		  } 
+	  }
+	  return null;
+  }
+  
+  public TypeDecl type(String name) {
+	  for(Decl d : declarations) {
+		  if(d instanceof TypeDecl) {
+			  TypeDecl cd = (TypeDecl) d;
+			  if(cd.name().equals(name)) {
+				  return cd;
+			  }
+		  }
+	  }
+	  return null;
+  }
+  
+  
   public interface Decl extends SyntacticElement {
 
     public String name();

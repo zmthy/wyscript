@@ -24,6 +24,7 @@
 
 DIR=`dirname "$0"`/..
 LIBDIR=$DIR/lib
+STDLIBDIR=$DIR/stdlib
 
 # check for running under cywin
 cygwin=false
@@ -39,9 +40,11 @@ if $cygwin; then
     # under cygwin the classpath separator must be ";"
     LIBDIR=`cygpath -pw "$LIBDIR"`
     WHILEY_CLASSPATH="$LIBDIR/wyjs.jar;$CLASSPATH"
+    WHILEY_BOOTPATH="$STDLIBDIR/"
 else
     # under UNIX the classpath separator must be ":"
     WHILEY_CLASSPATH="$LIBDIR/wyjs.jar:$CLASSPATH"
+    WHILEY_BOOTPATH="$STDLIBDIR/"
 fi
 
-java -server -Xmx128M -cp "$WHILEY_CLASSPATH" wyjs.Main "$@"
+java -server -Xmx128M -cp "$WHILEY_CLASSPATH" wyjs.Main -bp "$WHILEY_BOOTPATH" "$@"

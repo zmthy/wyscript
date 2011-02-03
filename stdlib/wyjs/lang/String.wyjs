@@ -1,0 +1,3 @@
+package wyjs.lang
+
+define string as [char]

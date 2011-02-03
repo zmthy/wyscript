@@ -24,6 +24,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import wyjs.lang.*;
+import wyjs.stages.Lexer;
+import wyjs.stages.NameResolution;
+import wyjs.stages.Parser;
+import wyjs.stages.TypeChecker;
 import wyjs.util.*;
 
 /**
@@ -35,12 +39,6 @@ import wyjs.util.*;
  * 
  */
 public class ModuleLoader {
-	/**
-	 * The Closed World Assumption indicates whether or not we should attempt to
-	 * compile source files that we encouter.
-	 */
-	private boolean closedWorldAssumption = true;
-	
 	/**
      * The whiley path is a list of directories which must be
      * searched in ascending order for whiley files.
@@ -136,10 +134,6 @@ public class ModuleLoader {
 	public ModuleLoader(Collection<String> whileypath) {
 		this.logger = Logger.NULL;
 		this.whileypath = new ArrayList<String>(whileypath);				
-	}
-	
-	public void setClosedWorldAssumption(boolean flag) {
-		closedWorldAssumption = flag;
 	}
 	
 	/**
@@ -278,7 +272,7 @@ public class ModuleLoader {
 		} else {
 			try {
 				// ok, now look for module inside package.
-				skeleton = loadSkeleton(module,pkg);
+				skeleton = loadModule(module,pkg);
 				if(skeleton == null) {
 					throw new ResolveError("Unable to find module: " + module);
 				}
@@ -289,38 +283,7 @@ public class ModuleLoader {
 		
 		return skeleton;		
 	}
-	
-	private Skeleton loadSkeleton(ModuleID module, Package pkg) throws ResolveError, IOException {		
-		String filename = module.fileName();	
-		String jarname = filename.replace(File.separatorChar,'/') + ".class";
-
-		for(File location : pkg.locations) {			
-			if (location.getName().endsWith(".jar")) {
-				// location is a jar file
-				JarFile jf = new JarFile(location);				
-				JarEntry je = jf.getJarEntry(jarname);
-				if (je == null) { continue; }  								
-				Module mi = readWhileyClass(module, jarname, jf.getInputStream(je));
-				if(mi != null) { return mi; }
-			} else {
-				File classFile = new File(location.getPath(),filename + ".class");					
-				File srcFile = new File(location.getPath(),filename + ".whiley");
-
-				if(classFile.exists()) {															
-					// Here, there is no sourcefile, but there is a
-					// classfile.
-					// So, no need to compile --- just load the class file!
-					Module mi = readWhileyClass(module, classFile.getPath(), new FileInputStream(classFile));
-					if(mi != null) {
-						return mi;
-					}
-				}			
-			}
-		}
-
-		throw new ResolveError("unable to find module: " + module);
-	}
-
+		
 	/**
 	 * This method attempts to read a whiley module from a given package.
 	 * 
@@ -334,29 +297,20 @@ public class ModuleLoader {
 	private Module loadModule(ModuleID module, Package pkg)
 			throws ResolveError, IOException {			
 		String filename = module.fileName();	
-		String jarname = filename.replace(File.separatorChar,'/') + ".class";
 		
 		for(File location : pkg.locations) {
-			if (location.getName().endsWith(".jar")) {
-				// location is a jar file				
-				JarFile jf = new JarFile(location);				
-				JarEntry je = jf.getJarEntry(jarname);
-				if (je == null) { continue; }  								
-				return readWhileyClass(module, jarname, jf.getInputStream(je));
-			} else {
-				File classFile = new File(location.getPath(),filename + ".class");					
-				
-				if(classFile.exists()) {															
-					// Here, there is no sourcefile, but there is a classfile.
-					// So, no need to compile --- just load the class file!
-					return readWhileyClass(module, jarname, new FileInputStream(classFile));					
-				}			
-			}
+			File wyjsFile = new File(location.getPath(),filename + ".wyjs");					
+
+			if(wyjsFile.exists()) {															
+				// Here, there is no sourcefile, but there is a classfile.
+				// So, no need to compile --- just load the class file!
+				return readWhileyFile(module, wyjsFile);					
+			}						
 		}
 		
 		throw new ResolveError("unable to find module: " + module);
 	}
-	
+		
 	/**
      * This method searches the WHILEYPATH looking for a matching package.
      * 
@@ -378,7 +332,7 @@ public class ModuleLoader {
 		String filePkg = pkg.fileName();
 		
 		// Second, try whileypath
-		for (String dir : whileypath) {			
+		for (String dir : whileypath) {					
 			// check if whileypath entry is a jarfile or a directory		
 			if (!dir.endsWith(".jar")) {
 				// dir is not a Jar file, so I assume it's a directory.				
@@ -395,10 +349,10 @@ public class ModuleLoader {
 							.hasMoreElements();) {
 						JarEntry je = e.nextElement();
 						String entryName = je.getName();
-						if (entryName.endsWith(".class")) {
-							// now strip off ".class"
+						if (entryName.endsWith(".wyjs")) {
+							// now strip off ".wyjs"
 							entryName = entryName.substring(0, entryName
-									.length() - 6);
+									.length() - 5);
 							entryName = entryName.replace("/", ".");
 							// strip off package information
 							String pkgName = pathParent(entryName);
@@ -426,35 +380,6 @@ public class ModuleLoader {
 		throw new ResolveError("package not found: " + pkg);
 	}
 	
-	private Module readWhileyClass(ModuleID module, String filename,
-			InputStream input) throws IOException {
-		long time = System.currentTimeMillis();		
-		
-		ArrayList<BytecodeAttribute.Reader> readers = new ArrayList<BytecodeAttribute.Reader>(
-				attributeReaders); 		
-		readers.add(new WhileyDefine.Reader(attributeReaders));		
-		ClassFileReader r = new ClassFileReader(input,readers);									
-		ClassFile cf = r.readClass();
-
-		Module mi = createModule(module,cf);
-		if(mi != null) {
-			logger.logTimedMessage("Loaded " + filename, System
-					.currentTimeMillis()
-					- time);				
-
-			// observe that createModule will return null if the
-			// class file is *not* from whiley source file. In such
-			// case, we simply ignore the class file altogether.
-			moduletable.put(module,mi);
-			return mi;
-		} else {
-			logger.logTimedMessage("Ignored " + filename, System
-					.currentTimeMillis()
-					- time);	
-			return null;
-		}
-	} 
-	
 	/**
      * This traverses the directory tree, starting from dir, looking for class
      * or java files. There's probably a bug if the directory tree is cyclic!
@@ -467,15 +392,11 @@ public class ModuleLoader {
 		File f = new File(root + File.separatorChar + filepkg);				
 		if (f.isDirectory()) {			
 			for (String file : f.list()) {				
-				if (!closedWorldAssumption && file.endsWith(".whiley")) {
+				if (file.endsWith(".wyjs")) {
 					// strip  off ".whiley" to get module name
-					String name = file.substring(0,file.length()-7);
+					String name = file.substring(0,file.length()-5);
 					addPackageItem(pkg, name, new File(root));					
-				} else if (file.endsWith(".class")) {					
-					// strip  off ".class" to get module name
-					String name = file.substring(0,file.length()-6);
-					addPackageItem(pkg, name, new File(root));					
-				}
+				} 
 			}
 		}
 
@@ -519,69 +440,25 @@ public class ModuleLoader {
 		}
 	}
 	
-	protected Module createModule(ModuleID mid, ClassFile cf) {
-		if(cf.attribute("WhileyVersion") == null) {
-			// This indicates the class is not a WhileyFile. This means it was
-			// generate from some other source (e.g. it was a .java file
-			// compiled with javac). Hence, we simply want to ignore this file
-			// since it obviously doesn't contain any information that we can
-			// sensibly use.
-			return null;
-		}
+	public Module readWhileyFile(ModuleID mid, File file) throws IOException {
+		long time = System.currentTimeMillis();
+		String filename = file.getPath();
 		
-		HashMap<Pair<Type.Fun,String>,Module.Method> methods = new HashMap();
-		
-		for (ClassFile.Method cm : cf.methods()) {
-			if (!cm.isSynthetic()) {
-				Module.Method mi = createMethodInfo(mid, cm);
-				Pair<Type.Fun, String> key = new Pair(mi.type(), mi.name());
-				Module.Method method = methods.get(key);
-				if (method != null) {
-					// coalesce cases
-					ArrayList<Module.Case> ncases = new ArrayList<Module.Case>(
-							method.cases());
-					ncases.addAll(mi.cases());
-					mi = new Module.Method(mi.name(), mi.type(), ncases);
-				}
-				methods.put(key, mi);
-			}
-		}
-		
-		ArrayList<Module.TypeDef> types = new ArrayList();
-		ArrayList<Module.ConstDef> constants = new ArrayList();
-		
-		for(BytecodeAttribute ba : cf.attributes()) {
-			
-			if(ba instanceof WhileyDefine) {				
-				WhileyDefine wd = (WhileyDefine) ba;								
-				Type type = wd.type();							
-				if(type == null) {
-					// constant definition
-					List<Attribute> attrs = new ArrayList<Attribute>();		
-					for(BytecodeAttribute bba : wd.attributes()) {			
-						// Ooh, this is such a hack ...						
-						if(bba instanceof Attribute) {							
-							attrs.add((Attribute)bba);
-						}
-					}
-					Module.ConstDef ci = new Module.ConstDef(wd.defName(),wd.value(),attrs);
-					constants.add(ci);
-				} else {
-					// type definition
-					List<Attribute> attrs = new ArrayList<Attribute>();		
-					for(BytecodeAttribute bba : wd.attributes()) {			
-						// Ooh, this is such a hack ...						
-						if(bba instanceof Attribute) {								
-							attrs.add((Attribute)bba);
-						}
-					}
-					Module.TypeDef ti = new Module.TypeDef(wd.defName(),type,attrs);					
-					types.add(ti);
-				}
-			}
-		}
-				
-		return new Module(mid, cf.name(), methods.values(), types, constants);
+		Lexer lexer = new Lexer(file.getPath());
+		Parser parser = new Parser(file.getPath(), lexer.scan());
+		Module m = parser.read();	    
+	    new NameResolution(this).resolve(m);
+	    // FIXME: following is a bit of a hack, as it assumes all important
+		// files are stand-alone.
+	    ArrayList<Module> files = new ArrayList<Module>();
+	    files.add(m);
+	    new TypeChecker(this).check(files);
+
+	    logger.logTimedMessage("Loaded " + filename, System
+				.currentTimeMillis()
+				- time);				
+
+		return m;
 	}
 	
 	public String stripCase(String name) {
@@ -591,29 +468,7 @@ public class ModuleLoader {
 		} else {
 			return name;
 		}
-	}
-	
-	protected Module.Method createMethodInfo(ModuleID mid,
-			ClassFile.Method cm) {
-		Pair<String,Type.Fun> info = splitDescriptor(cm.name());							
-		ArrayList<String> parameterNames = new ArrayList<String>();
-		Type.Fun type = info.second();
-		for (int i = 0; i != type.params.size(); ++i) {
-			parameterNames.add("$" + i);
-		}
-		
-		List<Attribute> attrs = new ArrayList<Attribute>();		
-		for(BytecodeAttribute ba : cm.attributes()) {			
-			// Ooh, this is such a hack ...					
-			if(ba instanceof Attribute) {						
-				attrs.add((Attribute)ba);
-			}
-		}
-		List<Module.Case> mcases = new ArrayList<Module.Case>();
-		mcases.add(new Module.Case(parameterNames,null,attrs));
-		
-		return new Module.Method(stripCase(info.first()), type, mcases);
-	}
+	}	
 	
 	/**
 	 * Given a path string of the form "xxx.yyy.zzz" this returns the parent
