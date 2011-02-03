@@ -136,7 +136,7 @@ public class Lexer {
       syntaxError("unexpected end-of-character", pos);
     }
     pos = pos + 1;
-    return new Int(c, input.substring(start, pos), start);
+    return new Char(c, input.substring(start, pos), start);
   }
 
   public Token scanString() {
@@ -284,7 +284,7 @@ public class Lexer {
         pos += 2;
         return new LogicalAnd("&&", pos - 2);
       } else {
-        return new BitwiseAnd("&", pos++);
+        return new AddressOf("&", pos++);
       }
     } else if (c == '|') {
       if ((pos + 1) < input.length() && input.charAt(pos + 1) == '|') {
@@ -368,7 +368,7 @@ public class Lexer {
   }
 
   public static final String[] keywords = { "true", "false", "null", "int",
-      "real", "bool", "process", "void", "if", "while", "else", "where",
+      "real", "char", "bool", "process", "void", "if", "while", "else", "where",
       "requires", "ensures", "as", "for", "assert", "debug", "print", "return",
       "define", "function", "import", "package", "public", "extern", "spawn" };
 
@@ -467,6 +467,16 @@ public class Lexer {
       super(text, pos);
       value = r;
     }
+  }
+
+  public static class Char extends Token {
+
+	  public final char value;
+
+	  public Char(char c, String text, int pos) {
+		  super(text, pos);
+		  value = c;
+	  }
   }
 
   public static class Identifier extends Token {
@@ -797,9 +807,8 @@ public class Lexer {
     }
   }
 
-  public static class BitwiseAnd extends Token {
-
-    public BitwiseAnd(String text, int pos) {
+  public static class AddressOf extends Token {
+    public AddressOf(String text, int pos) {
       super(text, pos);
     }
   }

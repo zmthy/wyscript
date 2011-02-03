@@ -34,6 +34,7 @@ public abstract class Type {
   public static final Int T_INT = new Int();
   public static final Real T_REAL = new Real();
   public static final Meta T_META = new Meta();
+  public static final Char T_CHAR = new Char();
 
   public static Named T_NAMED(NameID name, Type element) {
     return get(new Named(name, element));
@@ -90,10 +91,13 @@ public abstract class Type {
    */
   public static boolean isSubtype(Type t1, Type t2) {
 
-    if (t1 == t2 || (t2 instanceof Void) || (t1 instanceof Any)
-        || (t1 instanceof Real && t2 instanceof Int)) {
-      return true;
-    } else if (t1 instanceof List && t2 instanceof List) {
+    if (t1 == t2
+				|| (t2 instanceof Void)
+				|| (t1 instanceof Any)
+				|| (t1 instanceof Real && (t2 instanceof Int || t2 instanceof Char))
+				|| (t1 instanceof Int && t2 instanceof Char)) {
+			return true;
+		} else if (t1 instanceof List && t2 instanceof List) {
       // RULE: S-LIST
       List l1 = (List) t1;
       List l2 = (List) t2;
@@ -476,7 +480,8 @@ public abstract class Type {
     if (t instanceof Existential) {
       return true;
     } else if (t instanceof Void || t instanceof Null || t instanceof Bool
-        || t instanceof Int || t instanceof Real || t instanceof Any) {
+				|| t instanceof Char || t instanceof Int || t instanceof Real
+				|| t instanceof Any) {
       return false;
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -534,8 +539,8 @@ public abstract class Type {
    */
   public static java.util.Set<NameID> recursiveTypeNames(Type t) {
     if (t instanceof Existential || t instanceof Void || t instanceof Null
-        || t instanceof Bool || t instanceof Int || t instanceof Real
-        || t instanceof Any) {
+				|| t instanceof Bool || t instanceof Char || t instanceof Int
+				|| t instanceof Real || t instanceof Any) {
       return Collections.emptySet();
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -594,8 +599,8 @@ public abstract class Type {
    */
   public static Type renameRecursiveTypes(Type t, Map<NameID, NameID> binding) {
     if (t instanceof Existential || t instanceof Void || t instanceof Null
-        || t instanceof Bool || t instanceof Int || t instanceof Real
-        || t instanceof Any) {
+				|| t instanceof Bool || t instanceof Char || t instanceof Int
+				|| t instanceof Real || t instanceof Any) {
       return t;
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -664,8 +669,8 @@ public abstract class Type {
     }
 
     if (t instanceof Existential || t instanceof Void || t instanceof Null
-        || t instanceof Bool || t instanceof Int || t instanceof Real
-        || t instanceof Any || t instanceof Named) {
+				|| t instanceof Bool || t instanceof Char || t instanceof Int
+				|| t instanceof Real || t instanceof Any || t instanceof Named) {
       return t;
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -725,9 +730,9 @@ public abstract class Type {
    */
   public static boolean isOpenRecursive(NameID key, Type t) {
     if (t instanceof Type.Void || t instanceof Type.Null
-        || t instanceof Type.Bool || t instanceof Type.Int
-        || t instanceof Type.Real || t instanceof Type.Any
-        || t instanceof Type.Existential) {
+				|| t instanceof Type.Bool || t instanceof Type.Char
+				|| t instanceof Type.Int || t instanceof Type.Real
+				|| t instanceof Type.Any || t instanceof Type.Existential) {
       return false;
     } else if (t instanceof Type.List) {
       Type.List lt = (Type.List) t;
@@ -817,9 +822,10 @@ public abstract class Type {
    */
   public static Type normaliseRecursiveType(Type t) {
     if (t instanceof Type.Void || t instanceof Type.Null
-        || t instanceof Type.Bool || t instanceof Type.Int
-        || t instanceof Type.Real || t instanceof Type.Any
-        || t instanceof Type.Existential || t instanceof Type.Named) {
+				|| t instanceof Type.Bool || t instanceof Type.Char
+				|| t instanceof Type.Int || t instanceof Type.Real
+				|| t instanceof Type.Any || t instanceof Type.Existential
+				|| t instanceof Type.Named) {
       return t;
     } else if (t instanceof Type.List) {
       Type.List lt = (Type.List) t;
@@ -1020,8 +1026,9 @@ public abstract class Type {
    */
   public static String toShortString(Type t) {
     if (t instanceof Any || t instanceof Void || t instanceof Null
-        || t instanceof Real || t instanceof Int || t instanceof Bool
-        || t instanceof Meta || t instanceof Existential) {
+				|| t instanceof Real || t instanceof Int || t instanceof Char
+				|| t instanceof Bool || t instanceof Meta
+				|| t instanceof Existential) {
       return t.toString();
     } else if (t instanceof Set) {
       Set st = (Set) t;
@@ -1183,6 +1190,24 @@ public abstract class Type {
     public String toString() {
       return "bool";
     }
+  }
+
+  public static final class Char extends NonUnion {
+
+	  private Char() {
+	  }
+
+	  public boolean equals(Object o) {
+		  return o == T_CHAR;
+	  }
+
+	  public int hashCode() {
+		  return 1;
+	  }
+
+	  public String toString() {
+		  return "char";
+	  }
   }
 
   public static final class Int extends NonUnion {

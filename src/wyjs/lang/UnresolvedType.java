@@ -83,6 +83,14 @@ public interface UnresolvedType extends SyntacticElement {
     }
   }
 
+  public static final class Char extends SyntacticElement.Impl
+			implements NonUnion {
+
+		public Char(Attribute... attributes) {
+			super(attributes);
+		}
+	}
+  
   public static final class Named extends SyntacticElement.Impl implements
       NonUnion {
 
@@ -91,6 +99,10 @@ public interface UnresolvedType extends SyntacticElement {
     public Named(String name, Attribute... attributes) {
       super(attributes);
       this.name = name;
+    }
+    
+    public String toString() {
+    	return name;
     }
   }
 

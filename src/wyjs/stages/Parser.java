@@ -37,6 +37,7 @@ import wyjs.lang.WhileyFile.FunDecl;
 import wyjs.lang.WhileyFile.ImportDecl;
 import wyjs.lang.WhileyFile.Parameter;
 import wyjs.lang.WhileyFile.TypeDecl;
+import wyjs.stages.Lexer.AddressOf;
 import wyjs.stages.Lexer.Arrow;
 import wyjs.stages.Lexer.Bar;
 import wyjs.stages.Lexer.Colon;
@@ -777,9 +778,13 @@ public class Parser {
     } else if (token instanceof Identifier) {
       return new Expr.Variable(matchIdentifier().text, sourceAttr(start,
           index - 1));
+    } else if (token instanceof Lexer.Char) {
+    	char val = match(Lexer.Char.class).value;
+    	return new Expr.Constant(new Character(val), sourceAttr(start,
+					index - 1));
     } else if (token instanceof Int) {
-      int val = match(Int.class).value;
-      return new Expr.Constant(val, sourceAttr(start, index - 1));
+    	int val = match(Int.class).value;
+    	return new Expr.Constant(val, sourceAttr(start, index - 1));
     } else if (token instanceof Real) {
       double val = match(Real.class).value;
       return new Expr.Constant(val, sourceAttr(start, index - 1));
@@ -801,11 +806,19 @@ public class Parser {
       match(Shreak.class);
       return new Expr.UnOp(Expr.UOp.NOT, parseTerm(), sourceAttr(start,
           index - 1));
+    } else if (token instanceof AddressOf) {
+    	return parseFunVal();
     }
     syntaxError("unrecognised term.", token);
     return null;
   }
 
+  private Expr parseFunVal() {
+	  match(AddressOf.class);
+	  String funName = matchIdentifier().text;
+	  return new Expr.FunConst(funName);
+  }
+  
   private Expr parseListVal() {
     int start = index;
     ArrayList<Expr> exprs = new ArrayList<Expr>();
@@ -1122,8 +1135,11 @@ public class Parser {
     } else if (token.text.equals("bool")) {
       matchKeyword("bool");
       t = new UnresolvedType.Bool(sourceAttr(start, index - 1));
+    } else if (token.text.equals("char")) {    
+    	matchKeyword("char");
+    	t = new UnresolvedType.Char(sourceAttr(start, index - 1));
     } else if (token instanceof LeftBrace) {
-      match(LeftBrace.class);
+    	match(LeftBrace.class);
       skipWhiteSpace();
       ArrayList<UnresolvedType> types = new ArrayList<UnresolvedType>();
       types.add(parseType());
@@ -1140,7 +1156,7 @@ public class Parser {
         token = tokens.get(index);
       }
       match(RightBrace.class);
-      return new UnresolvedType.Tuple(types);
+      return new UnresolvedType.Tuple(types,sourceAttr(start, index - 1));
     } else if (token instanceof LeftCurly) {
       match(LeftCurly.class);
       skipWhiteSpace();

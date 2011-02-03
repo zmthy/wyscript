@@ -107,6 +107,7 @@ public class Main {
           files.add(new File(args[i]));
         }
         compile(files);
+        
       } catch (ParseError e) {
         if (e.filename() != null) {
           outputSourceError(e.filename(), e.start(), e.end(), e.getMessage());
@@ -144,8 +145,7 @@ public class Main {
   }
 
   public static void main(String[] args) throws Exception {
-    // System.exit(run(args));
-    compile(JsLists.wrap(new File("test.whiley")));
+    System.exit(run(args));
   }
 
   /**
