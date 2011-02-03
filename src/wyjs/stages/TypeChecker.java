@@ -277,7 +277,9 @@ public class TypeChecker {
 		Module.TypeDecl td = mi.type(key.name());
 		
 		// FIXME: I'm not sure this really makes sense.
-		unresolved.put(key, td.type);
+		System.out.println("ADDING KEY: " + key + " : " + td.type);
+		unresolved.put(key, td.type);		
+        filemap.put(key, mi);
     }
 
     // following is needed to terminate any recursion
@@ -988,6 +990,17 @@ public class TypeChecker {
         if (n_t != null) {
           return n_t;
         }
+      } else {
+    	// indicates a non-local key which we can resolve immediately
+    	  try {
+    		  Module mi = loader.loadModule(mid);
+    		  Module.TypeDecl td = mi.type(dt.name);  		 
+    		  System.out.println("ADDING KEY: " + dt.name + " : " + td.type);
+    		  return resolve(td.type);
+    	  } catch (ResolveError rex) {
+    		  syntaxError(rex.getMessage(), filename, t, rex);
+    		  return null;
+    	  }
       }
     } else if (t instanceof UnresolvedType.Union) {
       UnresolvedType.Union ut = (UnresolvedType.Union) t;
