@@ -1122,6 +1122,20 @@ public class Parser {
         types.add((UnresolvedType.NonUnion) t);
       }
       return new UnresolvedType.Union(types, sourceAttr(start, index - 1));
+    } else if (index < tokens.size() && tokens.get(index) instanceof LeftBrace) {
+    	// this is a function type
+    	match(LeftBrace.class);
+    	ArrayList<UnresolvedType> types = new ArrayList<UnresolvedType>();
+    	boolean firstTime=true;
+    	while(index < tokens.size() && !(tokens.get(index) instanceof RightBrace)) {
+    		if(!firstTime) {
+    			match(Comma.class);
+    		}
+    		firstTime=false;
+    		types.add(parseType());
+    	}
+    	match(RightBrace.class);
+    	return new UnresolvedType.Fun(t,types);
     } else {
       return t;
     }

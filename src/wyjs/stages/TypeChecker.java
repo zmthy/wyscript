@@ -949,7 +949,14 @@ public class TypeChecker {
       } else {
         return Type.leastUpperBound(bounds);
       }
-    }
+    } else if (t instanceof UnresolvedType.Fun) {
+        UnresolvedType.Fun ft = (UnresolvedType.Fun) t;
+        ArrayList<Type> types = new ArrayList();        
+        for (UnresolvedType ut : ft.paramTypes) {
+          types.add(resolve(ut));
+        }
+        return Type.T_FUN(null,resolve(ft.ret),types);
+      } 
        
     syntaxError("unknown type encountered: " + t, filename, t);
     return null;
