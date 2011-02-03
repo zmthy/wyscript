@@ -268,18 +268,20 @@ public class NameResolution {
 		for(Expr e : ivk.arguments) {						
 			resolve(e, environment, imports);
 		}
-		
-		// FIXME: needed for proper namespacing
-		//ModuleID mid = loader.resolve(ivk.name,imports);		
-		ModuleID mid = srcfile.module;
 		Expr target = ivk.receiver;
-		
+
 		if(target != null) {
 			resolve(target,environment,imports);
 		}
-		
-		// Ok, resolve the module for this invoke
-		ivk.attributes().add(new Attribute.Module(mid));		
+
+		if(!environment.contains(ivk.name)) {
+			// FIXME: needed for proper namespacing
+			//ModuleID mid = loader.resolve(ivk.name,imports);		
+			ModuleID mid = srcfile.module;
+			
+			// Ok, resolve the module for this invoke
+			ivk.attributes().add(new Attribute.Module(mid));		
+		}
 	}
 	
 	protected void resolve(Variable v, HashSet<String> environment,

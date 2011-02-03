@@ -613,24 +613,46 @@ public class TypeChecker {
 
   protected Type resolve(Invoke ivk, Environment environment) {
 
-		ArrayList<Type> types = new ArrayList<Type>();
+		// First, we look for a local variable with the matching name
+		
+		Type t = environment.get(ivk.name);
+		if(t instanceof Type.Fun) {			
+			Type.Fun ft = (Type.Fun) t;
+			if(ivk.arguments.size() != ft.params.size()) {
+				syntaxError("incorrect arguments for function call",filename,ivk);
+			}
+			for(int i=0;i!=ft.params.size();++i) {
+				Expr arg = ivk.arguments.get(i);
+				Type pt = ft.params.get(i);				
+				Type at = resolve(arg, environment);
+				checkSubtype(pt,at,arg);
+			}
+			
+			return ft.ret;
+		} else {
 
-		for (Expr arg : ivk.arguments) {
-			Type arg_t = resolve(arg, environment);
-			types.add(arg_t);
-		}
+			ArrayList<Type> types = new ArrayList<Type>();
 
-		try {
-			// FIXME: when putting name spacing back in, we'll need to fix this.
-			ModuleID mid = ivk.attribute(Attribute.Module.class).module;
-			NameID nid = new NameID(mid, ivk.name);
-			Type.Fun funtype = bindFunction(nid, types, ivk);
-			// now, udpate the invoke
-			ivk.attributes().add(new Attribute.FunType(funtype));
-			return funtype.ret;
-		} catch (ResolveError ex) {
-			syntaxError(ex.getMessage(), filename, ivk);
-			return null; // unreachable
+			for (Expr arg : ivk.arguments) {
+				Type arg_t = resolve(arg, environment);
+				types.add(arg_t);
+			}
+
+			// Second, we assume it's not a local variable and look outside the
+			// scope.
+
+			try {
+				// FIXME: when putting name spacing back in, we'll need to fix this.
+				ModuleID mid = ivk.attribute(Attribute.Module.class).module;
+				NameID nid = new NameID(mid, ivk.name);
+				Type.Fun funtype = bindFunction(nid, types, ivk);
+				// now, udpate the invoke
+				ivk.attributes().add(new Attribute.FunType(funtype));
+				return funtype.ret;
+			} catch (ResolveError ex) {
+				syntaxError(ex.getMessage(), filename, ivk);
+				return null; // unreachable
+			}
 		}
 	}
 
