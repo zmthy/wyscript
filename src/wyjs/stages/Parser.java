@@ -325,7 +325,9 @@ public class Parser {
       return parseInvokeStmt();
     } else if (token instanceof NewLine || token instanceof Comment) {
       return parseSkip();
-    } else {
+    } else if(token.text.equals("extern")) {			
+		return parseExtern(indent);
+	} else {
       int start = index;
       Expr t = parseTupleExpression();
       if (t instanceof Expr.Invoke) {
@@ -489,6 +491,31 @@ public class Parser {
     }
   }
 
+  private Stmt parseExtern(int indent) {
+		int start = index;
+		matchKeyword("extern");
+		Token tok = tokens.get(index++);
+		if(!tok.text.equals("js")) {
+			syntaxError("unsupported extern language: " + tok,tok);
+		}		
+		match(Colon.class);
+		int end = index;
+		matchEndLine();		
+		String javascript = "";
+		while (tokens.get(index) instanceof Tabs
+				&& ((Tabs) tokens.get(index)).ntabs == indent + 1) {
+			match(Tabs.class);
+			Lexer.Strung js = match(Lexer.Strung.class);
+			javascript = javascript + "\n" + js.string;
+			matchEndLine();		
+		} 				
+		
+		System.out.println("GOT: " + javascript);
+		
+		return new Stmt.ExternJS(javascript,sourceAttr(start,index-1));		
+  }	
+	
+  
   private Expr parseCondition() {
     checkNotEof();
     int start = index;

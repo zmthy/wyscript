@@ -186,4 +186,23 @@ public interface Stmt extends SyntacticElement {
       return "debug " + expr;
     }
   }
+  
+  /**
+   * this class permits inlining of java script.
+   * @author djp
+   *
+   */
+  public static final class ExternJS extends Skip implements Stmt {
+		String javascript;
+		
+		public ExternJS(String javascript, Attribute... attributes) {
+			super(attributes);
+			this.javascript = javascript;
+		}
+		
+		public ExternJS(String javascript, Collection<Attribute> attributes) {
+			super(attributes);
+			this.javascript = javascript;
+		}		
+	}
 }
