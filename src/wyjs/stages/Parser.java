@@ -508,9 +508,7 @@ public class Parser {
 			Lexer.Strung js = match(Lexer.Strung.class);
 			javascript = javascript + "\n" + js.string;
 			matchEndLine();		
-		} 				
-		
-		System.out.println("GOT: " + javascript);
+		} 								
 		
 		return new Stmt.ExternJS(javascript,sourceAttr(start,index-1));		
   }	
