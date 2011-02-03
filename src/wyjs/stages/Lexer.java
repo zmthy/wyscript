@@ -368,7 +368,7 @@ public class Lexer {
   }
 
   public static final String[] keywords = { "true", "false", "null", "int",
-      "real", "bool", "process", "void", "if", "while", "else", "where",
+      "real", "char", "bool", "process", "void", "if", "while", "else", "where",
       "requires", "ensures", "as", "for", "assert", "debug", "print", "return",
       "define", "function", "import", "package", "public", "extern", "spawn" };
 

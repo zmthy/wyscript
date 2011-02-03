@@ -1,5 +1,5 @@
 int f():
     return 1
 
-int main([string] args):
+int main([[char]] args):
     x = 1    

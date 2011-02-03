@@ -1131,8 +1131,11 @@ public class Parser {
     } else if (token.text.equals("bool")) {
       matchKeyword("bool");
       t = new UnresolvedType.Bool(sourceAttr(start, index - 1));
+    } else if (token.text.equals("char")) {    
+    	matchKeyword("char");
+    	t = new UnresolvedType.Char(sourceAttr(start, index - 1));
     } else if (token instanceof LeftBrace) {
-      match(LeftBrace.class);
+    	match(LeftBrace.class);
       skipWhiteSpace();
       ArrayList<UnresolvedType> types = new ArrayList<UnresolvedType>();
       types.add(parseType());
