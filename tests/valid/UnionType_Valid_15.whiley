@@ -6,6 +6,6 @@ nlist f(int i, [nlist] xs):
     else:
         return xs[i]
 
-void main([string] args):
+void main([[char]] args):
     x = f(2, [2,3,4])    
     println(str(x))

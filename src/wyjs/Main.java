@@ -1,29 +1,35 @@
 // This file is part of the Whiley-to-Java Compiler (wyjc).
 //
-// The Whiley-to-Java Compiler is free software; you can redistribute 
-// it and/or modify it under the terms of the GNU General Public 
-// License as published by the Free Software Foundation; either 
+// The Whiley-to-Java Compiler is free software; you can redistribute
+// it and/or modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
 //
-// The Whiley-to-Java Compiler is distributed in the hope that it 
-// will be useful, but WITHOUT ANY WARRANTY; without even the 
-// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-// PURPOSE.  See the GNU General Public License for more details.
+// The Whiley-to-Java Compiler is distributed in the hope that it
+// will be useful, but WITHOUT ANY WARRANTY; without even the
+// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public 
-// License along with the Whiley-to-Java Compiler. If not, see 
+// You should have received a copy of the GNU General Public
+// License along with the Whiley-to-Java Compiler. If not, see
 // <http://www.gnu.org/licenses/>
 //
-// Copyright 2010, David James Pearce. 
+// Copyright 2010, David James Pearce.
 
 package wyjs;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import wyjs.ast.util.JsBareFormatter;
 import wyjs.ast.util.JsFormatter;
-import wyjs.ast.util.JsLists;
 import wyjs.ast.util.JsPrettyFormatter;
 import wyjs.compiler.JsBuilder;
 import wyjs.lang.Module;
@@ -33,14 +39,14 @@ import wyjs.util.*;
 public class Main {
 
   public static final int PARSE_ERROR = 1;
-  public static final int CONTEXT_ERROR = 2;  
+  public static final int CONTEXT_ERROR = 2;
   public static final int RUNTIME_ERROR = 4;
   public static final int UNKNOWN_ERROR = 5;
 
   public static PrintStream errout;
   public static final int MAJOR_VERSION;
   public static final int MINOR_VERSION;
-  public static final int MINOR_REVISION;  
+  public static final int MINOR_REVISION;
 
   private static final JsBuilder builder = new JsBuilder();
   private static final JsFormatter bare = new JsBareFormatter(),
@@ -57,7 +63,7 @@ public class Main {
     String versionStr = Main.class.getPackage().getImplementationVersion();
     if (versionStr != null) {
       String[] vb = versionStr.split("-");
-      String[] pts = vb[0].split("\\.");      
+      String[] pts = vb[0].split("\\.");
       MAJOR_VERSION = Integer.parseInt(pts[0]);
       MINOR_VERSION = Integer.parseInt(pts[1]);
       MINOR_REVISION = Integer.parseInt(pts[2]);
@@ -65,15 +71,14 @@ public class Main {
       System.err.println("WARNING: version numbering unavailable");
       MAJOR_VERSION = 0;
       MINOR_VERSION = 0;
-      MINOR_REVISION = 0;      
+      MINOR_REVISION = 0;
     }
   }
 
   public static int run(String[] args) {
     boolean verbose = false;
-    
     ArrayList<String> whileypath = new ArrayList<String>();
-	ArrayList<String> bootpath = new ArrayList<String>();	
+    ArrayList<String> bootpath = new ArrayList<String>();	
     int fileArgsBegin = 0;
 
     for (int i = 0; i != args.length; ++i) {
@@ -120,7 +125,6 @@ public class Main {
           files.add(new File(args[i]));
         }
         compile(files,whileypath);
-        
       } catch (ParseError e) {
         if (e.filename() != null) {
           outputSourceError(e.filename(), e.start(), e.end(), e.getMessage());
@@ -166,10 +170,12 @@ public class Main {
    * 
    */
   public static void usage() {
-    String[][] info = {
-        { "version", "Print version information" },
-        { "verbose", "Print detailed information on what the compiler is doing" }};
-    
+    String[][] info =
+        {
+            { "version", "Print version information" },
+            { "verbose",
+                "Print detailed information on what the compiler is doing" } };
+
     System.out.println("usage: wyjs <options> <source-files>");
     System.out.println("Options:");
 
@@ -193,8 +199,8 @@ public class Main {
 
   /**
    * This method compiles the list of given Whiley files. In this case, the
-   * pipeline is quite simple since compiling to JavaScript is much easier than
-   * compiling to the JVM.
+   * pipeline is quite simple since compiling to JavaScript is much easier
+   * than compiling to the JVM.
    * 
    * @param files
    * @throws IOException
@@ -231,8 +237,9 @@ public class Main {
   }
 
   /**
-   * This method simply reads in the input file, and prints out a given line of
-   * text, with little markers (i.e. '^') placed underneath a portion of it.
+   * This method simply reads in the input file, and prints out a given line
+   * of text, with little markers (i.e. '^') placed underneath a portion of
+   * it.
    * 
    * @param fileArg - the name of the file whose line to print
    * @param start - the start position of the offending region.
@@ -241,8 +248,9 @@ public class Main {
    */
   public static void outputSourceError(String fileArg, int start, int end,
       String message) throws IOException {
-    BufferedReader in = new BufferedReader(new InputStreamReader(
-        new FileInputStream(fileArg), "UTF8"));
+    BufferedReader in =
+        new BufferedReader(new InputStreamReader(new FileInputStream(fileArg),
+            "UTF8"));
 
     int line = 0;
     String lineText = "";

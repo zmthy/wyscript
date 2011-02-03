@@ -1,5 +1,5 @@
 
-void main([string] args):
+void main([[char]] args):
     // the should override the implicit field 
     // scope of the field "out" in System.
     out = 1

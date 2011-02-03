@@ -1,8 +1,8 @@
 // this is a comment!
-string f({int} xs):
+[char] f({int} xs):
     return str(xs)
 
-void main([string] args):
+void main([[char]] args):
     ys = {1,2,3}
     zs = ys
     println(f(zs))

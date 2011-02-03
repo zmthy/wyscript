@@ -1,9 +1,9 @@
-string f(real x):
+[char] f(real x):
     return "GOT REAL"
 
-string f(int x):
+[char] f(int x):
     return "GOT INT"
 
-void main([string] args):
+void main([[char]] args):
     println(f(1))
     println(f(1.23))

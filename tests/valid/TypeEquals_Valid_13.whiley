@@ -8,7 +8,7 @@ int f(intlist x):
         return x
     return 1 
 
-void main([string] args):
+void main([[char]] args):
     x = f([1,2,3])
     println(str(x))
     x = f(123)

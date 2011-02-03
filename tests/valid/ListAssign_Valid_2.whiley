@@ -1,4 +1,4 @@
-void main([string] args):
+void main([[char]] args):
     arr1 = [1,2,4]
     arr2 = arr1
     arr2[2] = 3

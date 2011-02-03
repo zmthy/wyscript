@@ -2,7 +2,7 @@ define pos as real
 define neg as int
 define expr as pos|neg|[int]
 
-string f(expr e):
+[char] f(expr e):
     if e ~= pos && e > 0:
         return "POSITIVE: " + str(e)
     else if e ~= neg:
@@ -10,7 +10,7 @@ string f(expr e):
     else:
         return "OTHER"
 
-void main([string] args):
+void main([[char]] args):
     println(f(-1))
     println(f(1))
     println(f(1234))

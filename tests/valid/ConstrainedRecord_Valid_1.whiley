@@ -7,7 +7,7 @@ define UNIT as {unitCode op}
 [byte] f(UNIT x):
     return [x.op]
 
-void main([string] args):
+void main([[char]] args):
     bytes = f({op:NOP})
     println(str(bytes))
 

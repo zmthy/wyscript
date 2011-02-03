@@ -11,12 +11,31 @@ import java.util.Map;
 
 import wyjs.ModuleLoader;
 import wyjs.lang.Expr;
-import wyjs.lang.Expr.*;
+import wyjs.lang.Expr.Access;
+import wyjs.lang.Expr.BOp;
+import wyjs.lang.Expr.BinOp;
+import wyjs.lang.Expr.Constant;
+import wyjs.lang.Expr.DictionaryGen;
+import wyjs.lang.Expr.FunConst;
+import wyjs.lang.Expr.Invoke;
+import wyjs.lang.Expr.NOp;
+import wyjs.lang.Expr.NaryOp;
+import wyjs.lang.Expr.RecordAccess;
+import wyjs.lang.Expr.RecordGen;
+import wyjs.lang.Expr.TupleGen;
+import wyjs.lang.Expr.UnOp;
+import wyjs.lang.Expr.Variable;
 import wyjs.lang.ModuleID;
 import wyjs.lang.NameID;
-import wyjs.lang.PkgID;
 import wyjs.lang.Stmt;
-import wyjs.lang.Stmt.*;
+import wyjs.lang.Stmt.Assert;
+import wyjs.lang.Stmt.Assign;
+import wyjs.lang.Stmt.Debug;
+import wyjs.lang.Stmt.For;
+import wyjs.lang.Stmt.IfElse;
+import wyjs.lang.Stmt.Return;
+import wyjs.lang.Stmt.Skip;
+import wyjs.lang.Stmt.While;
 import wyjs.lang.Type;
 import wyjs.lang.UnresolvedType;
 import wyjs.lang.Module;
@@ -81,8 +100,8 @@ public class TypeChecker {
   // =======================================================================
 
   /**
-   * The following method visits every define constant statement in every whiley
-   * file being compiled, and determines its true and value.
+   * The following method visits every define constant statement in every
+   * whiley file being compiled, and determines its true and value.
    * 
    * @param files
    */
@@ -125,8 +144,8 @@ public class TypeChecker {
    * 
    * @param key --- name of constant we are expanding.
    * @param exprs --- mapping of all names to their( declared) expressions
-   * @param visited --- set of all constants seen during this traversal (used to
-   *          detect cycles).
+   * @param visited --- set of all constants seen during this traversal (used
+   *          to detect cycles).
    * @return
    * @throws ResolveError
    */
@@ -164,8 +183,8 @@ public class TypeChecker {
    * 
    * @param key --- name of constant we are expanding.
    * @param exprs --- mapping of all names to their( declared) expressions
-   * @param visited --- set of all constants seen during this traversal (used to
-   *          detect cycles).
+   * @param visited --- set of all constants seen during this traversal (used
+   *          to detect cycles).
    */
   protected Expr expandConstantHelper(Expr expr, String filename,
       HashMap<NameID, Expr> exprs, HashSet<NameID> visited) throws ResolveError {
@@ -237,9 +256,9 @@ public class TypeChecker {
    * @param cache
    * @return A triple of the form <T,B,C>, where T is the type, B is the
    *         constraint block and C indicates whether or not this is in fact a
-   *         constrained type. The latter is useful since it means we can throw
-   *         away unnecessary constraint blocks when the type in question is not
-   *         actually constrained.
+   *         constrained type. The latter is useful since it means we can
+   *         throw away unnecessary constraint blocks when the type in
+   *         question is not actually constrained.
    * @throws ResolveError
    */
   protected Type expandType(NameID key, HashMap<NameID, Type> cache)
@@ -386,7 +405,7 @@ public class TypeChecker {
   protected void resolve(FunDecl fd, Module wf) {
     Environment environment = new Environment();
     currentFunDecl = fd;
-    
+
     // First, initialise typing environment
     Type.Fun tf = (Type.Fun) fd.attribute(TypeAttr.class).type;
 
@@ -426,8 +445,8 @@ public class TypeChecker {
       } else if (stmt instanceof Skip) {
         return resolve((Skip) stmt, environment);
       } else if (stmt instanceof Invoke) {
-    	  resolve((Invoke) stmt, environment);
-    	  return environment;
+        resolve((Invoke) stmt, environment);
+        return environment;
       }
     } catch (SyntaxError se) {
       throw se;
@@ -594,7 +613,7 @@ public class TypeChecker {
       return Type.T_BOOL;
     } else if (v instanceof Character) {
       return Type.T_CHAR;
-    }else if (v instanceof Integer) {
+    } else if (v instanceof Integer) {
       return Type.T_INT;
     } else if (v instanceof Double) {
       return Type.T_REAL;
@@ -603,25 +622,28 @@ public class TypeChecker {
     return null;
   }
 
-  protected Type resolve(FunConst c, Environment environment) throws ResolveError {
-	  ModuleID mid = c.attribute(Attribute.Module.class).module;
-	  ArrayList<Type> types = new ArrayList<Type>();
-	  for(UnresolvedType ut : c.paramTypes) {
-		  types.add(resolve(ut));
-	  }
-	  NameID nid = new NameID(mid, c.name);
-	  return bindFunction(nid, types, c);
+  protected Type resolve(FunConst c, Environment environment)
+      throws ResolveError {
+    ModuleID mid = c.attribute(Attribute.Module.class).module;
+    ArrayList<Type> types = new ArrayList<Type>();
+    for (UnresolvedType ut : c.paramTypes) {
+      types.add(resolve(ut));
+    }
+    NameID nid = new NameID(mid, c.name);
+    return bindFunction(nid, types, c);
   }
-  
+
   protected Type resolve(Variable v, Environment environment)
       throws ResolveError {
     Type v_t = environment.get(v.var);
-    if (v_t != null) { return v_t; }
+    if (v_t != null) {
+      return v_t;
+    }
     // Not a variable, but could be a constant
     Attribute.Module mattr = v.attribute(Attribute.Module.class);
-    if(mattr != null) {
-    	Expr constant = constants.get(new NameID(mattr.module,v.var));    	
-    	return resolve(constant,environment);
+    if (mattr != null) {
+      Expr constant = constants.get(new NameID(mattr.module, v.var));
+      return resolve(constant, environment);
     }
     syntaxError("variable not defined", filename, v);
     return null;
@@ -629,141 +651,136 @@ public class TypeChecker {
 
   protected Type resolve(Invoke ivk, Environment environment) {
 
-		// First, we look for a local variable with the matching name
-		
-		Type t = environment.get(ivk.name);
-		if(t instanceof Type.Fun) {			
-			Type.Fun ft = (Type.Fun) t;
-			if(ivk.arguments.size() != ft.params.size()) {
-				syntaxError("incorrect arguments for function call",filename,ivk);
-			}
-			for(int i=0;i!=ft.params.size();++i) {
-				Expr arg = ivk.arguments.get(i);
-				Type pt = ft.params.get(i);				
-				Type at = resolve(arg, environment);
-				checkSubtype(pt,at,arg);
-			}
+    // First, we look for a local variable with the matching name
 
-			ivk.indirect = true;
-			
-			return ft.ret;
-		} else {
+    Type t = environment.get(ivk.name);
+    if (t instanceof Type.Fun) {
+      Type.Fun ft = (Type.Fun) t;
+      if (ivk.arguments.size() != ft.params.size()) {
+        syntaxError("incorrect arguments for function call", filename, ivk);
+      }
+      for (int i = 0; i != ft.params.size(); ++i) {
+        Expr arg = ivk.arguments.get(i);
+        Type pt = ft.params.get(i);
+        Type at = resolve(arg, environment);
+        checkSubtype(pt, at, arg);
+      }
 
-			ArrayList<Type> types = new ArrayList<Type>();
+      ivk.indirect = true;
 
-			for (Expr arg : ivk.arguments) {
-				Type arg_t = resolve(arg, environment);
-				types.add(arg_t);
-			}
+      return ft.ret;
+    } else {
 
-			// Second, we assume it's not a local variable and look outside the
-			// scope.
+      ArrayList<Type> types = new ArrayList<Type>();
 
-			try {
-				// FIXME: when putting name spacing back in, we'll need to fix this.
-				ModuleID mid = ivk.attribute(Attribute.Module.class).module;
-				NameID nid = new NameID(mid, ivk.name);
-				Type.Fun funtype = bindFunction(nid, types, ivk);
-				// now, udpate the invoke
-				ivk.attributes().add(new Attribute.FunType(funtype));
-				return funtype.ret;
-			} catch (ResolveError ex) {
-				syntaxError(ex.getMessage(), filename, ivk);
-				return null; // unreachable
-			}
-		}
-	}
+      for (Expr arg : ivk.arguments) {
+        Type arg_t = resolve(arg, environment);
+        types.add(arg_t);
+      }
 
-	/**
-	 * Bind function is responsible for determining the true type of a method or
-	 * function being invoked. To do this, it must find the function/method with
-	 * the most precise type that matches the argument types. *
-	 * 
-	 * @param nid
-	 * @param receiver
-	 * @param paramTypes
-	 * @param elem
-	 * @return
-	 * @throws ResolveError
-	 */
-	protected Type.Fun bindFunction(NameID nid, List<Type> paramTypes,
-			SyntacticElement elem) throws ResolveError {
-		Type receiver = null; // dummy
-		Type.Fun target = Type.T_FUN(null, Type.T_ANY, paramTypes);
-		Type.Fun candidate = null;
+      // Second, we assume it's not a local variable and look outside the
+      // scope.
 
-		List<Type.Fun> targets = lookupMethod(nid);
+      try {
+        // FIXME: when putting name spacing back in, we'll need to fix this.
+        ModuleID mid = ivk.attribute(Attribute.Module.class).module;
+        NameID nid = new NameID(mid, ivk.name);
+        Type.Fun funtype = bindFunction(nid, types, ivk);
+        // now, update the invoke
+        ivk.attributes().add(new Attribute.FunType(funtype));
+        return funtype.ret;
+      } catch (ResolveError ex) {
+        syntaxError(ex.getMessage(), filename, ivk);
+        return null; // unreachable
+      }
+    }
+  }
 
-		for (Type.Fun ft : targets) {
-			Type funrec = ft.receiver;
-			if (receiver == funrec
-					|| (receiver != null && funrec != null && Type.isSubtype(
-							funrec, receiver))) {
-				// receivers match up OK ...
-				if (ft.params.size() == paramTypes.size()
-						&& Type.isSubtype(ft, target)
-						&& (candidate == null || Type.isSubtype(candidate, ft))) {
-					// This declaration is a candidate. Now, we need to see if
-					// our
-					// candidate type signature is as precise as possible.
-					if (candidate == null) {
-						candidate = ft;
-					} else if (Type.isSubtype(candidate, ft)) {
-						candidate = ft;
-					}
-				}
-			}
-		}
+  /**
+   * Bind function is responsible for determining the true type of a method or
+   * function being invoked. To do this, it must find the function/method with
+   * the most precise type that matches the argument types. *
+   * 
+   * @param nid
+   * @param receiver
+   * @param paramTypes
+   * @param elem
+   * @return
+   * @throws ResolveError
+   */
+  protected Type.Fun bindFunction(NameID nid, List<Type> paramTypes,
+      SyntacticElement elem) throws ResolveError {
+    Type receiver = null; // dummy
+    Type.Fun target = Type.T_FUN(null, Type.T_ANY, paramTypes);
+    Type.Fun candidate = null;
 
-		// Check whether we actually found something. If not, print a useful
-		// error message.
-		if (candidate == null) {
-			String msg = "no match for " + nid.name()
-					+ parameterString(paramTypes);
-			boolean firstTime = true;
-			int count = 0;
-			for (Type.Fun ft : targets) {
-				if (firstTime) {
-					msg += "\n\tfound: " + nid.name()
-							+ parameterString(ft.params);
-				} else {
-					msg += "\n\tand: " + nid.name()
-							+ parameterString(ft.params);
-				}
-				if (++count < targets.size()) {
-					msg += ",";
-				}
-			}
+    List<Type.Fun> targets = lookupMethod(nid);
 
-			syntaxError(msg + "\n", filename, elem);
-		}
+    for (Type.Fun ft : targets) {
+      Type funrec = ft.receiver;
+      if (receiver == funrec
+          || (receiver != null && funrec != null && Type.isSubtype(funrec,
+              receiver))) {
+        // receivers match up OK ...
+        if (ft.params.size() == paramTypes.size() && Type.isSubtype(ft, target)
+            && (candidate == null || Type.isSubtype(candidate, ft))) {
+          // This declaration is a candidate. Now, we need to see if
+          // our
+          // candidate type signature is as precise as possible.
+          if (candidate == null) {
+            candidate = ft;
+          } else if (Type.isSubtype(candidate, ft)) {
+            candidate = ft;
+          }
+        }
+      }
+    }
 
-		return candidate;
-	}
+    // Check whether we actually found something. If not, print a useful
+    // error message.
+    if (candidate == null) {
+      String msg = "no match for " + nid.name() + parameterString(paramTypes);
+      boolean firstTime = true;
+      int count = 0;
+      for (Type.Fun ft : targets) {
+        if (firstTime) {
+          msg += "\n\tfound: " + nid.name() + parameterString(ft.params);
+        } else {
+          msg += "\n\tand: " + nid.name() + parameterString(ft.params);
+        }
+        if (++count < targets.size()) {
+          msg += ",";
+        }
+      }
 
-	private String parameterString(List<Type> paramTypes) {
-		String paramStr = "(";
-		boolean firstTime = true;
-		for (Type t : paramTypes) {
-			if (!firstTime) {
-				paramStr += ",";
-			}
-			firstTime = false;
-			paramStr += Type.toShortString(t);
-		}
-		return paramStr + ")";
-	}
+      syntaxError(msg + "\n", filename, elem);
+    }
 
-	protected List<Type.Fun> lookupMethod(NameID nid) throws ResolveError {
-		List<Type.Fun> matches = functions.get(nid);
-		if (matches == null) {
-			return Collections.EMPTY_LIST;
-		} else {
-			return matches;
-		}
-	}
-  
-  
+    return candidate;
+  }
+
+  private String parameterString(List<Type> paramTypes) {
+    String paramStr = "(";
+    boolean firstTime = true;
+    for (Type t : paramTypes) {
+      if (!firstTime) {
+        paramStr += ",";
+      }
+      firstTime = false;
+      paramStr += Type.toShortString(t);
+    }
+    return paramStr + ")";
+  }
+
+  protected List<Type.Fun> lookupMethod(NameID nid) throws ResolveError {
+    List<Type.Fun> matches = functions.get(nid);
+    if (matches == null) {
+      return Collections.emptyList();
+    } else {
+      return matches;
+    }
+  }
+
   protected Type resolve(UnOp uop, Environment environment) throws ResolveError {
     Type t = resolve(uop.mhs, environment);
     switch (uop.op) {
@@ -963,13 +980,13 @@ public class TypeChecker {
       }
       return Type.T_RECORD(types);
     } else if (t instanceof UnresolvedType.Named) {
-      UnresolvedType.Named dt = (UnresolvedType.Named) t;       
-      ModuleID mid = dt.attribute(Attribute.Module.class).module;            
+      UnresolvedType.Named dt = (UnresolvedType.Named) t;
+      ModuleID mid = dt.attribute(Attribute.Module.class).module;
       if (modules.contains(mid)) {
         Type n_t = types.get(new NameID(mid, dt.name));
-        if(n_t != null) {
-        	return n_t;
-        } 
+        if (n_t != null) {
+          return n_t;
+        }
       }
     } else if (t instanceof UnresolvedType.Union) {
       UnresolvedType.Union ut = (UnresolvedType.Union) t;
@@ -990,14 +1007,14 @@ public class TypeChecker {
         return Type.leastUpperBound(bounds);
       }
     } else if (t instanceof UnresolvedType.Fun) {
-        UnresolvedType.Fun ft = (UnresolvedType.Fun) t;
-        ArrayList<Type> types = new ArrayList();        
-        for (UnresolvedType ut : ft.paramTypes) {
-          types.add(resolve(ut));
-        }
-        return Type.T_FUN(null,resolve(ft.ret),types);
-      } 
-       
+      UnresolvedType.Fun ft = (UnresolvedType.Fun) t;
+      List<Type> types = new ArrayList<Type>();
+      for (UnresolvedType ut : ft.paramTypes) {
+        types.add(resolve(ut));
+      }
+      return Type.T_FUN(null, resolve(ft.ret), types);
+    }
+
     syntaxError("unknown type encountered: " + t, filename, t);
     return null;
   }

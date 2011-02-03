@@ -1,4 +1,4 @@
-string f(int i):
+[char] f(int i):
     arr1 = [1,2,64]
     arr2 = arr1
     if i != |arr1|:
@@ -8,6 +8,6 @@ string f(int i):
     assert arr2[2] == |arr1|
     return str(arr1) + str(arr2)
 
-void main([string] args):
+void main([[char]] args):
     println(f(2))
     println(f(3))

@@ -1,7 +1,7 @@
 define Expr as real | { Expr lhs, int data } | [Expr]
 define SubExpr as real | { SubExpr lhs, int data }
 
-string toString(Expr e):
+[char] toString(Expr e):
     if e ~= SubExpr:
         if e ~= real:
             return str(e)
@@ -10,7 +10,7 @@ string toString(Expr e):
     else:
         return str(-1)
 
-void main([string] args):
+void main([[char]] args):
     se1 = 0.1234
     se2 = {lhs: se1, data: 1}
     se3 = {lhs: se2, data: 45}

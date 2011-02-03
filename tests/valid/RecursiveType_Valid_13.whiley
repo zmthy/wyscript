@@ -4,7 +4,7 @@ define Value as real | [Value]
 Value init():
     return 0.0123
 
-void main([string] args):
+void main([[char]] args):
     v = init()
     if v ~= [Expr]:
         println("GOT LIST")

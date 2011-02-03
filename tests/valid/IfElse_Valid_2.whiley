@@ -5,7 +5,7 @@ int f(int x):
         return 2
     return 0
 
-void main([string] args):
+void main([[char]] args):
     println(str(f(1)))
     println(str(f(10)))
     println(str(f(11)))

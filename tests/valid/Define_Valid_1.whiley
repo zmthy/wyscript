@@ -2,7 +2,7 @@ define point as {int x,int y}
 define listint as [int]
 define setint as {int}
 
-void main([string] args):
+void main([[char]] args):
      si = {1,2,3}
      li = [1,2,3]     
      p = {x:1,y:2}

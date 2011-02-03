@@ -4,7 +4,7 @@ int f(int x):
     else:
         return 2
 
-void main([string] args):
+void main([[char]] args):
     println(str(f(1)))
     println(str(f(10)))
     println(str(f(11)))

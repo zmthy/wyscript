@@ -1,13 +1,13 @@
-string f({int} xs, {int} ys, {int} zs):
+[char] f({int} xs, {int} ys, {int} zs):
     return str(xs)
 
-string g({int} ys):
+[char] g({int} ys):
     return f(ys,ys,ys)
 
-string h({int} ys, {int} zs):
+[char] h({int} ys, {int} zs):
     return f(ys,zs,ys ∩ zs)
 
-void main([string] args):
+void main([[char]] args):
     println(g({}))
     println(g({2}))
     println(g({1,2,3}))

@@ -35,7 +35,7 @@ null|Value evaluate(Expr e):
         // e must be a list expression
         return 0
 
-public void main([string] args):
+public void main([[char]] args):
     println(str(evaluate(123)))
     println(str(evaluate({src: [112,212332,342], index:0})))
     println(str(evaluate({src: [112312,-289712,312242], index:2})))

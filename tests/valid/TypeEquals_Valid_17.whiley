@@ -1,6 +1,6 @@
-define SyntaxError as {string msg}
+define SyntaxError as {[char] msg}
 
-string f(int x):
+[char] f(int x):
     if x > 0:        
         nst = {input: "Hello World"}
     else:
@@ -12,9 +12,9 @@ string f(int x):
         return nst.input
 
 // Create a syntax error
-SyntaxError syntaxError(string errorMessage):
+SyntaxError syntaxError([char] errorMessage):
     return {msg: errorMessage}
 
-void main([string] args):
+void main([[char]] args):
     println(f(0))
     println(f(1))

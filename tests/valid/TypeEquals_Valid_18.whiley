@@ -1,10 +1,10 @@
 define ilist as real | [int]
 
-string f(real e):
+[char] f(real e):
     if e ~= int:
         return "int"
     else:
         return "realreal"
 
-void main([string] args):
+void main([[char]] args):
     println(f(1))

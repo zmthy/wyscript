@@ -5,7 +5,7 @@ define tupper as {int op, intList il}
 int f(tupper y):
     return y.op
 
-void main([string] args):
+void main([[char]] args):
     x = {op:1,il:1}
     println(str(x))
     f(x)

@@ -7,7 +7,7 @@ int g(int x):
 {byte} f(int x):
     return {g(x)}
 
-void main([string] args):
+void main([[char]] args):
     bytes = f(0)
     println(str(bytes))
 

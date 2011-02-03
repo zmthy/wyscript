@@ -1,7 +1,7 @@
 // this is a comment!
 define IntList as {int|[int] op}
 
-void main([string] args):
+void main([[char]] args):
     x = {op:1}
     x.op = 1
     y = x // OK

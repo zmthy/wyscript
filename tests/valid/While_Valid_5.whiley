@@ -7,7 +7,7 @@
         i = i + 1
     return r
 
-void main([string] args):
+void main([[char]] args):
     rs = extract([1,2,3,4,5,6,7])
     println(str(rs))
     rs = extract([])

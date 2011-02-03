@@ -8,7 +8,7 @@ nat sum([nat] ls):
         i = i + 1
     return sum
 
-void main([string] args):
+void main([[char]] args):
     println(str(sum([])))
     println(str(sum([1,2,3])))
     println(str(sum([12387,98123,12398,12309,0])))

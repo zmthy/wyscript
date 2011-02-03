@@ -1,5 +1,5 @@
-string f():
+[char] f():
     return ""
 
-void main([string] args):
+void main([[char]] args):
     println(f())

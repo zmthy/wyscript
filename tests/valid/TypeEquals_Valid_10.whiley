@@ -9,7 +9,7 @@ int f(expr e):
     else:
         return -1 // unreachable
 
-void main([string] args):
+void main([[char]] args):
     x = f(1)
     println(str(x))
     x = f({x:4,y:10})   

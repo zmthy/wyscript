@@ -13,7 +13,7 @@ int g(int x, int y):
         return 1
 
 
-void main([string] args):
+void main([[char]] args):
     println(str(f(1,1)))
     println(str(f(0,0)))
     println(str(f(4,345)))

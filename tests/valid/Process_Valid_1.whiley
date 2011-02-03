@@ -8,6 +8,6 @@ void pState::send(int x, System sys):
     sys->println("sent")
     sys->println(str(x))
 
-void main([string] args):
+void main([[char]] args):
     ps = spawn {x:1,y:2}
     ps->send(1,this)

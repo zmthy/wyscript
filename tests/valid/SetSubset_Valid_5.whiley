@@ -1,13 +1,13 @@
-string f({int} xs, {int} ys):
+[char] f({int} xs, {int} ys):
     if xs ⊆ ys:
         return "XS IS A SUBSET"
     else:
         return "FAILED"
 
-string g({int} xs, {int} ys):
+[char] g({int} xs, {int} ys):
     return f(xs,ys)
 
-void main([string] args):
+void main([[char]] args):
     println(g({1,2,3},{1,2,3}))
     println(g({1,2},{1,2,3}))
     println(g({1},{1,2,3}))

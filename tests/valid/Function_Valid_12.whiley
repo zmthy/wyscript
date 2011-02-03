@@ -5,7 +5,7 @@ int f(int x):
 int g(int x, int y):
     return x+y
 
-void main([string] args):
+void main([[char]] args):
     a = 2
     b = 1
     if |args| == 0:

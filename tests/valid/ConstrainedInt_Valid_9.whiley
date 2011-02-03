@@ -8,7 +8,7 @@ even f(oddeven x):
         return 2
     return x
     
-void main([string] args):
+void main([[char]] args):
     y = 1
     y = f(1)
     println(str(y))

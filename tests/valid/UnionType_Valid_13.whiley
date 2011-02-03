@@ -8,10 +8,10 @@ define BRANCH as {branchCode op, int16 offset}
 
 define byteCode as STORE | BRANCH
 
-string f(byteCode b):
+[char] f(byteCode b):
     return str(b)
 
-void main([string] args):
+void main([[char]] args):
     b = {op:0,index:1}
     println(f(b))
 
