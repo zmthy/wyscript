@@ -38,36 +38,37 @@ public class TypeChecker {
   private FunDecl currentFunDecl;    
   
   public void check(List<WhileyFile> files) {
-    modules = new HashSet<ModuleID>();
-    filemap = new HashMap<NameID, WhileyFile>();
-    functions = new HashMap<NameID, List<Type.Fun>>();
-    types = new HashMap<NameID, Type>();
-    constants = new HashMap<NameID, Expr>();
-    unresolved = new HashMap<NameID, UnresolvedType>();
+		modules = new HashSet<ModuleID>();
+		filemap = new HashMap<NameID, WhileyFile>();
+		functions = new HashMap<NameID, List<Type.Fun>>();
+		types = new HashMap<NameID, Type>();
+		constants = new HashMap<NameID, Expr>();
+		unresolved = new HashMap<NameID, UnresolvedType>();
 
-    // now, init data
-    for (WhileyFile f : files) {
-      modules.add(f.module);
-    }
+		// now, init data
+		for (WhileyFile f : files) {
+			modules.add(f.module);
+		}
 
-    // Stage 1 ... resolve and check types of all named types + constants
-    generateConstants(files);
-    generateTypes(files);
+		// Stage 1 ... resolve and check types of all named types + constants
+		generateConstants(files);
+		generateTypes(files);
 
-    // Stage 2 ... resolve and check types for all functions
-    for (WhileyFile f : files) {
-      for (WhileyFile.Decl d : f.declarations) {
-        if (d instanceof FunDecl) {
-          partResolve(f.module, (FunDecl) d);
-        }
-      }
-    }
+		// Stage 2 ... resolve and check types for all functions
+		for (WhileyFile f : files) {
+			filename = f.filename;
+			for (WhileyFile.Decl d : f.declarations) {
+				if (d instanceof FunDecl) {
+					partResolve(f.module, (FunDecl) d);
+				}
+			}
+		}
 
-    // Stage 3 ... propagate types through all expressions
-    for (WhileyFile f : files) {
-      resolve(f);
-    }
-  }
+		// Stage 3 ... propagate types through all expressions
+		for (WhileyFile f : files) {
+			resolve(f);
+		}
+	}
 
   // =======================================================================
   // Stage 1 --- Generate and expand all constants and types
@@ -933,7 +934,7 @@ public class TypeChecker {
         return Type.leastUpperBound(bounds);
       }
     }
-
+       
     syntaxError("unknown type encountered: " + t, filename, t);
     return null;
   }
