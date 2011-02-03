@@ -627,6 +627,8 @@ public class TypeChecker {
 				Type at = resolve(arg, environment);
 				checkSubtype(pt,at,arg);
 			}
+
+			ivk.indirect = true;
 			
 			return ft.ret;
 		} else {

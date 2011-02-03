@@ -270,6 +270,7 @@ public interface Expr extends SyntacticElement {
     public String name;
     public Expr receiver;
     public final ArrayList<Expr> arguments;
+    public boolean indirect = false;
 
     public Invoke(String name, Expr receiver, List<Expr> arguments,
         Attribute... attributes) {
