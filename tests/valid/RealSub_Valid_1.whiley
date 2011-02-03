@@ -1,5 +1,5 @@
 real f(real x):
     return (0.0 - x)
 
-void main([string] args):
+void main([[char]] args):
     println(str(f(1.234)))

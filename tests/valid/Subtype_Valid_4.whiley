@@ -1,6 +1,6 @@
 define sr4set as {int}
 
-void main([string] args):
+void main([[char]] args):
     x = {1}
     println(str(x))
     

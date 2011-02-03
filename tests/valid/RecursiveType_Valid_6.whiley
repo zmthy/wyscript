@@ -6,7 +6,7 @@ define binop as {int op, expr left, expr right}
 define asbinop as {int op, expr left, expr right}
 define expr as int | binop
 
-void main([string] args):
+void main([[char]] args):
     bop1 = {op:ADD,left:1,right:2}
     bop2 = bop1
     e1 = bop1

@@ -4,7 +4,7 @@
 int get(int i, {int->int} map):
     return map[i]
 
-void main([string] args):
+void main([[char]] args):
     m1 = f(1)
     m2 = f(2)
     m3 = f(3)

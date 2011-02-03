@@ -499,7 +499,7 @@ public class Parser {
 			syntaxError("unsupported extern language: " + tok,tok);
 		}		
 		match(Colon.class);
-		int end = index;
+		// int end = index;
 		matchEndLine();		
 		String javascript = "";
 		while (tokens.get(index) instanceof Tabs

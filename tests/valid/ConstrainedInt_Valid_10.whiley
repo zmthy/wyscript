@@ -9,7 +9,7 @@ bnat atob(anat x):
 anat btoa(bnat x):
     return x
 
-void main([string] args):
+void main([[char]] args):
     x = 1
     println(str(atob(x)))
     println(str(btoa(x)))

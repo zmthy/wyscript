@@ -2,12 +2,12 @@
 define nat as int
 define num as {1,2,3,4}
 
-string f(num x):
+[char] f(num x):
     y = x
     return str(y)
 
-string g(int x, nat z):
+[char] g(int x, nat z):
     return f(z)
 
-void main([string] args):
+void main([[char]] args):
     println(g(1,3))

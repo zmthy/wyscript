@@ -1,4 +1,4 @@
-void main([string] args):
+void main([[char]] args):
     x = true
     y = false
     println(str(x))

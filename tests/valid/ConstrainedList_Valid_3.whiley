@@ -9,7 +9,7 @@ int sum(posintlist ls, int i):
 int sum(posintlist ls):
     return sum(ls,0)
 
-void main([string] args):
+void main([[char]] args):
     c = sum([1,2,3,4,5,6,7])
     println(str(c))
     

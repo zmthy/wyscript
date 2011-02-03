@@ -1,7 +1,7 @@
 [byte] f(int x):
     return [x]
 
-void main([string] args):
+void main([[char]] args):
     bytes = f(0)
     println(str(bytes))
 

@@ -1,8 +1,8 @@
 define fr3nat as int
 
-string f(int x):
+[char] f(int x):
     return str(x)
 
-void main([string] args):
+void main([[char]] args):
     y = 234987234987234982304980130982398723
     println(f(y))

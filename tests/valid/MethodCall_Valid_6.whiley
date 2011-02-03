@@ -6,5 +6,5 @@ wmcr6tup f(System x, int y):
 int get():
     return 1
 
-void main([string] args):
+void main([[char]] args):
     println(str(this->f(this,1)))

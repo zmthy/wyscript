@@ -1,8 +1,8 @@
 define Expr as real | Var | BinOp
 define BinOp as { Expr lhs, Expr rhs } 
-define Var as { string id }
+define Var as { [char] id }
 
-define SyntaxError as { string err }
+define SyntaxError as { [char] err }
 define SExpr as SyntaxError | Expr
 
 Expr build(int i):    
@@ -28,7 +28,7 @@ real evaluate(Expr e):
         return evaluate(e.lhs) + evaluate(e.rhs)
 
 // Main method
-public void main([string] args):
+public void main([[char]] args):
     i = -5
     while i < 10:
         e = sbuild(i)

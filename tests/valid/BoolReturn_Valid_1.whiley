@@ -1,5 +1,5 @@
 bool pred():
     return false
 
-void main([string] args):
+void main([[char]] args):
     println(str(pred()))

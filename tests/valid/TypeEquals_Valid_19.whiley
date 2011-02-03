@@ -1,7 +1,7 @@
 define ilist as int | [int]
 define rlist as real | [int]
 
-string f(rlist e):
+[char] f(rlist e):
     if e ~= int:
         return "int"
     else if e ~= [int]:
@@ -9,11 +9,11 @@ string f(rlist e):
     else:
         return "real"
 
-string g(ilist e):
+[char] g(ilist e):
     return f(e)
 
 
-void main([string] args):
+void main([[char]] args):
     println(f(1))
     println(f([1]))
     println(f([]))

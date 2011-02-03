@@ -1,7 +1,7 @@
 [int] f():
     return [1,2]
 
-void main([string] args):
+void main([[char]] args):
      a1 = f()
      a2 = f()
      a2[0] = 0

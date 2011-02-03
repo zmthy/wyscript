@@ -6,7 +6,7 @@ void f([int] xs, [real] ys):
     else:
         print "NOT EQUAL"
 
-void main([string] args):
+void main([[char]] args):
     f([1,4],[1.0,4.0])
     f([1,4],[1.0,4.2])
     f([],[])

@@ -1,4 +1,4 @@
-void main([string] args):
+void main([[char]] args):
      x = 112233445566778899
      println(str(x))
      x = x + 1

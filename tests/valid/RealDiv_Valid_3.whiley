@@ -1,5 +1,5 @@
 real g(real x):
      return x / 3
 
-void main([string] args):
+void main([[char]] args):
      println(str(g(0.234)))

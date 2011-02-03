@@ -7,6 +7,6 @@
         i = i + 1
     return r
 
-void main([string] args):
+void main([[char]] args):
     rs = extract([-2,-3,1,2,-23,3,2345,4,5])
     println(str(rs))

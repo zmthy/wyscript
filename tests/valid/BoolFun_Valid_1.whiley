@@ -1,7 +1,7 @@
-string f(bool b):
+[char] f(bool b):
     return str(b)
 
-void main([string] args):
+void main([[char]] args):
     x = true
     println(f(x))
     x = false

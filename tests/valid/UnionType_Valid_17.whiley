@@ -1,6 +1,6 @@
-define State as { string input, int pos }
-define Expr as real | { string id }
-define SyntaxError as { string err }
+define State as { [char] input, int pos }
+define Expr as real | { [char] id }
+define SyntaxError as { [char] err }
 define SExpr as SyntaxError | Expr
 
 (SExpr, State) parseTerm(State st):
@@ -17,7 +17,7 @@ define SExpr as SyntaxError | Expr
         st.pos = st.pos + 1    
     return n, st
 
-void main([string] args):
+void main([[char]] args):
     e,s = parseTerm({input: "123", pos: 0})
     println(str(e))
     e,s = parseTerm({input: "abc", pos: 0})

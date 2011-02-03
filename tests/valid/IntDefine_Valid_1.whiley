@@ -2,13 +2,13 @@
 define ir1nat as int
 define pir1nat as ir1nat
 
-string f(int x):
+[char] f(int x):
     if x > 2:
         y = x
         return str(y)
     return ""
 
-void main([string] args):
+void main([[char]] args):
     println(f(1))
     println(f(2))
     println(f(3))

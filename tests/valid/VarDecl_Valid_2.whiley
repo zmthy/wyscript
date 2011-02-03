@@ -1,9 +1,9 @@
-string g(int z):
+[char] g(int z):
     return str(z)
 
-string f(int x):
+[char] f(int x):
     y = x + 1
     return g(y)
 
-void main([string] args):
+void main([[char]] args):
     println(f(1))

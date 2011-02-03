@@ -1,11 +1,11 @@
-define imsg as int|{string msg}
+define imsg as int|{[char] msg}
 
-string getMessage(imsg m):
-    if m ~= {string msg}:
+[char] getMessage(imsg m):
+    if m ~= {[char] msg}:
         return m.msg
     else:
         return str(m)
 
-void main([string] args):
+void main([[char]] args):
     println(getMessage({msg:"HELLO WORLD"}))
     println(getMessage(1))

@@ -1,4 +1,4 @@
-void main([string] args):    
+void main([[char]] args):    
     if |args| == 1:
         x = 1
     else:

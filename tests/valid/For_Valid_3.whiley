@@ -4,7 +4,7 @@ int sum({nat} xs):
         r = r + x
     return r
 
-void main([string] args):
+void main([[char]] args):
     z = sum({1,2,3,4,5})
     println(str(z))
     

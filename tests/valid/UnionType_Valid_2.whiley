@@ -1,10 +1,10 @@
 // this is a comment!
 define IntReal as int|real
 
-string f(IntReal y):
+[char] f(IntReal y):
     return str(y)
 
-void main([string] args):
+void main([[char]] args):
     x = 123
     println(f(x))
     x = 1.234

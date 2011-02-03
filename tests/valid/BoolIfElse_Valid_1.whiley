@@ -1,9 +1,9 @@
-string f(bool b):
+[char] f(bool b):
     if(b):
         return "TRUE"
     else:
         return "FALSE"
 
-void main([string] args):
+void main([[char]] args):
     println(f(true))
     println(f(false))

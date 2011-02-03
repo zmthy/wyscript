@@ -1,5 +1,5 @@
 define nat as int
-void main([string] args):
+void main([[char]] args):
     xs = [1,2,3]
     r = 0
     for x in xs:

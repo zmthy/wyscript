@@ -9,5 +9,5 @@ int f(int x, int y):
     else:
         return 123
 
-void main([string] args):
+void main([[char]] args):
     println(str(1))

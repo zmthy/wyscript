@@ -3,7 +3,7 @@ define tac1tup as {int f1, int f2}
 tac1tup f():
     return {f1:1,f2:3}
 
-void main([string] args):
+void main([[char]] args):
     x = f()    
     x.f1 = x.f2 - 2
     assert x.f1 != x.f2

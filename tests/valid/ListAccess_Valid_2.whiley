@@ -5,7 +5,7 @@ void f([int] x, int i):
     z = x[i]
     assert y == z
 
-void main([string] args):
+void main([[char]] args):
     arr = [1,2,3]
     f(arr, 1)
     println(str(arr))

@@ -1,9 +1,9 @@
 define fcode as {1,2,3,4}
 define tcode as {1,2}
 
-string g(fcode f):
+[char] g(fcode f):
     return str(f)
 
-void main([string] args):
+void main([[char]] args):
     x = 1
     println(g(x))

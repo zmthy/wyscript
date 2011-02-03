@@ -1,9 +1,9 @@
 define intlist as int|[int]
 
-string f([intlist] l):    
+[char] f([intlist] l):    
     return str(l)
 
-void main([string] args):
+void main([[char]] args):
     if |args| == 0:
         x = [1,2,3]
     else:

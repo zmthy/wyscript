@@ -6,6 +6,6 @@ void pState::send(int z):
     print str(this->y)
     print str(z)
 
-void main([string] args):
+void main([[char]] args):
     ps = spawn {x:1,y:2}
     ps->send(1)

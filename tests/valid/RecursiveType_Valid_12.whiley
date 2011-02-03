@@ -11,7 +11,7 @@ int maxDepth(Link l):
     else:
         return 0    
 
-void main([string] args):
+void main([[char]] args):
     l1 = null
     l2 = [l1]
     l3 = [l2]

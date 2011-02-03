@@ -1,5 +1,5 @@
-string f({real} ls):
+[char] f({real} ls):
     return str(ls)
 
-void main([string] args):
+void main([[char]] args):
     println(f({1,2,3}))

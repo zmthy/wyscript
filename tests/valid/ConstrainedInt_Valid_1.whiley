@@ -1,9 +1,9 @@
 // this is a comment!
 define cr1nat as int
 
-string f(cr1nat x):
+[char] f(cr1nat x):
     y = x
     return str(y)
 
-void main([string] args):
+void main([[char]] args):
     println(f(9))

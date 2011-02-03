@@ -1,12 +1,12 @@
-define expr as {int op, expr lhs} | {string err}
+define expr as {int op, expr lhs} | {[char] err}
 
 int f(expr e):
-    if e ~= {string err}:
+    if e ~= {[char] err}:
         return |e.err|
     else:
         return -1
     
-void main([string] args):
+void main([[char]] args):
     x = f({err:"Hello World"})
     println(str(x))
     x = f({op:1,lhs:{err:"Gotcha"}})

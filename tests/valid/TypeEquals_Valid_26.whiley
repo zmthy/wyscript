@@ -6,7 +6,7 @@ int f(rlist l):
     else:
         return |l|
 
-void main([string] args):
+void main([[char]] args):
     println(str(f(123)))
     println(str(f(1.23)))
     println(str(f([1,2,3]))) 

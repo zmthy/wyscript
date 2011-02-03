@@ -1,5 +1,5 @@
 // A simple, recursive expression tree
-define expr as {int num} | {int op, expr lhs, expr rhs} | {string err}
+define expr as {int num} | {int op, expr lhs, expr rhs} | {[char] err}
 
 expr parseTerm():
     return parseIdentifier() 
@@ -7,6 +7,6 @@ expr parseTerm():
 expr parseIdentifier():
     return {err:"err"}
 
-void main([string] args):
+void main([[char]] args):
     e = parseTerm()
     println(str(e))

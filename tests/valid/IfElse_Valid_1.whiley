@@ -1,4 +1,4 @@
-string f(int x):
+[char] f(int x):
     if(x < 10):
         return "LESS THAN"
     else if(x > 10):
@@ -6,7 +6,7 @@ string f(int x):
     else:
         return "EQUALS"
 
-void main([string] args):
+void main([[char]] args):
     println(f(1))
     println(f(10))
     println(f(11))

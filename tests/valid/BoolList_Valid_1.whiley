@@ -1,4 +1,4 @@
-void main([string] args):
+void main([[char]] args):
     ls = [true,false,true]
     println(str(ls))
     x = ls[0]

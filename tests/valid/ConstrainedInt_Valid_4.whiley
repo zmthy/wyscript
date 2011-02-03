@@ -4,5 +4,5 @@ define nat as int
 nat f():
     return 1
 
-void main([string] args):
+void main([[char]] args):
     println(str(f()))

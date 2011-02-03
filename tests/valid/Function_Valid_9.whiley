@@ -1,17 +1,17 @@
-string f(int x):
+[char] f(int x):
     return "F(INT)"
 
-string f(real y):
+[char] f(real y):
     return "F(REAL)"
 
-string f([int] xs):
+[char] f([int] xs):
     return "F([int])"
 
-string f({int} xs):
+[char] f({int} xs):
     return "F({int})"
 
 
-void main([string] args):
+void main([[char]] args):
     println(f(1.0))
     println(f(1))
     println(f([1,2,3]))

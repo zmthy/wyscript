@@ -5,5 +5,5 @@ int Ptype::get():
     this->mode = 1
     return this->mode
 
-void main([string] args):
+void main([[char]] args):
     println("OK")

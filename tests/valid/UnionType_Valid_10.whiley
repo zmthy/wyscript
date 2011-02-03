@@ -1,12 +1,12 @@
 define IntList as {int op, [real] rest}|{int op, int mode}
 
-string f(IntList y):
+[char] f(IntList y):
     return str(y)
 
-string g({int op, int mode} z):
+[char] g({int op, int mode} z):
     return str(z)
 
-void main([string] args):
+void main([[char]] args):
     x = {op:1, rest:[1.23]}
     println(f(x))
     x = {op:1.23, mode: 0}

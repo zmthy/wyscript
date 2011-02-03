@@ -1,4 +1,4 @@
-void main([string] args):
+void main([[char]] args):
      xs = { 1,2,3,4 }
      ys = { 1,2 }
      zs = { x+y | x∈xs, y∈ys }

@@ -1,4 +1,4 @@
-define state as {string input, int pos}
+define state as {[char] input, int pos}
 
 char f(state st):
     if(st.pos < |st.input|):
@@ -6,7 +6,7 @@ char f(state st):
             return st.input[st.pos]
     return ' '
 
-void main([string] args):
+void main([[char]] args):
     c = f({input:"hello",pos:0})
     println(str(c))
  

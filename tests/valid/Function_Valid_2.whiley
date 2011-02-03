@@ -1,8 +1,8 @@
 define fr2nat as int
 
-string f(fr2nat x):
+[char] f(fr2nat x):
     return str(x)
 
-void main([string] args):
+void main([[char]] args):
     y = 1
     println(f(y))
