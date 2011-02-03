@@ -92,6 +92,10 @@ public interface UnresolvedType extends SyntacticElement {
       super(attributes);
       this.name = name;
     }
+    
+    public String toString() {
+    	return name;
+    }
   }
 
   public static final class List extends SyntacticElement.Impl implements

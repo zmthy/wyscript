@@ -79,6 +79,16 @@ public interface Expr extends SyntacticElement {
     }
   }
 
+  public static class FunConst extends SyntacticElement.Impl implements Expr {
+
+	    public String name;
+
+	    public FunConst(String name, Attribute... attributes) {
+	      super(attributes);
+	      this.name = name;
+	    }
+	  }
+  
   public static class BinOp extends SyntacticElement.Impl implements Expr {
 
     public BOp op;

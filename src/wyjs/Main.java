@@ -144,8 +144,7 @@ public class Main {
   }
 
   public static void main(String[] args) throws Exception {
-    // System.exit(run(args));
-    compile(JsLists.wrap(new File("test.whiley")));
+    System.exit(run(args));
   }
 
   /**

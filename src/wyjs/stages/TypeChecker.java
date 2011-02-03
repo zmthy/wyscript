@@ -906,10 +906,13 @@ public class TypeChecker {
       }
       return Type.T_RECORD(types);
     } else if (t instanceof UnresolvedType.Named) {
-      UnresolvedType.Named dt = (UnresolvedType.Named) t;      // 
-      ModuleID mid = dt.attribute(Attribute.Module.class).module;      
+      UnresolvedType.Named dt = (UnresolvedType.Named) t;       
+      ModuleID mid = dt.attribute(Attribute.Module.class).module;            
       if (modules.contains(mid)) {
-        return types.get(new NameID(mid, dt.name));
+        Type n_t = types.get(new NameID(mid, dt.name));
+        if(n_t != null) {
+        	return n_t;
+        } 
       }
     } else if (t instanceof UnresolvedType.Union) {
       UnresolvedType.Union ut = (UnresolvedType.Union) t;

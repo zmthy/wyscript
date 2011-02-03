@@ -284,7 +284,7 @@ public class Lexer {
         pos += 2;
         return new LogicalAnd("&&", pos - 2);
       } else {
-        return new BitwiseAnd("&", pos++);
+        return new AddressOf("&", pos++);
       }
     } else if (c == '|') {
       if ((pos + 1) < input.length() && input.charAt(pos + 1) == '|') {
@@ -797,9 +797,8 @@ public class Lexer {
     }
   }
 
-  public static class BitwiseAnd extends Token {
-
-    public BitwiseAnd(String text, int pos) {
+  public static class AddressOf extends Token {
+    public AddressOf(String text, int pos) {
       super(text, pos);
     }
   }

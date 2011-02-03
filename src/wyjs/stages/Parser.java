@@ -37,6 +37,7 @@ import wyjs.lang.WhileyFile.FunDecl;
 import wyjs.lang.WhileyFile.ImportDecl;
 import wyjs.lang.WhileyFile.Parameter;
 import wyjs.lang.WhileyFile.TypeDecl;
+import wyjs.stages.Lexer.AddressOf;
 import wyjs.stages.Lexer.Arrow;
 import wyjs.stages.Lexer.Bar;
 import wyjs.stages.Lexer.Colon;
@@ -801,11 +802,19 @@ public class Parser {
       match(Shreak.class);
       return new Expr.UnOp(Expr.UOp.NOT, parseTerm(), sourceAttr(start,
           index - 1));
+    } else if (token instanceof AddressOf) {
+    	return parseFunVal();
     }
     syntaxError("unrecognised term.", token);
     return null;
   }
 
+  private Expr parseFunVal() {
+	  match(AddressOf.class);
+	  String funName = matchIdentifier().text;
+	  return new Expr.FunConst(funName);
+  }
+  
   private Expr parseListVal() {
     int start = index;
     ArrayList<Expr> exprs = new ArrayList<Expr>();
@@ -1140,7 +1149,7 @@ public class Parser {
         token = tokens.get(index);
       }
       match(RightBrace.class);
-      return new UnresolvedType.Tuple(types);
+      return new UnresolvedType.Tuple(types,sourceAttr(start, index - 1));
     } else if (token instanceof LeftCurly) {
       match(LeftCurly.class);
       skipWhiteSpace();

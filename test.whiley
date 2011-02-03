@@ -1,7 +1,5 @@
-define CONSTANT as 123
-
 int f():
-    return CONSTANT
+    return 1
 
-int main([int] args):
-    x = 1 + f()
+int main([string] args):
+    x = 1    
