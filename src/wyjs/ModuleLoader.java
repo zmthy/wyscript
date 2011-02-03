@@ -452,11 +452,7 @@ public class ModuleLoader {
 						
 		new NameResolution(this).resolve(m);
 	    ArrayList<Module> modules = new ArrayList<Module>();
-	    modules.add(m);
-	    // FIXME: the following line is broken I think. I need to ensure that
-		// functions are annotated with the appropriate type, in order to
-		// perform function binding.
-	    // new TypeChecker(this).check(modules);
+	    modules.add(m);	    
 	    
 	    logger.logTimedMessage("Loaded " + filename, System
 				.currentTimeMillis()

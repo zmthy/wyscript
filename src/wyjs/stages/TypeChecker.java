@@ -382,7 +382,7 @@ public class TypeChecker {
       functions.put(name, types);
     }
     types.add(ft);
-    fd.attributes().add(new TypeAttr(ft));
+    fd.attributes().add(new Attribute.FunType(ft));
   }
 
   // =======================================================================
@@ -409,7 +409,7 @@ public class TypeChecker {
     currentFunDecl = fd;
 
     // First, initialise typing environment
-    Type.Fun tf = (Type.Fun) fd.attribute(TypeAttr.class).type;
+    Type.Fun tf = fd.attribute(Attribute.FunType.class).type;
 
     for (int i = 0; i != fd.parameters.size(); ++i) {
       String name = fd.parameters.get(i).name();
@@ -486,9 +486,8 @@ public class TypeChecker {
   protected Environment resolve(Return s, Environment environment) {
 
     if (s.expr != null) {
-      Type t = resolve(s.expr, environment);
-      TypeAttr ta = currentFunDecl.attribute(TypeAttr.class);
-      Type.Fun ft = (Type.Fun) ta.type;
+      Type t = resolve(s.expr, environment);      
+      Type.Fun ft = currentFunDecl.attribute(Attribute.FunType.class).type;
       checkSubtype(ft.ret, t, s.expr);
     }
 
@@ -776,11 +775,18 @@ public class TypeChecker {
 
   protected List<Type.Fun> lookupMethod(NameID nid) throws ResolveError {
     List<Type.Fun> matches = functions.get(nid);
+    
     if (matches == null) {
-      return Collections.emptyList();
-    } else {
-      return matches;
+      Module m = loader.loadModule(nid.module());
+      List<FunDecl> fmatches = m.functions(nid.name());
+      matches = new ArrayList<Type.Fun>();
+      for(FunDecl fd : fmatches) {
+    	  partResolve(m.id(),fd);
+    	  matches.add(fd.attribute(Attribute.FunType.class).type);
+      }
     }
+    
+    return matches;    
   }
 
   protected Type resolve(UnOp uop, Environment environment) throws ResolveError {
@@ -1078,21 +1084,6 @@ public class TypeChecker {
     }
 
     return r;
-  }
-
-  /**
-   * A TypeAttr provides a way of attaching a type to a syntacticElement
-   * 
-   * @author djp
-   * 
-   */
-  public static class TypeAttr implements Attribute {
-
-    public final Type type;
-
-    public TypeAttr(Type t) {
-      this.type = t;
-    }
   }
 
   @SuppressWarnings("serial")

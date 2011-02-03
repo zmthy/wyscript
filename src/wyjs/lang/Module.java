@@ -82,6 +82,18 @@ public class Module extends ModuleLoader.Skeleton {
 	  return null;
   }
   
+  public List<FunDecl> functions(String name) {
+	  ArrayList<FunDecl> matches = new ArrayList<FunDecl>();
+	  for(Decl d : declarations) {
+		  if(d instanceof FunDecl) {
+			  FunDecl cd = (FunDecl) d;
+			  if(cd.name().equals(name)) {
+				  matches.add(cd);
+			  }
+		  }
+	  }
+	  return matches;
+  }
   
   public interface Decl extends SyntacticElement {
 
