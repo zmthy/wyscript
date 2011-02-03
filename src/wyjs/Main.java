@@ -18,17 +18,27 @@
 
 package wyjs;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import wyjs.ast.util.JsBareFormatter;
 import wyjs.ast.util.JsFormatter;
-import wyjs.ast.util.JsLists;
 import wyjs.ast.util.JsPrettyFormatter;
 import wyjs.compiler.JsBuilder;
 import wyjs.lang.WhileyFile;
-import wyjs.stages.*;
-import wyjs.util.*;
+import wyjs.stages.Lexer;
+import wyjs.stages.NameResolution;
+import wyjs.stages.Parser;
+import wyjs.stages.TypeChecker;
+import wyjs.util.ParseError;
+import wyjs.util.SyntaxError;
 
 public class Main {
 

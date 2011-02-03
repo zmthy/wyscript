@@ -15,6 +15,7 @@ import wyjs.lang.Expr.BOp;
 import wyjs.lang.Expr.BinOp;
 import wyjs.lang.Expr.Constant;
 import wyjs.lang.Expr.DictionaryGen;
+import wyjs.lang.Expr.FunConst;
 import wyjs.lang.Expr.Invoke;
 import wyjs.lang.Expr.NOp;
 import wyjs.lang.Expr.NaryOp;
@@ -669,7 +670,7 @@ public class TypeChecker {
 				ModuleID mid = ivk.attribute(Attribute.Module.class).module;
 				NameID nid = new NameID(mid, ivk.name);
 				Type.Fun funtype = bindFunction(nid, types, ivk);
-				// now, udpate the invoke
+				// now, update the invoke
 				ivk.attributes().add(new Attribute.FunType(funtype));
 				return funtype.ret;
 			} catch (ResolveError ex) {
@@ -996,7 +997,7 @@ public class TypeChecker {
       }
     } else if (t instanceof UnresolvedType.Fun) {
         UnresolvedType.Fun ft = (UnresolvedType.Fun) t;
-        ArrayList<Type> types = new ArrayList();        
+        List<Type> types = new ArrayList<Type>();        
         for (UnresolvedType ut : ft.paramTypes) {
           types.add(resolve(ut));
         }
