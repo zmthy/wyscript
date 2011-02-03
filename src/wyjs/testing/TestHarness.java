@@ -1,26 +1,21 @@
-// This file is part of the Whiley-to-Java Compiler (wyjc).
-//
-// The Whiley-to-Java Compiler is free software; you can redistribute 
-// it and/or modify it under the terms of the GNU General Public 
-// License as published by the Free Software Foundation; either 
-// version 3 of the License, or (at your option) any later version.
-//
-// The Whiley-to-Java Compiler is distributed in the hope that it 
-// will be useful, but WITHOUT ANY WARRANTY; without even the 
-// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-// PURPOSE.  See the GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public 
-// License along with the Whiley-to-Java Compiler. If not, see 
-// <http://www.gnu.org/licenses/>
-//
-// Copyright 2010, David James Pearce. 
-
 package wyjs.testing;
 
 import static org.junit.Assert.fail;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.Reader;
+import java.io.StringReader;
+
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import wyjs.Main;
 
@@ -48,15 +43,13 @@ public class TestHarness {
    * Compile and execute a test case, whilst comparing its output against the
    * sample output.
    * 
-   * @param name Name of the test to run. This must correspond to an executable
-   *          Java file in the srcPath of the same name.
+   * @param name Name of the test to run. This must correspond to an
+   *          executable Java file in the srcPath of the same name.
    */
   protected void runTest(String name, String... params) {
-    final String[] args = new String[3 + params.length];
-    args[0] = "-wp";
-    args[1] = "lib/wyrt.jar";
+    final String[] args = new String[1 + params.length];
     for (int i = 0; i != params.length; ++i) {
-      args[i + 2] = params[i];
+      args[i] = params[i];
     }
     args[args.length - 1] = srcPath + File.separatorChar + name + ".whiley";
 
@@ -71,16 +64,15 @@ public class TestHarness {
 
   protected void parserFailTest(String name) {
     name = srcPath + File.separatorChar + name + ".whiley";
-
+    
     if (compile("-wp", "lib/wyrt.jar", name) != Main.PARSE_ERROR) {
       fail("Test parsed when it shouldn't have!");
     }
-
   }
 
   protected void contextFailTest(String name) {
     name = srcPath + File.separatorChar + name + ".whiley";
-
+    
     if (compile("-wp", "lib/wyrt.jar", name) != Main.CONTEXT_ERROR) {
       fail("Test compiled when it shouldn't have!");
     }
@@ -88,7 +80,7 @@ public class TestHarness {
 
   protected void verificationFailTest(String name) {
     name = srcPath + File.separatorChar + name + ".whiley";
-
+    
     if (compile("-wp", "lib/wyrt.jar", "-V", name) != Main.CONTEXT_ERROR) {
       fail("Test compiled when it shouldn't have!");
     }
@@ -96,7 +88,7 @@ public class TestHarness {
 
   protected void verificationRunTest(String name) {
     String fullName = srcPath + File.separatorChar + name + ".whiley";
-
+    
     if (compile("-wp", "lib/wyrt.jar", "-V", fullName) != 0) {
       fail("couldn't compile test!");
     } else {
@@ -108,7 +100,6 @@ public class TestHarness {
 
   protected void runtimeFailTest(String name) {
     String fullName = srcPath + File.separatorChar + name + ".whiley";
-
     if (compile("-wp", "lib/wyrt.jar", fullName) != 0) {
       fail("couldn't compile test!");
     } else {
@@ -125,29 +116,28 @@ public class TestHarness {
 
   private static String run(String path, String name, String... args) {
     try {
-      // We need to have
-      String classpath = "../../../" + File.pathSeparator + "."
-          + File.pathSeparator + "../../../lib/wyrt.jar";
-      classpath = classpath.replace('/', File.separatorChar);
-      String tmp = "java -cp " + classpath + " " + name;
-      Process p = Runtime.getRuntime().exec(tmp, null, new File(path));
-
-      StringBuffer syserr = new StringBuffer();
-      StringBuffer sysout = new StringBuffer();
-      new StreamGrabber(p.getErrorStream(), syserr);
-      new StreamGrabber(p.getInputStream(), sysout);
-      int exitCode = p.waitFor();
-      System.err.println(syserr);
-      if (exitCode != 0) {
-        return null;
-      } else {
-        return sysout.toString();
-      }
+      Reader file = new FileReader(new File(path + "/" + name + ".js"));
+      Context cxt = Context.enter();
+      Scriptable scope = cxt.initStandardObjects();
+      
+      OutputStream out = new ByteArrayOutputStream(); 
+      Object sysout = Context.javaToJS(new PrintStream(out), scope);
+      OutputStream err = new ByteArrayOutputStream();
+      Object syserr = Context.javaToJS(new PrintStream(err), scope);
+      
+      ScriptableObject.putConstProperty(scope, "sysout", sysout);
+      ScriptableObject.putConstProperty(scope, "syserr", syserr);
+      cxt.evaluateReader(scope, file, name, 1, null);
+      
+      System.err.println(err);
+      return out.toString();
     } catch (Exception ex) {
       ex.printStackTrace();
       fail("Problem running compiled test");
+    } finally {
+      Context.exit();
     }
-
+    
     return null;
   }
 
@@ -163,13 +153,13 @@ public class TestHarness {
   private static void compare(String output, String referenceFile) {
     try {
       BufferedReader outReader = new BufferedReader(new StringReader(output));
-      BufferedReader refReader = new BufferedReader(new FileReader(new File(
-          referenceFile)));
-
+      BufferedReader refReader =
+          new BufferedReader(new FileReader(new File(referenceFile)));
+      
       while (refReader.ready() && outReader.ready()) {
         String a = refReader.readLine();
         String b = outReader.readLine();
-
+        
         if (a.equals(b)) {
           continue;
         } else {
@@ -178,11 +168,13 @@ public class TestHarness {
           throw new Error("Output doesn't match reference");
         }
       }
-
+      
       String l1 = outReader.readLine();
       String l2 = refReader.readLine();
-      if (l1 == null && l2 == null)
+      if (l1 == null && l2 == null) {
         return;
+      }
+      
       do {
         l1 = outReader.readLine();
         l2 = refReader.readLine();
@@ -192,7 +184,7 @@ public class TestHarness {
           System.err.println(" > " + l2);
         }
       } while (l1 != null && l2 != null);
-
+      
       fail("Files do not match");
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -200,7 +192,7 @@ public class TestHarness {
     }
   }
 
-  static public class StreamGrabber extends Thread {
+  public static class StreamGrabber extends Thread {
 
     private InputStream input;
     private StringBuffer buffer;
@@ -218,8 +210,7 @@ public class TestHarness {
         while ((nextChar = input.read()) != -1) {
           buffer.append((char) nextChar);
         }
-      } catch (IOException ioe) {
-      }
+      } catch (IOException ioe) {}
     }
   }
 }

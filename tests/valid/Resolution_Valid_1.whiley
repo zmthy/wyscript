@@ -1,0 +1,6 @@
+int f(byte b):
+    return b + 1
+
+void main([string] args):
+    b = f(10)
+    println(str(b))
