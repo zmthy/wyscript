@@ -18,8 +18,8 @@ import wyjs.lang.Stmt;
 import wyjs.lang.Stmt.*;
 import wyjs.lang.Type;
 import wyjs.lang.UnresolvedType;
-import wyjs.lang.WhileyFile;
-import wyjs.lang.WhileyFile.*;
+import wyjs.lang.Module;
+import wyjs.lang.Module.*;
 import wyjs.util.Attribute;
 import wyjs.util.Pair;
 import wyjs.util.ResolveError;
@@ -29,7 +29,7 @@ import wyjs.util.SyntaxError;
 public class TypeChecker {
 
   private HashSet<ModuleID> modules;
-  private HashMap<NameID, WhileyFile> filemap;
+  private HashMap<NameID, Module> filemap;
   private HashMap<NameID, List<Type.Fun>> functions;
   private HashMap<NameID, Type> types;
   private HashMap<NameID, Expr> constants;
@@ -37,16 +37,16 @@ public class TypeChecker {
   private String filename;
   private FunDecl currentFunDecl;    
   
-  public void check(List<WhileyFile> files) {
+  public void check(List<Module> files) {
 		modules = new HashSet<ModuleID>();
-		filemap = new HashMap<NameID, WhileyFile>();
+		filemap = new HashMap<NameID, Module>();
 		functions = new HashMap<NameID, List<Type.Fun>>();
 		types = new HashMap<NameID, Type>();
 		constants = new HashMap<NameID, Expr>();
 		unresolved = new HashMap<NameID, UnresolvedType>();
 
 		// now, init data
-		for (WhileyFile f : files) {
+		for (Module f : files) {
 			modules.add(f.module);
 		}
 
@@ -55,9 +55,9 @@ public class TypeChecker {
 		generateTypes(files);
 
 		// Stage 2 ... resolve and check types for all functions
-		for (WhileyFile f : files) {
+		for (Module f : files) {
 			filename = f.filename;
-			for (WhileyFile.Decl d : f.declarations) {
+			for (Module.Decl d : f.declarations) {
 				if (d instanceof FunDecl) {
 					partResolve(f.module, (FunDecl) d);
 				}
@@ -65,7 +65,7 @@ public class TypeChecker {
 		}
 
 		// Stage 3 ... propagate types through all expressions
-		for (WhileyFile f : files) {
+		for (Module f : files) {
 			resolve(f);
 		}
 	}
@@ -80,11 +80,11 @@ public class TypeChecker {
    * 
    * @param files
    */
-  protected void generateConstants(List<WhileyFile> files) {
+  protected void generateConstants(List<Module> files) {
     HashMap<NameID, Expr> exprs = new HashMap<NameID, Expr>();
 
     // first construct list.
-    for (WhileyFile f : files) {
+    for (Module f : files) {
       for (Decl d : f.declarations) {
         if (d instanceof ConstDecl) {
           ConstDecl cd = (ConstDecl) d;
@@ -181,7 +181,7 @@ public class TypeChecker {
    * 
    * @param files
    */
-  protected void generateTypes(List<WhileyFile> files) {
+  protected void generateTypes(List<Module> files) {
     HashMap<NameID, SyntacticElement> srcs = new HashMap<NameID, SyntacticElement>();
 
     // The declOrder list is basically a hack. It ensures that types are
@@ -191,7 +191,7 @@ public class TypeChecker {
     ArrayList<NameID> declOrder = new ArrayList<NameID>();
 
     // second construct list.
-    for (WhileyFile f : files) {
+    for (Module f : files) {
       for (Decl d : f.declarations) {
         if (d instanceof TypeDecl) {
           TypeDecl td = (TypeDecl) d;
@@ -330,7 +330,7 @@ public class TypeChecker {
   protected void partResolve(ModuleID module, FunDecl fd) {
 
     ArrayList<Type> parameters = new ArrayList<Type>();
-    for (WhileyFile.Parameter p : fd.parameters) {
+    for (Module.Parameter p : fd.parameters) {
       parameters.add(resolve(p.type));
     }
 
@@ -352,9 +352,9 @@ public class TypeChecker {
   // Stage 3 --- Propagate types through expressions
   // =======================================================================
 
-  public void resolve(WhileyFile wf) {
+  public void resolve(Module wf) {
     this.filename = wf.filename;
-    for (WhileyFile.Decl d : wf.declarations) {
+    for (Module.Decl d : wf.declarations) {
       try {
         if (d instanceof FunDecl) {
           resolve((FunDecl) d, wf);
@@ -367,7 +367,7 @@ public class TypeChecker {
     }
   }
 
-  protected void resolve(FunDecl fd, WhileyFile wf) {
+  protected void resolve(FunDecl fd, Module wf) {
     Environment environment = new Environment();
     currentFunDecl = fd;
     

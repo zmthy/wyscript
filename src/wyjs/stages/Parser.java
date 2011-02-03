@@ -30,13 +30,13 @@ import wyjs.lang.Modifier;
 import wyjs.lang.ModuleID;
 import wyjs.lang.Stmt;
 import wyjs.lang.UnresolvedType;
-import wyjs.lang.WhileyFile;
-import wyjs.lang.WhileyFile.ConstDecl;
-import wyjs.lang.WhileyFile.Decl;
-import wyjs.lang.WhileyFile.FunDecl;
-import wyjs.lang.WhileyFile.ImportDecl;
-import wyjs.lang.WhileyFile.Parameter;
-import wyjs.lang.WhileyFile.TypeDecl;
+import wyjs.lang.Module;
+import wyjs.lang.Module.ConstDecl;
+import wyjs.lang.Module.Decl;
+import wyjs.lang.Module.FunDecl;
+import wyjs.lang.Module.ImportDecl;
+import wyjs.lang.Module.Parameter;
+import wyjs.lang.Module.TypeDecl;
 import wyjs.stages.Lexer.AddressOf;
 import wyjs.stages.Lexer.Arrow;
 import wyjs.stages.Lexer.Bar;
@@ -94,7 +94,7 @@ public class Parser {
     this.tokens = new ArrayList<Token>(tokens);
   }
 
-  public WhileyFile read() {
+  public Module read() {
     ArrayList<Decl> decls = new ArrayList<Decl>();
     boolean finishedImports = false;
     ArrayList<String> pkg = parsePackage();
@@ -133,7 +133,7 @@ public class Parser {
     String name = filename.substring(
         filename.lastIndexOf(File.separatorChar) + 1, filename.length() - 7);
 
-    return new WhileyFile(new ModuleID(pkg, name), filename, decls);
+    return new Module(new ModuleID(pkg, name), filename, decls);
   }
 
   private ArrayList<String> parsePackage() {

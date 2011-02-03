@@ -26,7 +26,7 @@ import wyjs.ast.util.JsFormatter;
 import wyjs.ast.util.JsLists;
 import wyjs.ast.util.JsPrettyFormatter;
 import wyjs.compiler.JsBuilder;
-import wyjs.lang.WhileyFile;
+import wyjs.lang.Module;
 import wyjs.stages.*;
 import wyjs.util.*;
 
@@ -187,7 +187,7 @@ public class Main {
    * @throws IOException
    */
   public static void compile(List<File> files) throws IOException {
-    ArrayList<WhileyFile> wyfiles = new ArrayList<WhileyFile>();
+    ArrayList<Module> wyfiles = new ArrayList<Module>();
     
     for (File file : files) {
       Lexer lexer = new Lexer(file.getPath());
@@ -198,12 +198,12 @@ public class Main {
     new NameResolution().resolve(wyfiles);    
     new TypeChecker().check(wyfiles); 
     
-    for (WhileyFile wf : wyfiles) {
+    for (Module wf : wyfiles) {
       translate(wf, true);
     }
   }
 
-  public static void translate(WhileyFile wf, boolean pp) throws IOException {
+  public static void translate(Module wf, boolean pp) throws IOException {
     String filename = wf.filename.replace(".whiley", ".js");
     FileOutputStream fout = new FileOutputStream(filename);
     PrintStream out = new PrintStream(fout);

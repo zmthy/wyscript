@@ -23,21 +23,21 @@ import java.util.*;
 import static wyjs.util.SyntaxError.*;
 import wyjs.util.*;
 import wyjs.lang.*;
-import wyjs.lang.WhileyFile.*;
+import wyjs.lang.Module.*;
 import wyjs.lang.Stmt;
 import wyjs.lang.Stmt.*;
 import wyjs.lang.Expr.*;
 
 public class NameResolution {	
-	private WhileyFile srcfile;
+	private Module srcfile;
 	
-	public void resolve(List<WhileyFile> wyfiles) {
-		for(WhileyFile wf : wyfiles) {
+	public void resolve(List<Module> wyfiles) {
+		for(Module wf : wyfiles) {
 			resolve(wf);
 		}
 	}
 	
-	public void resolve(WhileyFile wf) {
+	public void resolve(Module wf) {
 		ArrayList<PkgID> imports = new ArrayList<PkgID>();
 		
 		srcfile = wf;		
@@ -81,7 +81,7 @@ public class NameResolution {
 		HashSet<String> environment = new HashSet<String>();
 		
 		// method parameter types
-		for (WhileyFile.Parameter p : fd.parameters) {
+		for (Module.Parameter p : fd.parameters) {
 			try {
 				resolve(p.type, imports);
 				environment.add(p.name());

@@ -54,19 +54,19 @@ import wyjs.lang.Stmt.IfElse;
 import wyjs.lang.Stmt.Return;
 import wyjs.lang.Stmt.Skip;
 import wyjs.lang.Stmt.While;
-import wyjs.lang.WhileyFile;
-import wyjs.lang.WhileyFile.ConstDecl;
-import wyjs.lang.WhileyFile.Decl;
-import wyjs.lang.WhileyFile.FunDecl;
-import wyjs.lang.WhileyFile.ImportDecl;
-import wyjs.lang.WhileyFile.Parameter;
-import wyjs.lang.WhileyFile.TypeDecl;
+import wyjs.lang.Module;
+import wyjs.lang.Module.ConstDecl;
+import wyjs.lang.Module.Decl;
+import wyjs.lang.Module.FunDecl;
+import wyjs.lang.Module.ImportDecl;
+import wyjs.lang.Module.Parameter;
+import wyjs.lang.Module.TypeDecl;
 import wyjs.util.Pair;
 import wyjs.util.SyntaxError;
 
 public class JsBuilder {
 
-  public JsNode build(WhileyFile wfile) throws IOException {
+  public JsNode build(Module wfile) throws IOException {
     List<JsStmt> nodes = new ArrayList<JsStmt>();
     for (Decl decl : wfile.declarations) {
       nodes.add(doDecl(wfile, decl));
@@ -74,7 +74,7 @@ public class JsBuilder {
     return new JsBase(nodes);
   }
 
-  public JsStmt doDecl(WhileyFile wfile, Decl decl) {
+  public JsStmt doDecl(Module wfile, Decl decl) {
     if (decl instanceof ImportDecl) {
       return doImport(wfile, (ImportDecl) decl);
     } else if (decl instanceof ConstDecl) {
@@ -89,21 +89,21 @@ public class JsBuilder {
         wfile.filename, 0, 0);
   }
 
-  public JsStmt doImport(WhileyFile wfile, ImportDecl decl) {
+  public JsStmt doImport(Module wfile, ImportDecl decl) {
     throw new SyntaxError("No Javascript equivalent to import.",
         wfile.filename, 0, 0);
   }
 
-  public JsStmt doConst(WhileyFile wfile, ConstDecl decl) {
+  public JsStmt doConst(Module wfile, ConstDecl decl) {
     return new JsConstant(decl.name, doExpr(wfile, decl.constant));
   }
 
-  public JsStmt doType(WhileyFile wfile, TypeDecl decl) {
+  public JsStmt doType(Module wfile, TypeDecl decl) {
     throw new SyntaxError("No Javascript equivalent to types.", wfile.filename,
         0, 0);
   }
 
-  public JsStmt doFun(WhileyFile wfile, FunDecl decl) {
+  public JsStmt doFun(Module wfile, FunDecl decl) {
     List<String> parameters = decl.parameters.isEmpty() ? null
         : new ArrayList<String>();
     List<JsStmt> body = decl.statements.isEmpty() ? null
@@ -120,7 +120,7 @@ public class JsBuilder {
     return new JsFunctionStmt(decl.name, parameters, body);
   }
 
-  public JsStmt doStmt(WhileyFile wfile, Stmt stmt) {
+  public JsStmt doStmt(Module wfile, Stmt stmt) {
     if (stmt instanceof Assign) {
       return doAssign(wfile, (Assign) stmt);
     } else if (stmt instanceof Assert) {
@@ -143,7 +143,7 @@ public class JsBuilder {
         0);
   }
 
-  public JsStmt doAssign(WhileyFile wfile, Assign stmt) {
+  public JsStmt doAssign(Module wfile, Assign stmt) {
     JsExpr lhs = doExpr(wfile, stmt.lhs);
 
     if (!(lhs instanceof JsAssignable)) {
@@ -154,30 +154,30 @@ public class JsBuilder {
     return new JsLine(new JsAssign((JsAssignable) lhs, doExpr(wfile, stmt.rhs)));
   }
 
-  public JsStmt doAssert(WhileyFile wfile, Assert stmt) {
+  public JsStmt doAssert(Module wfile, Assert stmt) {
     return new JsLine(JsHelpers.assertion(doExpr(wfile, stmt.expr)));
   }
 
-  public JsStmt doReturn(WhileyFile wfile, Return stmt) {
+  public JsStmt doReturn(Module wfile, Return stmt) {
     return new JsReturn(doExpr(wfile, stmt.expr));
   }
 
-  public JsStmt doWhile(WhileyFile wfile, While stmt) {
+  public JsStmt doWhile(Module wfile, While stmt) {
     return new JsWhile(doExpr(wfile, stmt.condition), collectBody(wfile,
         stmt.body));
   }
 
-  public JsStmt doFor(WhileyFile wfile, For stmt) {
+  public JsStmt doFor(Module wfile, For stmt) {
     return new JsFor(stmt.variable, doExpr(wfile, stmt.source), collectBody(
         wfile, stmt.body));
   }
 
-  public JsStmt doIfElse(WhileyFile wfile, IfElse stmt) {
+  public JsStmt doIfElse(Module wfile, IfElse stmt) {
     return new JsIfElse(doExpr(wfile, stmt.condition), collectBody(wfile,
         stmt.trueBranch), collectBody(wfile, stmt.falseBranch));
   }
 
-  private List<JsStmt> collectBody(WhileyFile wfile, List<Stmt> statements) {
+  private List<JsStmt> collectBody(Module wfile, List<Stmt> statements) {
     List<JsStmt> body = statements.isEmpty() ? null : new ArrayList<JsStmt>();
 
     for (Stmt statement : statements) {
@@ -187,16 +187,16 @@ public class JsBuilder {
     return body;
   }
 
-  public JsStmt doSkip(WhileyFile wfile, Skip stmt) {
+  public JsStmt doSkip(Module wfile, Skip stmt) {
     throw new SyntaxError("No Javascript equivalent to skip.", wfile.filename,
         0, 0);
   }
 
-  public JsStmt doDebug(WhileyFile wfile, Debug stmt) {
+  public JsStmt doDebug(Module wfile, Debug stmt) {
     return new JsLine(JsHelpers.debug(doExpr(wfile, stmt.expr)));
   }
 
-  public JsExpr doExpr(WhileyFile wfile, Expr expr) {
+  public JsExpr doExpr(Module wfile, Expr expr) {
     if (expr instanceof Variable) {
       return doVariable(wfile, (Variable) expr);
     } else if (expr instanceof NamedConstant) {
@@ -231,7 +231,7 @@ public class JsBuilder {
         0);
   }
 
-  public List<JsExpr> doExprs(WhileyFile wfile, List<? extends Expr> exprs) {
+  public List<JsExpr> doExprs(Module wfile, List<? extends Expr> exprs) {
     List<JsExpr> js = new ArrayList<JsExpr>();
     for (Expr expr : exprs) {
       js.add(doExpr(wfile, expr));
@@ -239,24 +239,24 @@ public class JsBuilder {
     return js;
   }
 
-  public JsExpr doVariable(WhileyFile wfile, Variable expr) {
+  public JsExpr doVariable(Module wfile, Variable expr) {
     return new JsVariable(expr.var);
   }
 
-  public JsExpr doNamedConstant(WhileyFile wfile, NamedConstant expr) {
+  public JsExpr doNamedConstant(Module wfile, NamedConstant expr) {
     return new JsVariable(expr.var);
   }
 
-  public JsExpr doConstant(WhileyFile wfile, Constant expr) {
+  public JsExpr doConstant(Module wfile, Constant expr) {
     return new JsLiteral(expr.value.toString());
   }
 
-  public JsExpr doTypeConst(WhileyFile wfile, TypeConst expr) {
+  public JsExpr doTypeConst(Module wfile, TypeConst expr) {
     throw new SyntaxError("Unrecognised expression " + expr, wfile.filename, 0,
         0);
   }
 
-  public JsExpr doBinOp(WhileyFile wfile, BinOp expr) {
+  public JsExpr doBinOp(Module wfile, BinOp expr) {
     JsBinOp bop = doBinOp(expr.op);
     JsExpr lhs = doExpr(wfile, expr.lhs), rhs = doExpr(wfile, expr.rhs);
 
@@ -316,11 +316,11 @@ public class JsBuilder {
     }
   }
 
-  public JsExpr doListAccess(WhileyFile wfile, Access expr) {
+  public JsExpr doListAccess(Module wfile, Access expr) {
     return new JsAccess(doExpr(wfile, expr.src), doExpr(wfile, expr.index));
   }
 
-  public JsExpr doUnOp(WhileyFile wfile, UnOp expr) {
+  public JsExpr doUnOp(Module wfile, UnOp expr) {
     JsUnOp uop = doUnOp(expr.op);
     JsExpr mhs = doExpr(wfile, expr.mhs);
 
@@ -348,7 +348,7 @@ public class JsBuilder {
     }
   }
 
-  public JsExpr doNaryOp(WhileyFile wfile, NaryOp expr) {
+  public JsExpr doNaryOp(Module wfile, NaryOp expr) {
     List<JsExpr> args = doExprs(wfile, expr.arguments);
 
     switch (expr.op) {
@@ -363,16 +363,16 @@ public class JsBuilder {
         0, 0);
   }
 
-  public JsExpr doComprehension(WhileyFile wfile, Comprehension expr) {
+  public JsExpr doComprehension(Module wfile, Comprehension expr) {
     throw new SyntaxError("Comprehensions not yet supported.", wfile.filename,
         0, 0);
   }
 
-  public JsExpr doRecordAccess(WhileyFile wfile, RecordAccess expr) {
+  public JsExpr doRecordAccess(Module wfile, RecordAccess expr) {
     return new JsAccess(doExpr(wfile, expr.lhs), expr.name);
   }
 
-  public JsExpr doDictionaryGen(WhileyFile wfile, DictionaryGen expr) {
+  public JsExpr doDictionaryGen(Module wfile, DictionaryGen expr) {
     List<JsExpr> keys = new ArrayList<JsExpr>(), values = new ArrayList<JsExpr>();
 
     for (Pair<Expr, Expr> pair : expr.pairs) {
@@ -383,7 +383,7 @@ public class JsBuilder {
     return JsHelpers.newMap(keys, values);
   }
 
-  public JsExpr doRecordGen(WhileyFile wfile, RecordGen expr) {
+  public JsExpr doRecordGen(Module wfile, RecordGen expr) {
     Map<String, JsExpr> fields = new HashMap<String, JsExpr>();
     for (String name : expr.fields.keySet()) {
       fields.put(name, doExpr(wfile, expr.fields.get(name)));
@@ -391,11 +391,11 @@ public class JsBuilder {
     return new JsObject(fields);
   }
 
-  public JsExpr doTupleGen(WhileyFile wfile, TupleGen expr) {
+  public JsExpr doTupleGen(Module wfile, TupleGen expr) {
     return new JsList(doExprs(wfile, expr.fields));
   }
 
-  public JsExpr doInvoke(WhileyFile wfile, Invoke expr) {
+  public JsExpr doInvoke(Module wfile, Invoke expr) {
     JsExpr function = expr.receiver == null ? new JsVariable(expr.name)
         : new JsAccess(doExpr(wfile, expr.receiver), expr.name);
 

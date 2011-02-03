@@ -24,13 +24,13 @@ import java.util.List;
 import wyjs.util.Attribute;
 import wyjs.util.SyntacticElement;
 
-public class WhileyFile {
+public class Module {
 
   public final ModuleID module;
   public final String filename;
   public final ArrayList<Decl> declarations;
 
-  public WhileyFile(ModuleID module, String filename, List<Decl> decls) {
+  public Module(ModuleID module, String filename, List<Decl> decls) {
     this.module = module;
     this.filename = filename;
     this.declarations = new ArrayList<Decl>(decls);
