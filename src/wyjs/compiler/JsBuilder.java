@@ -76,7 +76,9 @@ public class JsBuilder {
 
   public JsStmt doDecl(Module wfile, Decl decl) {
     if (decl instanceof ImportDecl) {
-      return doImport(wfile, (ImportDecl) decl);
+    	// DJP: can just ignore imports, since after name resolution is
+		// completed they are redundant.
+    	//return doImport(wfile, (ImportDecl) decl);
     } else if (decl instanceof ConstDecl) {
       return doConst(wfile, (ConstDecl) decl);
     } else if (decl instanceof TypeDecl) {
@@ -86,11 +88,6 @@ public class JsBuilder {
     }
 
     throw new SyntaxError("Unrecognised top-level declaration " + decl.name(),
-        wfile.filename, 0, 0);
-  }
-
-  public JsStmt doImport(Module wfile, ImportDecl decl) {
-    throw new SyntaxError("No Javascript equivalent to import.",
         wfile.filename, 0, 0);
   }
 

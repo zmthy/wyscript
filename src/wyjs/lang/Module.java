@@ -48,6 +48,11 @@ public class Module extends ModuleLoader.Skeleton {
 			  if(cd.name().equals(name)) {
 				  return true;
 			  }
+		  } else if(d instanceof FunDecl) {
+			  FunDecl fd = (FunDecl) d;
+			  if(fd.name().equals(name)) {
+				  return true;
+			  }
 		  }
 	  }
 	  return false;

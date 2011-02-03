@@ -276,8 +276,7 @@ public class TypeChecker {
 		Module mi = loader.loadModule(key.module());
 		Module.TypeDecl td = mi.type(key.name());
 		
-		// FIXME: I'm not sure this really makes sense.
-		System.out.println("ADDING KEY: " + key + " : " + td.type);
+		// FIXME: I'm not 100% sure this really makes sense.		
 		unresolved.put(key, td.type);		
         filemap.put(key, mi);
     }
@@ -994,8 +993,7 @@ public class TypeChecker {
     	// indicates a non-local key which we can resolve immediately
     	  try {
     		  Module mi = loader.loadModule(mid);
-    		  Module.TypeDecl td = mi.type(dt.name);  		 
-    		  System.out.println("ADDING KEY: " + dt.name + " : " + td.type);
+    		  Module.TypeDecl td = mi.type(dt.name);  		     		  
     		  return resolve(td.type);
     	  } catch (ResolveError rex) {
     		  syntaxError(rex.getMessage(), filename, t, rex);

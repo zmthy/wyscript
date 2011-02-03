@@ -1,3 +1,6 @@
 package wyjs.lang
 
 define string as [char]
+
+int str(string x):
+    return 1

@@ -51,7 +51,7 @@ public class NameResolution {
 		
 		imports.add(srcfile.id().pkg().append(srcfile.id().module()));
 		imports.add(srcfile.id().pkg().append("*"));
-		imports.add(new PkgID(new String[]{"whiley","lang"}).append("*"));
+		imports.add(new PkgID(new String[]{"wyjs","lang"}).append("*"));
 						
 		for(Decl d : wf.declarations) {			
 			try {

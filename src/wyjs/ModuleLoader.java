@@ -447,17 +447,23 @@ public class ModuleLoader {
 		Lexer lexer = new Lexer(file.getPath());
 		Parser parser = new Parser(file.getPath(), lexer.scan());
 		Module m = parser.read();	    
-	    new NameResolution(this).resolve(m);
-	    // FIXME: following is a bit of a hack, as it assumes all important
-		// files are stand-alone.
-	    ArrayList<Module> files = new ArrayList<Module>();
-	    files.add(m);
-	    new TypeChecker(this).check(files);
-
+	    
+		skeletontable.put(mid,m);	    
+						
+		new NameResolution(this).resolve(m);
+	    ArrayList<Module> modules = new ArrayList<Module>();
+	    modules.add(m);
+	    // FIXME: the following line is broken I think. I need to ensure that
+		// functions are annotated with the appropriate type, in order to
+		// perform function binding.
+	    // new TypeChecker(this).check(modules);
+	    
 	    logger.logTimedMessage("Loaded " + filename, System
 				.currentTimeMillis()
 				- time);				
 
+	    moduletable.put(mid,m);	    
+	    
 		return m;
 	}
 	
