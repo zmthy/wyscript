@@ -778,9 +778,13 @@ public class Parser {
     } else if (token instanceof Identifier) {
       return new Expr.Variable(matchIdentifier().text, sourceAttr(start,
           index - 1));
+    } else if (token instanceof Lexer.Char) {
+    	char val = match(Lexer.Char.class).value;
+    	return new Expr.Constant(new Character(val), sourceAttr(start,
+					index - 1));
     } else if (token instanceof Int) {
-      int val = match(Int.class).value;
-      return new Expr.Constant(val, sourceAttr(start, index - 1));
+    	int val = match(Int.class).value;
+    	return new Expr.Constant(val, sourceAttr(start, index - 1));
     } else if (token instanceof Real) {
       double val = match(Real.class).value;
       return new Expr.Constant(val, sourceAttr(start, index - 1));

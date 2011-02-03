@@ -574,7 +574,9 @@ public class TypeChecker {
     Object v = c.value;
     if (v instanceof Boolean) {
       return Type.T_BOOL;
-    } else if (v instanceof Integer) {
+    } else if (v instanceof Character) {
+      return Type.T_CHAR;
+    }else if (v instanceof Integer) {
       return Type.T_INT;
     } else if (v instanceof Double) {
       return Type.T_REAL;

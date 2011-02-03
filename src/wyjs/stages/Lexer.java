@@ -136,7 +136,7 @@ public class Lexer {
       syntaxError("unexpected end-of-character", pos);
     }
     pos = pos + 1;
-    return new Int(c, input.substring(start, pos), start);
+    return new Char(c, input.substring(start, pos), start);
   }
 
   public Token scanString() {
@@ -467,6 +467,16 @@ public class Lexer {
       super(text, pos);
       value = r;
     }
+  }
+
+  public static class Char extends Token {
+
+	  public final char value;
+
+	  public Char(char c, String text, int pos) {
+		  super(text, pos);
+		  value = c;
+	  }
   }
 
   public static class Identifier extends Token {
