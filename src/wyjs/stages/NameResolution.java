@@ -223,6 +223,8 @@ public class NameResolution {
 				
 			} else if (e instanceof Variable) {
 				resolve((Variable)e, environment, imports);
+			} else if (e instanceof FunConst) {
+				resolve((FunConst)e, environment, imports);
 			} else if (e instanceof NaryOp) {
 				resolve((NaryOp)e, environment, imports);
 			} else if (e instanceof Comprehension) {
@@ -266,18 +268,20 @@ public class NameResolution {
 		for(Expr e : ivk.arguments) {						
 			resolve(e, environment, imports);
 		}
-		
-		// FIXME: needed for proper namespacing
-		//ModuleID mid = loader.resolve(ivk.name,imports);		
-		ModuleID mid = srcfile.module;
 		Expr target = ivk.receiver;
-		
+
 		if(target != null) {
 			resolve(target,environment,imports);
 		}
-		
-		// Ok, resolve the module for this invoke
-		ivk.attributes().add(new Attribute.Module(mid));		
+
+		if(!environment.contains(ivk.name)) {
+			// FIXME: needed for proper namespacing
+			//ModuleID mid = loader.resolve(ivk.name,imports);		
+			ModuleID mid = srcfile.module;
+			
+			// Ok, resolve the module for this invoke
+			ivk.attributes().add(new Attribute.Module(mid));		
+		}
 	}
 	
 	protected void resolve(Variable v, HashSet<String> environment,
@@ -303,6 +307,21 @@ public class NameResolution {
 				}
 			}
 		} 
+	}
+	
+	protected void resolve(FunConst v, HashSet<String> environment,
+			ArrayList<PkgID> imports) throws ResolveError {		
+
+		for(Decl d : srcfile.declarations) {
+			if(d instanceof FunDecl) {
+				FunDecl cd = (FunDecl) d;
+				if(cd.name().equals(v.name)) {
+					// The following indicates that this is a constant
+					v.attributes().add(new Attribute.Module(srcfile.module));
+					break;
+				}
+			}
+		}		 
 	}
 	
 	protected void resolve(UnOp v, HashSet<String> environment,

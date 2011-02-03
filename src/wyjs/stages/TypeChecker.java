@@ -560,6 +560,8 @@ public class TypeChecker {
     try {
       if (e instanceof Constant) {
         return resolve((Constant) e, environment);
+      } else if (e instanceof FunConst) {
+        return resolve((FunConst) e, environment);
       } else if (e instanceof Variable) {
         return resolve((Variable) e, environment);
       } else if (e instanceof UnOp) {
@@ -606,6 +608,16 @@ public class TypeChecker {
     return null;
   }
 
+  protected Type resolve(FunConst c, Environment environment) throws ResolveError {
+	  ModuleID mid = c.attribute(Attribute.Module.class).module;
+	  ArrayList<Type> types = new ArrayList<Type>();
+	  for(UnresolvedType ut : c.paramTypes) {
+		  types.add(resolve(ut));
+	  }
+	  NameID nid = new NameID(mid, c.name);
+	  return bindFunction(nid, types, c);
+  }
+  
   protected Type resolve(Variable v, Environment environment)
       throws ResolveError {
     Type v_t = environment.get(v.var);
@@ -622,24 +634,48 @@ public class TypeChecker {
 
   protected Type resolve(Invoke ivk, Environment environment) {
 
-		ArrayList<Type> types = new ArrayList<Type>();
+		// First, we look for a local variable with the matching name
+		
+		Type t = environment.get(ivk.name);
+		if(t instanceof Type.Fun) {			
+			Type.Fun ft = (Type.Fun) t;
+			if(ivk.arguments.size() != ft.params.size()) {
+				syntaxError("incorrect arguments for function call",filename,ivk);
+			}
+			for(int i=0;i!=ft.params.size();++i) {
+				Expr arg = ivk.arguments.get(i);
+				Type pt = ft.params.get(i);				
+				Type at = resolve(arg, environment);
+				checkSubtype(pt,at,arg);
+			}
 
-		for (Expr arg : ivk.arguments) {
-			Type arg_t = resolve(arg, environment);
-			types.add(arg_t);
-		}
+			ivk.indirect = true;
+			
+			return ft.ret;
+		} else {
 
-		try {
-			// FIXME: when putting name spacing back in, we'll need to fix this.
-			ModuleID mid = ivk.attribute(Attribute.Module.class).module;
-			NameID nid = new NameID(mid, ivk.name);
-			Type.Fun funtype = bindFunction(nid, types, ivk);
-			// now, udpate the invoke
-			ivk.attributes().add(new Attribute.FunType(funtype));
-			return funtype.ret;
-		} catch (ResolveError ex) {
-			syntaxError(ex.getMessage(), filename, ivk);
-			return null; // unreachable
+			ArrayList<Type> types = new ArrayList<Type>();
+
+			for (Expr arg : ivk.arguments) {
+				Type arg_t = resolve(arg, environment);
+				types.add(arg_t);
+			}
+
+			// Second, we assume it's not a local variable and look outside the
+			// scope.
+
+			try {
+				// FIXME: when putting name spacing back in, we'll need to fix this.
+				ModuleID mid = ivk.attribute(Attribute.Module.class).module;
+				NameID nid = new NameID(mid, ivk.name);
+				Type.Fun funtype = bindFunction(nid, types, ivk);
+				// now, udpate the invoke
+				ivk.attributes().add(new Attribute.FunType(funtype));
+				return funtype.ret;
+			} catch (ResolveError ex) {
+				syntaxError(ex.getMessage(), filename, ivk);
+				return null; // unreachable
+			}
 		}
 	}
 
@@ -958,7 +994,14 @@ public class TypeChecker {
       } else {
         return Type.leastUpperBound(bounds);
       }
-    }
+    } else if (t instanceof UnresolvedType.Fun) {
+        UnresolvedType.Fun ft = (UnresolvedType.Fun) t;
+        ArrayList<Type> types = new ArrayList();        
+        for (UnresolvedType ut : ft.paramTypes) {
+          types.add(resolve(ut));
+        }
+        return Type.T_FUN(null,resolve(ft.ret),types);
+      } 
        
     syntaxError("unknown type encountered: " + t, filename, t);
     return null;
