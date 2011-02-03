@@ -190,6 +190,7 @@ public class Parser {
 
   private FunDecl parseFunction(List<Modifier> modifiers) {
     int start = index;
+        
     UnresolvedType ret = parseType();
     Identifier name = matchIdentifier();
 
@@ -213,8 +214,13 @@ public class Parser {
     match(Colon.class);
     int end = index;
     matchEndLine();
-
-    List<Stmt> stmts = parseBlock(1);
+    List<Stmt> stmts;
+    if(modifiers.contains(Modifier.EXTERN)) {
+    	// this indicates an external method
+    	stmts = parseExternalBlock(1);
+    } else {
+    	stmts = parseBlock(1);
+    }
 
     return new FunDecl(modifiers, name.text, ret, paramTypes, stmts,
         sourceAttr(start, end - 1));
@@ -257,13 +263,15 @@ public class Parser {
     while (index < tokens.size() && isModifier((lookahead = tokens.get(index)))) {
       if (lookahead.text.equals("public")) {
         mods.add(Modifier.PUBLIC);
+      } else if (lookahead.text.equals("extern")) {
+        mods.add(Modifier.EXTERN);
       }
       index = index + 1;
     }
     return mods;
   }
 
-  public String[] modifiers = { "public", "visible" };
+  public String[] modifiers = { "public", "extern", "visible" };
 
   public boolean isModifier(Token tok) {
     for (String m : modifiers) {
@@ -289,6 +297,22 @@ public class Parser {
     return stmts;
   }
 
+  private List<Stmt> parseExternalBlock(int indent) {
+	  Tabs tabs = null;
+
+	  tabs = getIndent();
+
+	  ArrayList<Stmt> stmts = new ArrayList<Stmt>();
+	  while (tabs != null && tabs.ntabs == indent) {
+		  index = index + 1;
+		  String jsString = parseJSLine();
+		  stmts.add(new Stmt.ExternJS(jsString));
+		  tabs = getIndent();
+	  }
+	  
+	  return stmts;
+  }
+  
   private Tabs getIndent() {
     // FIXME: there's still a bug here for empty lines with arbitrary tabs
     if (index < tokens.size() && tokens.get(index) instanceof Tabs) {
@@ -303,6 +327,22 @@ public class Parser {
     }
   }
 
+  private String parseJSLine() {
+	  String line = "";
+	  Token t = null;	  
+	  int last = Integer.MAX_VALUE; // last column
+	  while (index < tokens.size()
+				&& !((t = tokens.get(index++)) instanceof NewLine)) {
+		  while(t.start > last) {
+			line += " ";
+			last++;
+		  }		  
+		  line += t.text;
+		  last = t.end()+1;
+	  }
+	  return line;
+  }
+  
   private Stmt parseStatement(int indent) {
     checkNotEof();
     Token token = tokens.get(index);

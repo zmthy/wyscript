@@ -20,12 +20,20 @@ package wyjs.lang;
 
 public interface Modifier {
 
-  public static final Modifier PUBLIC = new Public();
+	public static final Modifier PUBLIC = new Public();
+	public static final Modifier EXTERN = new Extern();
 
-  public static class Public implements Modifier {
+	public static class Public implements Modifier {
 
-    public String toString() {
-      return "public";
-    }
-  }
+		public String toString() {
+			return "public";
+		}
+	}
+
+	public static class Extern implements Modifier {
+
+		public String toString() {
+			return "extern";
+		}
+	}
 }

@@ -193,7 +193,7 @@ public interface Stmt extends SyntacticElement {
    *
    */
   public static final class ExternJS extends Skip implements Stmt {
-		String javascript;
+		public final String javascript;
 		
 		public ExternJS(String javascript, Attribute... attributes) {
 			super(attributes);

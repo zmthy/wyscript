@@ -19,14 +19,7 @@ import wyjs.ast.expr.JsLiteral;
 import wyjs.ast.expr.JsObject;
 import wyjs.ast.expr.JsUnOp;
 import wyjs.ast.expr.JsVariable;
-import wyjs.ast.stmt.JsConstant;
-import wyjs.ast.stmt.JsFor;
-import wyjs.ast.stmt.JsFunctionStmt;
-import wyjs.ast.stmt.JsIfElse;
-import wyjs.ast.stmt.JsLine;
-import wyjs.ast.stmt.JsReturn;
-import wyjs.ast.stmt.JsStmt;
-import wyjs.ast.stmt.JsWhile;
+import wyjs.ast.stmt.*;
 import wyjs.ast.util.JsHelpers;
 import wyjs.lang.Expr;
 import wyjs.lang.Expr.BOp;
@@ -46,14 +39,7 @@ import wyjs.lang.Expr.UOp;
 import wyjs.lang.Expr.UnOp;
 import wyjs.lang.Expr.Variable;
 import wyjs.lang.Stmt;
-import wyjs.lang.Stmt.Assert;
-import wyjs.lang.Stmt.Assign;
-import wyjs.lang.Stmt.Debug;
-import wyjs.lang.Stmt.For;
-import wyjs.lang.Stmt.IfElse;
-import wyjs.lang.Stmt.Return;
-import wyjs.lang.Stmt.Skip;
-import wyjs.lang.Stmt.While;
+import wyjs.lang.Stmt.*;
 import wyjs.lang.Module;
 import wyjs.lang.Module.ConstDecl;
 import wyjs.lang.Module.Decl;
@@ -111,7 +97,10 @@ public class JsBuilder {
     }
 
     for (Stmt statement : decl.statements) {
-      body.add(doStmt(wfile, statement));
+      JsStmt stmt = doStmt(wfile, statement); 
+      if(stmt != null) {
+    	  body.add(stmt);
+      }
     }
 
     return new JsFunctionStmt(decl.name, parameters, body);
@@ -130,6 +119,8 @@ public class JsBuilder {
       return doFor(wfile, (For) stmt);
     } else if (stmt instanceof IfElse) {
       return doIfElse(wfile, (IfElse) stmt);
+    } else if (stmt instanceof ExternJS) {
+      return doExtern(wfile, (ExternJS) stmt);
     } else if (stmt instanceof Skip) {
       return doSkip(wfile, (Skip) stmt);
     } else if (stmt instanceof Debug) {
@@ -184,9 +175,12 @@ public class JsBuilder {
     return body;
   }
 
+  public JsStmt doExtern(Module wfile, ExternJS stmt) {
+    return new JsRaw(stmt.javascript);
+  }
+  
   public JsStmt doSkip(Module wfile, Skip stmt) {
-    throw new SyntaxError("No Javascript equivalent to skip.", wfile.filename,
-        0, 0);
+    return null;
   }
 
   public JsStmt doDebug(Module wfile, Debug stmt) {
