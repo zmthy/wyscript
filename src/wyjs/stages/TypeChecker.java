@@ -275,9 +275,10 @@ public class TypeChecker {
 		// indicates a non-local key which we can resolve immediately
 		Module mi = loader.loadModule(key.module());
 		Module.TypeDecl td = mi.type(key.name());
-		// FIXME: need to resolve the type somehow?
-		return td.type;
-	}
+		
+		// FIXME: I'm not sure this really makes sense.
+		unresolved.put(key, td.type);
+    }
 
     // following is needed to terminate any recursion
     cache.put(key, Type.T_RECURSIVE(key, null));
