@@ -223,6 +223,8 @@ public class NameResolution {
 				
 			} else if (e instanceof Variable) {
 				resolve((Variable)e, environment, imports);
+			} else if (e instanceof FunConst) {
+				resolve((FunConst)e, environment, imports);
 			} else if (e instanceof NaryOp) {
 				resolve((NaryOp)e, environment, imports);
 			} else if (e instanceof Comprehension) {
@@ -303,6 +305,21 @@ public class NameResolution {
 				}
 			}
 		} 
+	}
+	
+	protected void resolve(FunConst v, HashSet<String> environment,
+			ArrayList<PkgID> imports) throws ResolveError {		
+
+		for(Decl d : srcfile.declarations) {
+			if(d instanceof FunDecl) {
+				FunDecl cd = (FunDecl) d;
+				if(cd.name().equals(v.name)) {
+					// The following indicates that this is a constant
+					v.attributes().add(new Attribute.Module(srcfile.module));
+					break;
+				}
+			}
+		}		 
 	}
 	
 	protected void resolve(UnOp v, HashSet<String> environment,

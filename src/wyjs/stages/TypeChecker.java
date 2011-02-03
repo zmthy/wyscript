@@ -539,6 +539,8 @@ public class TypeChecker {
     try {
       if (e instanceof Constant) {
         return resolve((Constant) e, environment);
+      } else if (e instanceof FunConst) {
+        return resolve((FunConst) e, environment);
       } else if (e instanceof Variable) {
         return resolve((Variable) e, environment);
       } else if (e instanceof UnOp) {
@@ -585,6 +587,16 @@ public class TypeChecker {
     return null;
   }
 
+  protected Type resolve(FunConst c, Environment environment) throws ResolveError {
+	  ModuleID mid = c.attribute(Attribute.Module.class).module;
+	  ArrayList<Type> types = new ArrayList<Type>();
+	  for(UnresolvedType ut : c.paramTypes) {
+		  types.add(resolve(ut));
+	  }
+	  NameID nid = new NameID(mid, c.name);
+	  return bindFunction(nid, types, c);
+  }
+  
   protected Type resolve(Variable v, Environment environment)
       throws ResolveError {
     Type v_t = environment.get(v.var);

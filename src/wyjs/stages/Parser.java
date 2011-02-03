@@ -814,9 +814,28 @@ public class Parser {
   }
 
   private Expr parseFunVal() {
+	  int start = index;
 	  match(AddressOf.class);
 	  String funName = matchIdentifier().text;
-	  return new Expr.FunConst(funName);
+	  ArrayList<UnresolvedType> paramTypes = new ArrayList<UnresolvedType>();
+	  	  
+	  if(tokens.get(index) instanceof LeftBrace) {
+		// parse parameter types
+		match(LeftBrace.class);
+		boolean firstTime=true;
+		while(index < tokens.size() && !(tokens.get(index) instanceof RightBrace)) {
+			if(!firstTime) {
+				match(Comma.class);
+			}
+			firstTime=false;
+			UnresolvedType ut = parseType();
+			paramTypes.add(ut);
+		}
+		match(RightBrace.class);
+	  }
+	  
+	  return new Expr.FunConst(funName, paramTypes, sourceAttr(start,
+	          index - 1));
   }
   
   private Expr parseListVal() {
