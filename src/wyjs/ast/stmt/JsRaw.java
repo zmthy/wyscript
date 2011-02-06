@@ -2,8 +2,6 @@ package wyjs.ast.stmt;
 
 import java.util.Set;
 
-import wyjs.ast.JsNode;
-import wyjs.ast.expr.JsExpr;
 import wyjs.ast.util.JsFormatter;
 
 /**
@@ -14,12 +12,12 @@ import wyjs.ast.util.JsFormatter;
 public class JsRaw implements JsStmt {
 
   private final String content;
-  
+
   public JsRaw(String content) {
     this.content = content;
   }
- 
-  public String compile(JsFormatter ws) {    
+
+  public String compile(JsFormatter ws) {
     if (content.length() == 0) {
       return content;
     }
@@ -27,7 +25,6 @@ public class JsRaw implements JsStmt {
     return ws.idt + content + ws.lb;
   }
 
-  
   public void collectAssignments(Set<String> assignments) {
     // do nout
   }
