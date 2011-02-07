@@ -2,5 +2,5 @@ package wyjs.lang
 
 define string as [char]
 
-int str(string x):
+int str(* x):
     return 1
