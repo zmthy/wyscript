@@ -1,0 +1,5 @@
+void main([[char]] args):
+    x = true
+    println(x)
+    x = false
+    println(x)
