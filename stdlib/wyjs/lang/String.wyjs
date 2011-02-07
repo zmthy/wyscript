@@ -2,5 +2,5 @@ package wyjs.lang
 
 define string as [char]
 
-int str(string x):
-    return 1
+extern string str(* value):
+    return value + "";

@@ -62,16 +62,15 @@ public class JsBuilder {
 
   public JsStmt doDecl(Module wfile, Decl decl) {
     if (decl instanceof ImportDecl) {
-    	// DJP: can just ignore imports, since after name resolution is
-		// completed they are redundant.
     	//return doImport(wfile, (ImportDecl) decl);
+    	return new JsRaw("");
     } else if (decl instanceof ConstDecl) {
       return doConst(wfile, (ConstDecl) decl);
     } else if (decl instanceof TypeDecl) {
       return doType(wfile, (TypeDecl) decl);
     } else if (decl instanceof FunDecl) {
       return doFun(wfile, (FunDecl) decl);
-    }
+    } 
 
     throw new SyntaxError("Unrecognised top-level declaration " + decl.name(),
         wfile.filename, 0, 0);
