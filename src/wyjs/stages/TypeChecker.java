@@ -1053,20 +1053,6 @@ public class TypeChecker {
    */
   public void checkSubtype(Type t1, Type t2, SyntacticElement elem) {
 
-    // FIXME: the following special case is used because Type.isSubtype does
-    // not consider a set to be a subtype of a list. In the source language,
-    // however, this does make sense --- but it requires us to insert
-    // coercions.
-
-    if (Type.isSubtype(Type.T_SET(Type.T_ANY), t1)
-        && Type.isSubtype(Type.T_LIST(Type.T_ANY), t2)) {
-      // FIXME: following is broken because of named types.
-      Type.Set ts1 = (Type.Set) t1;
-      Type.List ts2 = (Type.List) t2;
-      t1 = ts1.element;
-      t2 = ts2.element;
-    }
-
     if (!Type.isSubtype(t1, t2)) {
       syntaxError("expecting type " + t1 + ", got type " + t2, filename, elem);
     }
