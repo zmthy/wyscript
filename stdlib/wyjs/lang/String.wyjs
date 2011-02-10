@@ -5,14 +5,14 @@ define string as [char]
 // Stringifies an arbitrary value.
 extern string str(* value):
     if (typeof value === 'object' && typeof JSON !== 'undefined') {
-        return JSON.stringify(value);
+    return JSON.stringify(value);
     }
     return value + '';
 
 // Prints an arbitrary value to the standard output or console.
 extern void println(* value):
     if (typeof stdout !== 'undefined') {
-        stdout.println(str(value));
+    stdout.println(str(value));
     } else if (typeof console !== 'undefined') {
-        console.log(str(value));
+    console.log(str(value));
     }
