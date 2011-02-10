@@ -27,10 +27,10 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.*;
 
+import wyjs.ast.Builder;
 import wyjs.ast.util.JsBareFormatter;
 import wyjs.ast.util.JsFormatter;
 import wyjs.ast.util.JsPrettyFormatter;
-import wyjs.compiler.JsBuilder;
 import wyjs.lang.Module;
 import wyjs.stages.*;
 import wyjs.util.*;
@@ -47,7 +47,7 @@ public class Main {
   public static final int MINOR_VERSION;
   public static final int MINOR_REVISION;
 
-  private static final JsBuilder builder = new JsBuilder();
+  private static final Builder builder = new Builder();
   private static final JsFormatter bare = new JsBareFormatter(),
       pretty = new JsPrettyFormatter();
 
@@ -117,7 +117,6 @@ public class Main {
 	whileypath.addAll(bootpath);
     
     try {
-
       try {
         ArrayList<File> files = new ArrayList<File>();
         for (int i = fileArgsBegin; i != args.length; ++i) {

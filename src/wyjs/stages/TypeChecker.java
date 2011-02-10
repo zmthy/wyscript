@@ -728,7 +728,7 @@ public class TypeChecker {
         // receivers match up OK ...
         if (ft.params.size() == paramTypes.size() && paramSubtypes(ft, target)
             && (candidate == null || paramSubtypes(candidate, ft))) {
-          candidate = ft;         
+          candidate = ft;
         }
       }
     }
@@ -755,20 +755,20 @@ public class TypeChecker {
 
     return candidate;
   }
-  
+
   private boolean paramSubtypes(Type.Fun f1, Type.Fun f2) {
-		List<Type> f1_params = f1.params;
-		List<Type> f2_params = f2.params;
-		if(f1_params.size() == f2_params.size()) {
-			for(int i=0;i!=f1_params.size();++i) {
-				if(!Type.isSubtype(f1_params.get(i),f2_params.get(i))) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
+    List<Type> f1_params = f1.params;
+    List<Type> f2_params = f2.params;
+    if (f1_params.size() == f2_params.size()) {
+      for (int i = 0; i != f1_params.size(); ++i) {
+        if (!Type.isSubtype(f1_params.get(i), f2_params.get(i))) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 
   private String parameterString(List<Type> paramTypes) {
     String paramStr = "(";
@@ -1093,4 +1093,5 @@ public class TypeChecker {
       super(init);
     }
   }
+
 }

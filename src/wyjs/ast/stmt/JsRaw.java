@@ -5,7 +5,7 @@ import java.util.Set;
 import wyjs.ast.util.JsFormatter;
 
 /**
- * A raw line of java script code, which is simply inlined as is.
+ * A raw line of Javascript code, which is simply inlined as is.
  * 
  * @author Timothy Jones
  */
@@ -18,14 +18,9 @@ public class JsRaw implements JsStmt {
   }
 
   public String compile(JsFormatter ws) {
-    if (content.length() == 0) {
-      return content;
-    }
-
-    return ws.idt + content + ws.lb;
+    return content;
   }
 
-  public void collectAssignments(Set<String> assignments) {
-    // do nout
-  }
+  public void collectAssignments(Set<String> assignments) {}
+
 }
