@@ -1,4 +1,21 @@
-var $debug, $newMap, $newSet;
+var $debug, $newMap, $newSet, println, str;
+
+str = (function () {
+  var j, s;
+  s = function (o) {
+    return o.toString();
+  };
+  j = typeof JSON !== 'undefined' ? JSON.stringify : s;
+  return function (o) {
+    return (typeof o === 'object' ? j : s)(o);
+  };
+}());
+
+println = (function () {
+  return typeof sysout === 'undefined' ? function () {} : function (o) {
+    sysout.println(str(o));
+  };
+}());
 
 // Performs a deep clone of a given value.
 function $clone(a) {

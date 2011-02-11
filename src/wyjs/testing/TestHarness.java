@@ -116,7 +116,7 @@ public class TestHarness {
 
   private static String run(String path, String name, String... args) {
     try {
-      Reader stdlib = new FileReader(new File("lib/stdlib.min.js"));
+      Reader stdlib = new FileReader(new File("stdlib/stdlib.js"));
       Reader file = new FileReader(new File(path + "/" + name + ".js"));
       Context cxt = Context.enter();
       Scriptable scope = cxt.initStandardObjects();
@@ -125,11 +125,12 @@ public class TestHarness {
       Object sysout = Context.javaToJS(new PrintStream(out), scope);
       OutputStream err = new ByteArrayOutputStream();
       Object syserr = Context.javaToJS(new PrintStream(err), scope);
-
+      
       ScriptableObject.putConstProperty(scope, "sysout", sysout);
       ScriptableObject.putConstProperty(scope, "syserr", syserr);
       cxt.evaluateReader(scope, stdlib, "stdlib", 1, null);
       cxt.evaluateReader(scope, file, name, 1, null);
+      cxt.evaluateString(scope, "main()", "main", 1, null);
 
       System.err.println(err);
       return out.toString();

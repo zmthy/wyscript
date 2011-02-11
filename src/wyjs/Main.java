@@ -77,7 +77,7 @@ public class Main {
   public static int run(String[] args) {
     boolean verbose = false;
     ArrayList<String> whileypath = new ArrayList<String>();
-    ArrayList<String> bootpath = new ArrayList<String>();	
+    ArrayList<String> bootpath = new ArrayList<String>();
     int fileArgsBegin = 0;
 
     for (int i = 0; i != args.length; ++i) {
@@ -91,17 +91,15 @@ public class Main {
               + MAJOR_VERSION + "." + MINOR_VERSION + "." + MINOR_REVISION);
           System.exit(0);
         } else if (arg.equals("-wp") || arg.equals("-whileypath")) {
-        	Collections.addAll(whileypath, args[++i]
-        	                                    .split(File.pathSeparator));
+          Collections.addAll(whileypath, args[++i].split(File.pathSeparator));
         } else if (arg.equals("-bp") || arg.equals("-bootpath")) {
-        	Collections.addAll(bootpath, args[++i]
-        	                                  .split(File.pathSeparator));
+          Collections.addAll(bootpath, args[++i].split(File.pathSeparator));
         } else if (arg.equals("-verbose")) {
-        	verbose = true;
+          verbose = true;
         } else if (arg.equals("-verbose")) {
-        	verbose = true;
+          verbose = true;
         } else {
-        	throw new RuntimeException("Unknown option: " + args[i]);
+          throw new RuntimeException("Unknown option: " + args[i]);
         }
 
         fileArgsBegin = i + 1;
@@ -113,16 +111,17 @@ public class Main {
       return UNKNOWN_ERROR;
     }
 
-    whileypath.add(0,".");
-	whileypath.addAll(bootpath);
-    
+    whileypath.add(0, ".");
+    whileypath.add(1, "stdlib/wyjs/lang/");
+    whileypath.addAll(bootpath);
+
     try {
       try {
         ArrayList<File> files = new ArrayList<File>();
         for (int i = fileArgsBegin; i != args.length; ++i) {
           files.add(new File(args[i]));
         }
-        compile(files,whileypath,verbose);
+        compile(files, whileypath, verbose);
       } catch (ParseError e) {
         if (e.filename() != null) {
           outputSourceError(e.filename(), e.start(), e.end(), e.getMessage());
@@ -203,28 +202,29 @@ public class Main {
    * @param files
    * @throws IOException
    */
-  public static void compile(List<File> files, List<String> whileypath, boolean verbose) throws IOException {
+  public static void compile(List<File> files, List<String> whileypath,
+      boolean verbose) throws IOException {
     ArrayList<Module> wyfiles = new ArrayList<Module>();
     ModuleLoader loader = new ModuleLoader(whileypath);
-    if(verbose) {
-    	loader.setLogger(new Logger() {
-    		
-    		public void logTimedMessage(String msg, long time) {
-    			errout.print(msg);
-    			errout.print(" ");
+    if (verbose) {
+      loader.setLogger(new Logger() {
 
-    			String t = Long.toString(time);
+        public void logTimedMessage(String msg, long time) {
+          errout.print(msg);
+          errout.print(" ");
 
-    			for (int i = 0; i < (80 - msg.length() - t.length()); ++i) {
-    				errout.print(".");
-    			}
-    			errout.print(" [");
-    			errout.print(time);
-    			errout.println("ms]");
-    		}
-    	});
+          String t = Long.toString(time);
+
+          for (int i = 0; i < (80 - msg.length() - t.length()); ++i) {
+            errout.print(".");
+          }
+          errout.print(" [");
+          errout.print(time);
+          errout.println("ms]");
+        }
+      });
     }
-    
+
     for (File file : files) {
       Lexer lexer = new Lexer(file.getPath());
       Parser parser = new Parser(file.getPath(), lexer.scan());
@@ -233,16 +233,16 @@ public class Main {
       loader.register(module);
     }
 
-    new NameResolution(loader).resolve(wyfiles);    
-    new TypeChecker(loader).check(wyfiles); 
-    
+    new NameResolution(loader).resolve(wyfiles);
+    new TypeChecker(loader).check(wyfiles);
+
     for (Module wf : wyfiles) {
       translate(wf, true);
     }
   }
 
   public static void translate(Module wf, boolean pp) throws IOException {
-    String filename = wf.filename.replace(".whiley", ".js");
+    String filename = wf.filename.replace(".wyjs", ".js");
     FileOutputStream fout = new FileOutputStream(filename);
     PrintStream out = new PrintStream(fout);
 
