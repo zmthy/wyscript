@@ -1,11 +1,16 @@
-var $debug, $newMap, $newSet, println, str;
+var $Map, $Set, $debug, $newMap, $newSet, println, str;
 
+// TODO Doesn't account for recursive structures.
 str = (function () {
   var j, s;
   s = function (o) {
     return o.toString();
   };
-  j = typeof JSON !== 'undefined' ? JSON.stringify : s;
+  return typeof JSON === 'undefined' ? s : function (o) {
+    return typeof o === 'object' &&
+        !(o instanceof $Set || o instanceof $Map) ?
+        JSON.stringify(o).replace(/,/g, ', ') : s(o);
+  };
   return function (o) {
     return (typeof o === 'object' ? j : s)(o);
   };
@@ -158,6 +163,7 @@ $newSet = (function () {
   var p;
   function Set(a) {
     var i, l;
+    this.values = [];
     for (i = 0, l = a.length; i < l; ++i) {
       this.push(a[i]);
     }
@@ -177,6 +183,15 @@ $newSet = (function () {
     }
     return c;
   }
+  p.toString = function () {
+    var i, l, r, v;
+    r = [], v = this.values;
+    for (i = 0, l = v.length; i < l; ++i) {
+      r.push(str(v[i]));
+    }
+    return "{" + r.join(", ") + "}";
+  };
+  $Set = Set;
   return function () {
     return new Set(arguments);
   };
@@ -216,6 +231,15 @@ $newMap = (function () {
       this.values.splice(index, 1);
     }
   };
+  p.toString = function () {
+    var i, k, l, r, v;
+    k = this.keys, r = [], v = this.values;
+    for (i = 0, l = k.length; i < l; ++i) {
+      r.push(str(k[i]) + "=" + str(v[i]));
+    }
+    return "{" + r.join(", ") + "}";
+  };
+  $Map = Map;
   return function (k, v) {
     return new Map(k, v);
   };
