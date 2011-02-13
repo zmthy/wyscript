@@ -112,7 +112,7 @@ public class Main {
     }
 
     if(bootpath.isEmpty()) {
-    	bootpath.add(1, "stdlib/");	
+    	bootpath.add("stdlib/");	
     }
     
     whileypath.add(0, ".");        
