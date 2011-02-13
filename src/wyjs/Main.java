@@ -111,8 +111,11 @@ public class Main {
       return UNKNOWN_ERROR;
     }
 
-    whileypath.add(0, ".");
-    whileypath.add(1, "stdlib/wyjs/lang/");
+    if(bootpath.isEmpty()) {
+    	bootpath.add(1, "stdlib/");	
+    }
+    
+    whileypath.add(0, ".");        
     whileypath.addAll(bootpath);
 
     try {
