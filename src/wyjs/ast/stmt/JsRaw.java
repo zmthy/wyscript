@@ -2,33 +2,25 @@ package wyjs.ast.stmt;
 
 import java.util.Set;
 
-import wyjs.ast.JsNode;
-import wyjs.ast.expr.JsExpr;
 import wyjs.ast.util.JsFormatter;
 
 /**
- * A raw line of java script code, which is simply inlined as is.
+ * A raw line of Javascript code, which is simply inlined as is.
  * 
  * @author Timothy Jones
  */
 public class JsRaw implements JsStmt {
 
   private final String content;
-  
+
   public JsRaw(String content) {
     this.content = content;
   }
- 
-  public String compile(JsFormatter ws) {    
-    if (content.length() == 0) {
-      return content;
-    }
 
-    return ws.idt + content + ws.lb;
+  public String compile(JsFormatter ws) {
+    return content;
   }
 
-  
-  public void collectAssignments(Set<String> assignments) {
-    // do nout
-  }
+  public void collectAssignments(Set<String> assignments) {}
+
 }

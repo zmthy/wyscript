@@ -3,7 +3,6 @@ package wyjs.stages;
 import static wyjs.util.SyntaxError.syntaxError;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +24,11 @@ import wyjs.lang.Expr.RecordGen;
 import wyjs.lang.Expr.TupleGen;
 import wyjs.lang.Expr.UnOp;
 import wyjs.lang.Expr.Variable;
+import wyjs.lang.Module;
+import wyjs.lang.Module.ConstDecl;
+import wyjs.lang.Module.Decl;
+import wyjs.lang.Module.FunDecl;
+import wyjs.lang.Module.TypeDecl;
 import wyjs.lang.ModuleID;
 import wyjs.lang.NameID;
 import wyjs.lang.Stmt;
@@ -38,8 +42,6 @@ import wyjs.lang.Stmt.Skip;
 import wyjs.lang.Stmt.While;
 import wyjs.lang.Type;
 import wyjs.lang.UnresolvedType;
-import wyjs.lang.Module;
-import wyjs.lang.Module.*;
 import wyjs.util.Attribute;
 import wyjs.util.Pair;
 import wyjs.util.ResolveError;
@@ -47,6 +49,7 @@ import wyjs.util.SyntacticElement;
 import wyjs.util.SyntaxError;
 
 public class TypeChecker {
+
   private ModuleLoader loader;
   private HashSet<ModuleID> modules;
   private HashMap<NameID, Module> filemap;
@@ -55,45 +58,44 @@ public class TypeChecker {
   private HashMap<NameID, Expr> constants;
   private HashMap<NameID, UnresolvedType> unresolved;
   private String filename;
-  private FunDecl currentFunDecl;    
-  
+  private FunDecl currentFunDecl;
+
   public TypeChecker(ModuleLoader loader) {
-		this.loader = loader;
+    this.loader = loader;
   }
-	
-  
+
   public void check(List<Module> files) {
-		modules = new HashSet<ModuleID>();
-		filemap = new HashMap<NameID, Module>();
-		functions = new HashMap<NameID, List<Type.Fun>>();
-		types = new HashMap<NameID, Type>();
-		constants = new HashMap<NameID, Expr>();
-		unresolved = new HashMap<NameID, UnresolvedType>();
+    modules = new HashSet<ModuleID>();
+    filemap = new HashMap<NameID, Module>();
+    functions = new HashMap<NameID, List<Type.Fun>>();
+    types = new HashMap<NameID, Type>();
+    constants = new HashMap<NameID, Expr>();
+    unresolved = new HashMap<NameID, UnresolvedType>();
 
-		// now, init data
-		for (Module f : files) {
-			modules.add(f.id());
-		}
+    // now, init data
+    for (Module f : files) {
+      modules.add(f.id());
+    }
 
-		// Stage 1 ... resolve and check types of all named types + constants
-		generateConstants(files);
-		generateTypes(files);
+    // Stage 1 ... resolve and check types of all named types + constants
+    generateConstants(files);
+    generateTypes(files);
 
-		// Stage 2 ... resolve and check types for all functions
-		for (Module f : files) {
-			filename = f.filename;
-			for (Module.Decl d : f.declarations) {
-				if (d instanceof FunDecl) {
-					partResolve(f.id(), (FunDecl) d);
-				}
-			}
-		}
+    // Stage 2 ... resolve and check types for all functions
+    for (Module f : files) {
+      filename = f.filename;
+      for (Module.Decl d : f.declarations) {
+        if (d instanceof FunDecl) {
+          partResolve(f.id(), (FunDecl) d);
+        }
+      }
+    }
 
-		// Stage 3 ... propagate types through all expressions
-		for (Module f : files) {
-			resolve(f);
-		}
-	}
+    // Stage 3 ... propagate types through all expressions
+    for (Module f : files) {
+      resolve(f);
+    }
+  }
 
   // =======================================================================
   // Stage 1 --- Generate and expand all constants and types
@@ -156,10 +158,10 @@ public class TypeChecker {
     if (value != null) {
       return value;
     } else if (!modules.contains(key.module())) {
-		// indicates a non-local key
-		Module mi = loader.loadModule(key.module());
-		return mi.constant(key.name()).constant;
-	} else if (visited.contains(key)) {
+      // indicates a non-local key
+      Module mi = loader.loadModule(key.module());
+      return mi.constant(key.name()).constant;
+    } else if (visited.contains(key)) {
       // this indicates a cyclic definition.
       syntaxError("cyclic constant definition encountered",
           filemap.get(key).filename, exprs.get(key));
@@ -211,7 +213,8 @@ public class TypeChecker {
    * @param files
    */
   protected void generateTypes(List<Module> files) {
-    HashMap<NameID, SyntacticElement> srcs = new HashMap<NameID, SyntacticElement>();
+    HashMap<NameID, SyntacticElement> srcs =
+        new HashMap<NameID, SyntacticElement>();
 
     // The declOrder list is basically a hack. It ensures that types are
     // visited in the order that they are declared. This helps give some
@@ -272,13 +275,13 @@ public class TypeChecker {
     } else if (t != null) {
       return t;
     } else if (!modules.contains(key.module())) {
-		// indicates a non-local key which we can resolve immediately
-		Module mi = loader.loadModule(key.module());
-		Module.TypeDecl td = mi.type(key.name());
-		
-		// FIXME: I'm not 100% sure this really makes sense.		
-		unresolved.put(key, td.type);		
-        filemap.put(key, mi);
+      // indicates a non-local key which we can resolve immediately
+      Module mi = loader.loadModule(key.module());
+      Module.TypeDecl td = mi.type(key.name());
+
+      // FIXME: I'm not 100% sure this really makes sense.
+      unresolved.put(key, td.type);
+      filemap.put(key, mi);
     }
 
     // following is needed to terminate any recursion
@@ -486,7 +489,7 @@ public class TypeChecker {
   protected Environment resolve(Return s, Environment environment) {
 
     if (s.expr != null) {
-      Type t = resolve(s.expr, environment);      
+      Type t = resolve(s.expr, environment);
       Type.Fun ft = currentFunDecl.attribute(Attribute.FunType.class).type;
       checkSubtype(ft.ret, t, s.expr);
     }
@@ -725,7 +728,7 @@ public class TypeChecker {
         // receivers match up OK ...
         if (ft.params.size() == paramTypes.size() && paramSubtypes(ft, target)
             && (candidate == null || paramSubtypes(candidate, ft))) {
-          candidate = ft;         
+          candidate = ft;
         }
       }
     }
@@ -752,20 +755,20 @@ public class TypeChecker {
 
     return candidate;
   }
-  
+
   private boolean paramSubtypes(Type.Fun f1, Type.Fun f2) {
-		List<Type> f1_params = f1.params;
-		List<Type> f2_params = f2.params;
-		if(f1_params.size() == f2_params.size()) {
-			for(int i=0;i!=f1_params.size();++i) {
-				if(!Type.isSubtype(f1_params.get(i),f2_params.get(i))) {
-					return false;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
+    List<Type> f1_params = f1.params;
+    List<Type> f2_params = f2.params;
+    if (f1_params.size() == f2_params.size()) {
+      for (int i = 0; i != f1_params.size(); ++i) {
+        if (!Type.isSubtype(f1_params.get(i), f2_params.get(i))) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 
   private String parameterString(List<Type> paramTypes) {
     String paramStr = "(";
@@ -782,18 +785,18 @@ public class TypeChecker {
 
   protected List<Type.Fun> lookupMethod(NameID nid) throws ResolveError {
     List<Type.Fun> matches = functions.get(nid);
-    
+
     if (matches == null) {
       Module m = loader.loadModule(nid.module());
       List<FunDecl> fmatches = m.functions(nid.name());
       matches = new ArrayList<Type.Fun>();
-      for(FunDecl fd : fmatches) {
-    	  partResolve(m.id(),fd);
-    	  matches.add(fd.attribute(Attribute.FunType.class).type);
+      for (FunDecl fd : fmatches) {
+        partResolve(m.id(), fd);
+        matches.add(fd.attribute(Attribute.FunType.class).type);
       }
     }
-    
-    return matches;    
+
+    return matches;
   }
 
   protected Type resolve(UnOp uop, Environment environment) throws ResolveError {
@@ -1003,15 +1006,15 @@ public class TypeChecker {
           return n_t;
         }
       } else {
-    	// indicates a non-local key which we can resolve immediately
-    	  try {
-    		  Module mi = loader.loadModule(mid);
-    		  Module.TypeDecl td = mi.type(dt.name);  		     		  
-    		  return resolve(td.type);
-    	  } catch (ResolveError rex) {
-    		  syntaxError(rex.getMessage(), filename, t, rex);
-    		  return null;
-    	  }
+        // indicates a non-local key which we can resolve immediately
+        try {
+          Module mi = loader.loadModule(mid);
+          Module.TypeDecl td = mi.type(dt.name);
+          return resolve(td.type);
+        } catch (ResolveError rex) {
+          syntaxError(rex.getMessage(), filename, t, rex);
+          return null;
+        }
       }
     } else if (t instanceof UnresolvedType.Union) {
       UnresolvedType.Union ut = (UnresolvedType.Union) t;
@@ -1090,4 +1093,5 @@ public class TypeChecker {
       super(init);
     }
   }
+
 }

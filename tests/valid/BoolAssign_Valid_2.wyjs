@@ -1,0 +1,10 @@
+void main([[char]] args):
+    x = true
+    y = false
+    println(x)
+    println(y)
+    println("AND")
+    x = x && y
+    println(x)
+    println("NOT")
+    println(str(!x))

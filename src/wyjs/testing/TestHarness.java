@@ -51,7 +51,7 @@ public class TestHarness {
     for (int i = 0; i != params.length; ++i) {
       args[i] = params[i];
     }
-    args[args.length - 1] = srcPath + File.separatorChar + name + ".whiley";
+    args[args.length - 1] = srcPath + File.separatorChar + name + ".wyjs";
 
     if (Main.run(args) != 0) {
       fail("couldn't compile test!");
@@ -63,7 +63,7 @@ public class TestHarness {
   }
 
   protected void parserFailTest(String name) {
-    name = srcPath + File.separatorChar + name + ".whiley";
+    name = srcPath + File.separatorChar + name + ".wyjs";
 
     if (compile("-wp", "lib/wyrt.jar", name) != Main.PARSE_ERROR) {
       fail("Test parsed when it shouldn't have!");
@@ -71,7 +71,7 @@ public class TestHarness {
   }
 
   protected void contextFailTest(String name) {
-    name = srcPath + File.separatorChar + name + ".whiley";
+    name = srcPath + File.separatorChar + name + ".wyjs";
 
     if (compile("-wp", "lib/wyrt.jar", name) != Main.CONTEXT_ERROR) {
       fail("Test compiled when it shouldn't have!");
@@ -79,7 +79,7 @@ public class TestHarness {
   }
 
   protected void verificationFailTest(String name) {
-    name = srcPath + File.separatorChar + name + ".whiley";
+    name = srcPath + File.separatorChar + name + ".wyjs";
 
     if (compile("-wp", "lib/wyrt.jar", "-V", name) != Main.CONTEXT_ERROR) {
       fail("Test compiled when it shouldn't have!");
@@ -87,7 +87,7 @@ public class TestHarness {
   }
 
   protected void verificationRunTest(String name) {
-    String fullName = srcPath + File.separatorChar + name + ".whiley";
+    String fullName = srcPath + File.separatorChar + name + ".wyjs";
 
     if (compile("-wp", "lib/wyrt.jar", "-V", fullName) != 0) {
       fail("couldn't compile test!");
@@ -99,7 +99,7 @@ public class TestHarness {
   }
 
   protected void runtimeFailTest(String name) {
-    String fullName = srcPath + File.separatorChar + name + ".whiley";
+    String fullName = srcPath + File.separatorChar + name + ".wyjs";
     if (compile("-wp", "lib/wyrt.jar", fullName) != 0) {
       fail("couldn't compile test!");
     } else {
@@ -116,6 +116,8 @@ public class TestHarness {
 
   private static String run(String path, String name, String... args) {
     try {
+      Reader stdlib = new FileReader(new File("stdlib/stdlib.js"));
+      Reader json = new FileReader(new File("stdlib/json.min.js"));
       Reader file = new FileReader(new File(path + "/" + name + ".js"));
       Context cxt = Context.enter();
       Scriptable scope = cxt.initStandardObjects();
@@ -124,10 +126,13 @@ public class TestHarness {
       Object sysout = Context.javaToJS(new PrintStream(out), scope);
       OutputStream err = new ByteArrayOutputStream();
       Object syserr = Context.javaToJS(new PrintStream(err), scope);
-
+      
       ScriptableObject.putConstProperty(scope, "sysout", sysout);
       ScriptableObject.putConstProperty(scope, "syserr", syserr);
+      cxt.evaluateReader(scope, json, "json", 1, null);
+      cxt.evaluateReader(scope, stdlib, "stdlib", 1, null);
       cxt.evaluateReader(scope, file, name, 1, null);
+      cxt.evaluateString(scope, "main()", "main", 1, null);
 
       System.err.println(err);
       return out.toString();

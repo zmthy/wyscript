@@ -3,7 +3,7 @@ package wyjs.ast.util;
 public abstract class JsRegex {
 
   public static boolean isIdentifier(String value) {
-    return value.matches("^[a-Z$_][a-Z0-9$_]+$");
+    return value.matches("^[a-zA-Z$_][a-zA-Z0-9$_]+$");
   }
 
   public static boolean isNumber(String value) {

@@ -1,0 +1,7 @@
+void main([[char]] args):
+    ls = [true,false,true]
+    println(ls)
+    x = ls[0]
+    println(x)
+    ls[0] = false
+    println(ls)

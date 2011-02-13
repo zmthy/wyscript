@@ -1,0 +1,5 @@
+void main([[char]] args):
+    x = {flag:true,code:0}
+    println(x)
+    x.flag = false
+    println(x)
