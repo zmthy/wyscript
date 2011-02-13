@@ -214,9 +214,9 @@ public class Parser {
     match(Colon.class);
     int end = index;
     matchEndLine();
-    List<Stmt> stmts;
+    List<Stmt> stmts;    
     if(modifiers.contains(Modifier.EXTERN)) {
-    	// this indicates an external method
+    	// this indicates an external method    	
     	stmts = parseExternalBlock(1);
     } else {
     	stmts = parseBlock(1);
