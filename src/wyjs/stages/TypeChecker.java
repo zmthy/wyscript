@@ -979,6 +979,8 @@ public class TypeChecker {
       return Type.T_INT;
     } else if (t instanceof UnresolvedType.Char) {
       return Type.T_CHAR;
+    } else if (t instanceof UnresolvedType.Strung) {
+      return Type.T_STRING;
     } else if (t instanceof UnresolvedType.Real) {
       return Type.T_REAL;
     } else if (t instanceof UnresolvedType.List) {
