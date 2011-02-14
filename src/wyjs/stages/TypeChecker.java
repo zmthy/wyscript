@@ -621,8 +621,10 @@ public class TypeChecker {
       return Type.T_INT;
     } else if (v instanceof Double) {
       return Type.T_REAL;
+    } else if (v instanceof String) {
+      return Type.T_STRING;
     }
-    syntaxError("unknown constant encountered", filename, c);
+    syntaxError("unknown constant encountered (" + v.getClass().getName() + ")", filename, c);
     return null;
   }
 
@@ -841,7 +843,15 @@ public class TypeChecker {
       checkSubtype(Type.T_REAL, lhs_t, bop.lhs);
       checkSubtype(Type.T_REAL, rhs_t, bop.rhs);
       return Type.leastUpperBound(lhs_t, rhs_t);
-    }
+    }    
+    case EQ:
+    case NEQ: {
+    	Type lub = Type.greatestLowerBound(lhs_t, rhs_t);
+    	if(lub == Type.T_VOID) {
+    		syntaxError("incomparable types: " + lhs_t + ", " + rhs_t,filename,bop);
+    	}
+    	return Type.T_BOOL;
+    }    
     case LT:
     case LTEQ:
     case GT:

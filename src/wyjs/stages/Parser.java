@@ -1164,12 +1164,8 @@ public class Parser {
 
   private Expr parseString() {
     int start = index;
-    String s = match(Strung.class).string;
-    ArrayList<Object> vals = new ArrayList<Object>();
-    for (int i = 0; i != s.length(); ++i) {
-      vals.add(s.charAt(i));
-    }
-    return new Expr.Constant(vals, sourceAttr(start, index - 1));
+    String s = match(Strung.class).string;    
+    return new Expr.Constant(s, sourceAttr(start, index - 1));
   }
 
   private UnresolvedType parseType() {
@@ -1239,6 +1235,9 @@ public class Parser {
     } else if (token.text.equals("char")) {
       matchKeyword("char");
       t = new UnresolvedType.Char(sourceAttr(start, index - 1));
+    } else if (token.text.equals("string")) {
+        matchKeyword("string");
+        t = new UnresolvedType.Strung(sourceAttr(start, index - 1));
     } else if (token instanceof LeftBrace) {
       match(LeftBrace.class);
       skipWhiteSpace();

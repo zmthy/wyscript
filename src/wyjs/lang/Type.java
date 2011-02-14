@@ -35,6 +35,7 @@ public abstract class Type {
   public static final Real T_REAL = new Real();
   public static final Meta T_META = new Meta();
   public static final Char T_CHAR = new Char();
+  public static final Strung T_STRING = new Strung();
 
   public static Named T_NAMED(NameID name, Type element) {
     return get(new Named(name, element));
@@ -1210,6 +1211,24 @@ public abstract class Type {
 	  }
   }
 
+  public static final class Strung extends NonUnion {
+
+	  private Strung() {
+	  }
+
+	  public boolean equals(Object o) {
+		  return o == T_STRING;
+	  }
+
+	  public int hashCode() {
+		  return 2;
+	  }
+
+	  public String toString() {
+		  return "string";
+	  }
+  }
+  
   public static final class Int extends NonUnion {
 
     private Int() {}

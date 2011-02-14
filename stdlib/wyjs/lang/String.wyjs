@@ -1,9 +1,7 @@
 package wyjs.lang
 
-define string as [char]
-
 // Stringifies an arbitrary value.
-extern [char] str(* value):
+extern string str(* value):
     if (typeof value === "object" && typeof JSON !== "undefined") {
     return JSON.stringify(value);
     }
