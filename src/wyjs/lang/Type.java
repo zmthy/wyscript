@@ -966,7 +966,10 @@ public abstract class Type {
     } else if (t instanceof Type.List) {
       Type.List tl = (Type.List) t;
       return Type.T_DICTIONARY(Type.T_INT, tl.element);
-    } else if (t instanceof Type.Named) {
+    } else if (t instanceof Type.Strung) {
+        Type.Strung tl = (Type.Strung) t;
+        return Type.T_DICTIONARY(Type.T_INT, Type.T_CHAR);
+      } else if (t instanceof Type.Named) {
       Type.Named nt = (Type.Named) t;
       return effectiveDictionaryType(nt.type);
     }
