@@ -3,6 +3,6 @@ void f([int] x):
     print str(z)
     print str(x[z-1])
 
-void main([[char]] args):
+void main([string] args):
      arr = [1,2,3]
      f(arr)

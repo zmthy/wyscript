@@ -7,7 +7,7 @@ b_nat f(a_nat x):
     else:
         return f(x-1)
 
-void main([[char]] args):
+void main([string] args):
     x = |args|    
     x = f(x)    
     println(x)

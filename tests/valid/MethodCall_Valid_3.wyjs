@@ -1,5 +1,5 @@
 void f(int x):
     println(x)
 
-void main([[char]] args):
+void main([string] args):
     this->f(1)

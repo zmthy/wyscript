@@ -1,2 +1,2 @@
-void main([[char]] args):
+void main([string] args):
      println(1)

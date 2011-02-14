@@ -6,6 +6,6 @@ void MyProc::run(System sys):
     else:
         sys->println("FALSE")
 
-void main([[char]] args):
+void main([string] args):
     mproc = spawn { flag:false }     
     mproc->run(this)

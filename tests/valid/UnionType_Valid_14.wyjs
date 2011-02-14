@@ -6,6 +6,6 @@ nlist f(int x):
     else:
         return f(x-1)
 
-void main([[char]] args):
+void main([string] args):
     x = f(2)    
     println(x)

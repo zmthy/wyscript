@@ -5,6 +5,6 @@ int pState::send2(int x, System sys):
     sys->println(x)
     return -1
 
-void main([[char]] args):
+void main([string] args):
     x = (spawn {x:1,y:2})->send2(1,this)
     println(x)

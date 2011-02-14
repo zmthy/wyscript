@@ -1,7 +1,7 @@
 (int,int) f(int x):
     return (x,x+2)
 
-void main([[char]] args):
+void main([string] args):
     (x,y) = f(1)
     println(x)
     println(y)

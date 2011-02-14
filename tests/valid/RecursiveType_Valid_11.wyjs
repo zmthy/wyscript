@@ -7,7 +7,7 @@ int f(Expr e):
     else:
         return 0
 
-void main([[char]] args):
+void main([string] args):
     v = f([1,2,3])
     println(v)
     v = f(1.234)

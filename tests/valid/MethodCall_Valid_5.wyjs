@@ -4,5 +4,5 @@
 int get():
     return 1
 
-void main([[char]] args):
+void main([string] args):
     println(str(this->f(this)))

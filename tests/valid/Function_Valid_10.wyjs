@@ -1,14 +1,14 @@
 define msg as {int op, int s}
 
-[char] f(msg m):
+string f(msg m):
     return (str(m))
 
-[char] f([int] ls):
+string f([int] ls):
     return (str(ls))
 
-[char] f([real] ls):
+string f([real] ls):
     return (str(ls))
 
-void main([[char]] args):
+void main([string] args):
     println(f([1,2,3]))
     println(f([1.2,2.2,3.3]))

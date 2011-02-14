@@ -1,6 +1,6 @@
-[char] f([int] x):
+string f([int] x):
      return str(|x|)
 
-void main([[char]] args):
+void main([string] args):
      arr = [[1,2,3]]
      println(f(arr[0]))

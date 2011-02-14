@@ -1,12 +1,12 @@
-[char] f({int} xs):
+string f({int} xs):
     if |xs| > 0:
         return str(xs)
     else:
         return "FAILED"
 
-[char] g({int} ys):
+string g({int} ys):
     return f(ys ∪ {1})
 
-void main([[char]] args):
+void main([string] args):
     println(g({}))
     println(g({2}))

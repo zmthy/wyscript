@@ -7,7 +7,7 @@ void f(int y):
 void g([int] z):
     println(z)
 
-void main([[char]] args):
+void main([string] args):
     x = 123
     this->f(x)
     x = [1,2,3]

@@ -1,6 +1,6 @@
 define expr as {int}|bool
 
-[char] f(expr e):
+string f(expr e):
     if e ~= {int}:
         return "GOT {INT}"
     else if e ~= bool:
@@ -8,7 +8,7 @@ define expr as {int}|bool
     else:
         return "GOT SOMETHING ELSE?"
 
-void main([[char]] args):
+void main([string] args):
     e = true
     println(f(e))
     e = {1,2,3,4}

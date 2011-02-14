@@ -4,7 +4,7 @@ define tac2tb as {int f1, int f2}
 tac2tb f(tac2ta x):
     return {f1: x.f1-1, f2: x.f2}
 
-void main([[char]] args):
+void main([string] args):
     x = {f1:2,f2:3}
     println(x)
     x.f1 = 1

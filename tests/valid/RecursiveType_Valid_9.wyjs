@@ -8,6 +8,6 @@ expr f(posExpr e1):
     e2 = e1
     return e2
 
-void main([[char]] args):
+void main([string] args):
     e = f({lhs:{lhs:1,rhs:2},rhs:1})
     println(e)

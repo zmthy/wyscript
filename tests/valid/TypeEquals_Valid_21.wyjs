@@ -1,12 +1,12 @@
 define Rtypes as {real x, real y} | {int x, int z}
 
-[char] f(Rtypes e):
+string f(Rtypes e):
     if e ~= {int x, int y}:
         return "GOT IT"
     else:
         return "NOPE"
 
-void main([[char]] args):
+void main([string] args):
     println(f({x: 1.2, y: 1.2}))
     println(f({x: 1, y: 1}))
     println(f({x: 1, z: 1}))

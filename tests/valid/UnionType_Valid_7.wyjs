@@ -4,10 +4,10 @@ define msg2 as {int index}
 
 define msgType as msg1 | msg2
 
-[char] f(msgType m):
+string f(msgType m):
     return str(m)
 
-void main([[char]] args):
+void main([string] args):
     m1 = {op:11,data:[]}
     m2 = {index:1}
     println(f(m1))

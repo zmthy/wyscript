@@ -1,9 +1,9 @@
 define realtup as {real op}
 
-[char] f(realtup t):
+string f(realtup t):
     x = t.op
     return str(t)
 
-void main([[char]] args):
+void main([string] args):
     t = {op:1}
     println(f(t))

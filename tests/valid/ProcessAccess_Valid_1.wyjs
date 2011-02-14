@@ -7,7 +7,7 @@ int Ptype::get():
     print str(*this)
     return this->mode
 
-void main([[char]] args):
+void main([string] args):
     p = spawn {mode:1,rest:2}
     println(str(*p))
     x = p->get()
