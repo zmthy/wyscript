@@ -1584,6 +1584,83 @@ public abstract class Type {
     }
   }
 
+  public static String type2str(Type t) {
+		if(t == Type.T_EXISTENTIAL) {
+			return "?";
+		} else if(t == Type.T_ANY) {
+			return "*";
+		} else if(t == Type.T_VOID) {
+			return "V";
+		} else if(t == Type.T_NULL) {
+			return "O";
+		} else if(t instanceof Type.Bool) {
+			return "B";
+		} else if(t instanceof Type.Int) {
+			return "I";
+		} else if(t instanceof Type.Real) {
+			return "R";
+		} else if(t instanceof Type.List) {
+			Type.List st = (Type.List) t;
+			return "[" + type2str(st.element) + "]";
+		} else if(t instanceof Type.Set) {
+			Type.Set st = (Type.Set) t;
+			return "{" + type2str(st.element) + "}";
+		} else if(t instanceof Type.Dictionary) {
+			Type.Dictionary st = (Type.Dictionary) t;
+			return "{" + type2str(st.key) + "->" + type2str(st.value) + "}";
+		} else if(t instanceof Type.Union) {
+			Type.Union st = (Type.Union) t;
+			String r = "";
+			boolean firstTime=true;
+			for(Type b : st.bounds) {
+				if(!firstTime) {
+					r += "|";
+				}
+				firstTime=false;
+				r += type2str(b);
+			}			
+			return r;
+		} else if(t instanceof Type.Record) {
+			Type.Record st = (Type.Record) t;
+			ArrayList<String> keys = new ArrayList<String>(st.types.keySet());
+			Collections.sort(keys);
+			String r="(";
+			for(String k : keys) {
+				Type kt = st.types.get(k);
+				r += k + ":" + type2str(kt);
+			}			
+			return r + ")";
+		} else if(t instanceof Type.Process) {
+			Type.Process st = (Type.Process) t;
+			return "P" + type2str(st.element);
+		} else if(t instanceof Type.Recursive) {
+			Type.Recursive rt = (Type.Recursive) t;
+			if(rt.type == null) {
+				return rt.name.module() + ";" + rt.name.name();				
+			} else {
+				return "U" + rt.name.module() + ";" + rt.name.name() + ";"
+				+ type2str(rt.type);				
+			}
+		} else if(t instanceof Type.Named) {
+			Type.Named st = (Type.Named) t;
+			return "N" + st.name.module() + ";" + st.name.name() + ";"
+					+ type2str(st.type);
+		} else if(t instanceof Type.Fun) {
+			Type.Fun ft = (Type.Fun) t;
+			String r = "";
+			if(ft.receiver != null) {
+				r += type2str(ft.receiver) + "$";
+			}				
+			r += type2str(ft.ret);
+			for(Type pt : ft.params) {
+				r += type2str(pt);
+			}
+			return r;
+		} else {
+			throw new RuntimeException("unknown type encountered: " + t);
+		}
+	}
+  
   private static final ArrayList<Type> types = new ArrayList<Type>();
   private static final HashMap<Type, Integer> cache = new HashMap<Type, Integer>();
 
