@@ -8,5 +8,5 @@ void main([string] args):
      p = {x:1,y:2}
      x = p.x     
      println(x)
-     println(str(|si|))
-     println(str(li[0]))
+     println(|si|)
+     println(li[0])

@@ -204,6 +204,7 @@ $newSet = (function () {
   function Set(a) {
     var i, l;
     this.values = [];
+    this.length = 0;
     for (i = 0, l = a.length; i < l; ++i) {
       this.push(a[i]);
     }
@@ -235,6 +236,7 @@ $newMap = (function () {
   function Map(k, v) {
     this.keys = $clone(k) || [];
     this.values = $clone(v) || [];
+    this.length = 0;
   }
   p = Map.prototype;
   p.put = function (k, v) {
@@ -243,9 +245,11 @@ $newMap = (function () {
     if (index > -1) {
       this.keys[index] = k;
       this.values[index] = v;
+    } else {
+      this.keys.push(k);
+      this.values.push(v);
+      this.length += 1;
     }
-    this.keys.push(k);
-    this.values.push(v);
   };
   p.get = function (k) {
     var index;
@@ -254,14 +258,6 @@ $newMap = (function () {
       return this.values[index];
     }
     return null;
-  };
-  p.remove = function (k) {
-    var index;
-    index = $indexOf(this.keys, k);
-    if (index > -1) {
-      this.keys.splice(index, 1);
-      this.values.splice(index, 1);
-    }
   };
   $Map = Map;
   return function (k, v) {
