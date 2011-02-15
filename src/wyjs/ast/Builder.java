@@ -62,6 +62,8 @@ import wyjs.lang.Stmt.IfElse;
 import wyjs.lang.Stmt.Return;
 import wyjs.lang.Stmt.Skip;
 import wyjs.lang.Stmt.While;
+import wyjs.lang.Type;
+import wyjs.util.Attribute;
 import wyjs.util.Pair;
 import wyjs.util.SyntaxError;
 
@@ -115,7 +117,10 @@ public class Builder {
       }
     }
 
-    return new JsFunctionStmt(decl.name, parameters, body);
+    Attribute.FunType attr = decl.attribute(Attribute.FunType.class);
+    String mangled = decl.name + "$" + Type.type2str(attr.type);
+
+    return new JsFunctionStmt(mangled, parameters, body);
   }
 
   public JsStmt doStmt(Module wfile, Stmt stmt) {
@@ -407,9 +412,12 @@ public class Builder {
   }
 
   public JsExpr doInvoke(Module wfile, Invoke expr) {
+    Attribute.FunType attr = expr.attribute(Attribute.FunType.class);
+    String mangled = expr.name + "$" + Type.type2str(attr.type);
+
     JsExpr function =
-        expr.receiver == null ? new JsVariable(expr.name) : new JsAccess(
-            doExpr(wfile, expr.receiver), expr.name);
+        expr.receiver == null ? new JsVariable(mangled) : new JsAccess(
+            doExpr(wfile, expr.receiver), mangled);
 
     return new JsInvoke(function, doExprs(wfile, expr.arguments));
   }

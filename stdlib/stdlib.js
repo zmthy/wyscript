@@ -1,6 +1,6 @@
-var $Map, $Set, $debug, $newMap, $newSet, println;
+var $Map, $Set, $debug, $newMap, $newSet, println$VA, str, str$StA;
 
-str = (function () {
+str = str$StA = (function () {
   function keys(o) {
     var i, k;
     if (Object.keys) {
@@ -41,7 +41,7 @@ str = (function () {
   };
 }());
 
-println = (function () {
+println$VA = (function () {
   return typeof sysout === 'undefined' ? function () {} : function (o) {
     sysout.println(str(o));
   };

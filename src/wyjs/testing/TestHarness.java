@@ -130,7 +130,7 @@ public class TestHarness {
       ScriptableObject.putConstProperty(scope, "syserr", syserr);
       cxt.evaluateReader(scope, stdlib, "stdlib", 1, null);
       cxt.evaluateReader(scope, file, name, 1, null);
-      cxt.evaluateString(scope, "main()", "main", 1, null);
+      cxt.evaluateString(scope, "main$VLSt()", "main", 1, null);
 
       System.err.println(err);
       return out.toString();
