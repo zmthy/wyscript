@@ -1,18 +1,43 @@
-var $Map, $Set, $debug, $newMap, $newSet, println, str;
+var $Map, $Set, $debug, $newMap, $newSet, println;
 
-// TODO Doesn't account for recursive structures.
 str = (function () {
-  var j, s;
-  s = function (o) {
-    return o.toString();
-  };
-  return typeof JSON === 'undefined' ? s : function (o) {
-    return typeof o === 'object' &&
-        !(o instanceof $Set || o instanceof $Map) ?
-        JSON.stringify(o).replace(/,/g, ', ') : s(o);
-  };
+  function keys(o) {
+    var i, k;
+    if (Object.keys) {
+      return Object.keys(o).sort();
+    }
+    k = [];
+    for (i in o) {
+      k.push(i);
+    }
+    return k.sort();
+  }
+  function join(list, arr, fn) {
+    var i, l, r;
+    r = [];
+    for (i = 0, l = arr.length; i < l; ++i) {
+      r.push(fn(arr[i], i));
+    }
+    return (list ? "[" : "{") + r.join(", ") + (list ? "]" : "}");
+  }
   return function (o) {
-    return (typeof o === 'object' ? j : s)(o);
+    var v;
+    if (typeof o === 'object') {
+      if (o instanceof Array) {
+        return join(true, o, str);
+      } else if (o instanceof $Map) {
+        v = o.values;
+        return join(false, o.keys, function (k, i) {
+          return str(k) + "=" + str(v[i]);
+        });
+      } else if (o instanceof $Set) {
+        return join(false, o.values, str);
+      }
+      return join(false, keys(o), function (k) {
+        return k + ":" + str(o[k]);
+      });
+    }
+    return o.toString();
   };
 }());
 
@@ -42,12 +67,27 @@ function $clone(a) {
   return b;
 }
 
+// Ensures two objects are either both not or both of the given types.
+function $typecheck(a, b, ts) {
+  var at, bt, i, l, t;
+  for (i = 0, l = t.length; i < l; ++i) {
+    t = ts[i], at = a instanceof t, bt = b instanceof t;
+    if (at && !bt || !at && bt) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // Computes whether two values are strictly equal.
 // Recurses down structures to see if all properties are the same.
 function $equals(a, b, m) {
   var i, j, k, l, v;
   if (typeof a !== 'object' || typeof b !== 'object') {
     return a === b;
+  }
+  if (!$typecheck(a, b, [Array, $Map, $Set])) {
+    return false;
   }
   try {
     return JSON.stringify(a) === JSON.stringify(b);
@@ -66,7 +106,7 @@ function $equals(a, b, m) {
   }
   i = j = 0;
   if (a instanceof Array) {
-    if (!(b instanceof Array) || a.length !== b.length) {
+    if (a.length !== b.length) {
       return false;
     }
     for (l = a.length; i < l; ++i) {
@@ -174,7 +214,7 @@ $newSet = (function () {
       this.values.push(v);
       this.length += 1;
     }
-  }
+  };
   p.concat = function (a) {
     var c, i, l;
     c = $clone(a);
@@ -182,14 +222,6 @@ $newSet = (function () {
       c.push(a[i]);
     }
     return c;
-  }
-  p.toString = function () {
-    var i, l, r, v;
-    r = [], v = this.values;
-    for (i = 0, l = v.length; i < l; ++i) {
-      r.push(str(v[i]));
-    }
-    return "{" + r.join(", ") + "}";
   };
   $Set = Set;
   return function () {
@@ -230,14 +262,6 @@ $newMap = (function () {
       this.keys.splice(index, 1);
       this.values.splice(index, 1);
     }
-  };
-  p.toString = function () {
-    var i, k, l, r, v;
-    k = this.keys, r = [], v = this.values;
-    for (i = 0, l = k.length; i < l; ++i) {
-      r.push(str(k[i]) + "=" + str(v[i]));
-    }
-    return "{" + r.join(", ") + "}";
   };
   $Map = Map;
   return function (k, v) {

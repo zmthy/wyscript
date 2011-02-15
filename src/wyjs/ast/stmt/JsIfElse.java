@@ -32,15 +32,13 @@ public class JsIfElse implements JsStmt {
     }
   }
 
-  
   public String compile(JsFormatter ws) {
-    return "if" + ws.s + "(" + condition.compile(ws) + ")" + ws.s + "{" + ws.ln
-        + JsLists.compile(ifBody, ws.next()) + ws.idt + "}" + ws.s + "else"
-        + ws.s + "{" + ws.ln + JsLists.compile(elseBody, ws.next()) + ws.idt
-        + "}" + ws.ln;
+    return ws.idt + "if" + ws.s + "(" + condition.compile(ws) + ")" + ws.s
+        + "{" + ws.ln + JsLists.compile(ifBody, ws.next()) + ws.idt + "}"
+        + ws.s + "else" + ws.s + "{" + ws.ln
+        + JsLists.compile(elseBody, ws.next()) + ws.idt + "}" + ws.ln;
   }
 
-  
   public void collectAssignments(Set<String> assignments) {
     condition.collectAssignments(assignments);
     for (JsStmt stmt : ifBody) {

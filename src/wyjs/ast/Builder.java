@@ -17,16 +17,25 @@ import wyjs.ast.expr.JsLiteral;
 import wyjs.ast.expr.JsObject;
 import wyjs.ast.expr.JsUnOp;
 import wyjs.ast.expr.JsVariable;
-import wyjs.ast.stmt.*;
+import wyjs.ast.stmt.JsConstant;
+import wyjs.ast.stmt.JsFor;
+import wyjs.ast.stmt.JsFunctionStmt;
+import wyjs.ast.stmt.JsIfElse;
+import wyjs.ast.stmt.JsLine;
+import wyjs.ast.stmt.JsRaw;
+import wyjs.ast.stmt.JsReturn;
+import wyjs.ast.stmt.JsStmt;
+import wyjs.ast.stmt.JsWhile;
 import wyjs.ast.util.JsHelpers;
+import wyjs.ast.util.JsRegex;
 import wyjs.lang.Expr;
+import wyjs.lang.Expr.Access;
 import wyjs.lang.Expr.BOp;
 import wyjs.lang.Expr.BinOp;
 import wyjs.lang.Expr.Comprehension;
 import wyjs.lang.Expr.Constant;
 import wyjs.lang.Expr.DictionaryGen;
 import wyjs.lang.Expr.Invoke;
-import wyjs.lang.Expr.Access;
 import wyjs.lang.Expr.NamedConstant;
 import wyjs.lang.Expr.NaryOp;
 import wyjs.lang.Expr.RecordAccess;
@@ -36,8 +45,6 @@ import wyjs.lang.Expr.TypeConst;
 import wyjs.lang.Expr.UOp;
 import wyjs.lang.Expr.UnOp;
 import wyjs.lang.Expr.Variable;
-import wyjs.lang.Stmt;
-import wyjs.lang.Stmt.*;
 import wyjs.lang.Module;
 import wyjs.lang.Module.ConstDecl;
 import wyjs.lang.Module.Decl;
@@ -45,6 +52,16 @@ import wyjs.lang.Module.FunDecl;
 import wyjs.lang.Module.ImportDecl;
 import wyjs.lang.Module.Parameter;
 import wyjs.lang.Module.TypeDecl;
+import wyjs.lang.Stmt;
+import wyjs.lang.Stmt.Assert;
+import wyjs.lang.Stmt.Assign;
+import wyjs.lang.Stmt.Debug;
+import wyjs.lang.Stmt.ExternJS;
+import wyjs.lang.Stmt.For;
+import wyjs.lang.Stmt.IfElse;
+import wyjs.lang.Stmt.Return;
+import wyjs.lang.Stmt.Skip;
+import wyjs.lang.Stmt.While;
 import wyjs.util.Pair;
 import wyjs.util.SyntaxError;
 
@@ -78,8 +95,7 @@ public class Builder {
   }
 
   public JsStmt doType(Module wfile, TypeDecl decl) {
-    throw new SyntaxError("No Javascript equivalent to types.", wfile.filename,
-        0, 0);
+    return new JsRaw("");
   }
 
   public JsStmt doFun(Module wfile, FunDecl decl) {
@@ -237,7 +253,12 @@ public class Builder {
   }
 
   public JsExpr doConstant(Module wfile, Constant expr) {
-    return new JsLiteral(expr.value.toString());
+    Object value = expr.value;
+    String literal = value.toString();
+    if (value instanceof String) {
+      literal = JsRegex.stringify(literal);
+    }
+    return new JsLiteral(literal);
   }
 
   public JsExpr doTypeConst(Module wfile, TypeConst expr) {

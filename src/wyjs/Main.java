@@ -111,11 +111,11 @@ public class Main {
       return UNKNOWN_ERROR;
     }
 
-    if(bootpath.isEmpty()) {
-    	bootpath.add("stdlib/");	
+    if (bootpath.isEmpty()) {
+      bootpath.add("stdlib/");
     }
-    
-    whileypath.add(0, ".");        
+
+    whileypath.add(0, ".");
     whileypath.addAll(bootpath);
 
     try {

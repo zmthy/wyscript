@@ -1,24 +1,29 @@
 // This file is part of the Whiley-to-Java Compiler (wyjc).
 //
-// The Whiley-to-Java Compiler is free software; you can redistribute 
-// it and/or modify it under the terms of the GNU General Public 
-// License as published by the Free Software Foundation; either 
+// The Whiley-to-Java Compiler is free software; you can redistribute
+// it and/or modify it under the terms of the GNU General Public
+// License as published by the Free Software Foundation; either
 // version 3 of the License, or (at your option) any later version.
 //
-// The Whiley-to-Java Compiler is distributed in the hope that it 
-// will be useful, but WITHOUT ANY WARRANTY; without even the 
-// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-// PURPOSE.  See the GNU General Public License for more details.
+// The Whiley-to-Java Compiler is distributed in the hope that it
+// will be useful, but WITHOUT ANY WARRANTY; without even the
+// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+// PURPOSE. See the GNU General Public License for more details.
 //
-// You should have received a copy of the GNU General Public 
-// License along with the Whiley-to-Java Compiler. If not, see 
+// You should have received a copy of the GNU General Public
+// License along with the Whiley-to-Java Compiler. If not, see
 // <http://www.gnu.org/licenses/>
 //
-// Copyright 2010, David James Pearce. 
+// Copyright 2010, David James Pearce.
 
 package wyjs.lang;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public abstract class Type {
 
@@ -92,13 +97,11 @@ public abstract class Type {
    */
   public static boolean isSubtype(Type t1, Type t2) {
 
-    if (t1 == t2
-				|| (t2 instanceof Void)
-				|| (t1 instanceof Any)
-				|| (t1 instanceof Real && (t2 instanceof Int || t2 instanceof Char))
-				|| (t1 instanceof Int && t2 instanceof Char)) {
-			return true;
-		} else if (t1 instanceof List && t2 instanceof List) {
+    if (t1 == t2 || (t2 instanceof Void) || (t1 instanceof Any)
+        || (t1 instanceof Real && (t2 instanceof Int || t2 instanceof Char))
+        || (t1 instanceof Int && t2 instanceof Char)) {
+      return true;
+    } else if (t1 instanceof List && t2 instanceof List) {
       // RULE: S-LIST
       List l1 = (List) t1;
       List l2 = (List) t2;
@@ -211,9 +214,9 @@ public abstract class Type {
 
   /**
    * Compute the <i>least upper bound</i> of two types t1 and t2. The least
-   * upper bound is a type t3 where <code>t3 :> t1</code>, <code>t3 :> t2</code>
-   * and there does not exist a type t4, where <code>t3 :> t4</code>,
-   * <code>t4 :> t1</code>, <code>t4 :> t2</code>.
+   * upper bound is a type t3 where <code>t3 :> t1</code>,
+   * <code>t3 :> t2</code> and there does not exist a type t4, where
+   * <code>t3 :> t4</code>, <code>t4 :> t1</code>, <code>t4 :> t2</code>.
    * 
    * @param t1
    * @param t2
@@ -368,8 +371,8 @@ public abstract class Type {
       HashMap<NameID, NameID> binding = new HashMap<NameID, NameID>();
       binding.put(r2.name, r1.name);
 
-      Type glb = greatestLowerBound(r1.type,
-          renameRecursiveTypes(r2.type, binding));
+      Type glb =
+          greatestLowerBound(r1.type, renameRecursiveTypes(r2.type, binding));
 
       if (isOpenRecursive(r1.name, glb)) {
         return T_RECURSIVE(r1.name, glb);
@@ -449,8 +452,9 @@ public abstract class Type {
         } else if (r1.type != null && r2.type != null) {
           HashMap<NameID, NameID> binding = new HashMap<NameID, NameID>();
           binding.put(r2.name, r1.name);
-          r1_type = greatestDifference(r1_type,
-              renameRecursiveTypes(r2_type, binding));
+          r1_type =
+              greatestDifference(r1_type,
+                  renameRecursiveTypes(r2_type, binding));
           if (isOpenRecursive(r1.name, r1_type)) {
             return T_RECURSIVE(r1.name, r1_type);
           } else {
@@ -481,8 +485,8 @@ public abstract class Type {
     if (t instanceof Existential) {
       return true;
     } else if (t instanceof Void || t instanceof Null || t instanceof Bool
-				|| t instanceof Char || t instanceof Int || t instanceof Real
-				|| t instanceof Any) {
+        || t instanceof Char || t instanceof Int || t instanceof Real
+        || t instanceof Any) {
       return false;
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -533,15 +537,16 @@ public abstract class Type {
   }
 
   /**
-   * This method lists the names for all recursive types used in the given type.
+   * This method lists the names for all recursive types used in the given
+   * type.
    * 
    * @param t
    * @return
    */
   public static java.util.Set<NameID> recursiveTypeNames(Type t) {
     if (t instanceof Existential || t instanceof Void || t instanceof Null
-				|| t instanceof Bool || t instanceof Char || t instanceof Int
-				|| t instanceof Real || t instanceof Any) {
+        || t instanceof Bool || t instanceof Char || t instanceof Int
+        || t instanceof Real || t instanceof Any) {
       return Collections.emptySet();
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -600,8 +605,8 @@ public abstract class Type {
    */
   public static Type renameRecursiveTypes(Type t, Map<NameID, NameID> binding) {
     if (t instanceof Existential || t instanceof Void || t instanceof Null
-				|| t instanceof Bool || t instanceof Char || t instanceof Int
-				|| t instanceof Real || t instanceof Any) {
+        || t instanceof Bool || t instanceof Char || t instanceof Int
+        || t instanceof Real || t instanceof Any) {
       return t;
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -663,15 +668,16 @@ public abstract class Type {
    * @param binding
    * @return
    */
-  public static Type substituteRecursiveTypes(Type t, Map<NameID, Type> binding) {
+  public static Type
+      substituteRecursiveTypes(Type t, Map<NameID, Type> binding) {
     if (t == null) {
       throw new IllegalArgumentException(
           "substituteRecursiveTypes cannot be called on null");
     }
 
     if (t instanceof Existential || t instanceof Void || t instanceof Null
-				|| t instanceof Bool || t instanceof Char || t instanceof Int
-				|| t instanceof Real || t instanceof Any || t instanceof Named) {
+        || t instanceof Bool || t instanceof Char || t instanceof Int
+        || t instanceof Real || t instanceof Any || t instanceof Named) {
       return t;
     } else if (t instanceof List) {
       List lt = (List) t;
@@ -723,17 +729,17 @@ public abstract class Type {
   }
 
   /**
-   * An open recursive type is one for which there is a recursive leaf node for
-   * the given key, but there is no enclosing recursive node for it.
+   * An open recursive type is one for which there is a recursive leaf node
+   * for the given key, but there is no enclosing recursive node for it.
    * 
    * @param t
    * @return
    */
   public static boolean isOpenRecursive(NameID key, Type t) {
     if (t instanceof Type.Void || t instanceof Type.Null
-				|| t instanceof Type.Bool || t instanceof Type.Char
-				|| t instanceof Type.Int || t instanceof Type.Real
-				|| t instanceof Type.Any || t instanceof Type.Existential) {
+        || t instanceof Type.Bool || t instanceof Type.Char
+        || t instanceof Type.Int || t instanceof Type.Real
+        || t instanceof Type.Any || t instanceof Type.Existential) {
       return false;
     } else if (t instanceof Type.List) {
       Type.List lt = (Type.List) t;
@@ -790,8 +796,8 @@ public abstract class Type {
   /**
    * <p>
    * The purpose of this method is to move recursive types into a normal form.
-   * This is necessary to ensure that subtyping works as expected. For example,
-   * consider these types:
+   * This is necessary to ensure that subtyping works as expected. For
+   * example, consider these types:
    * </p>
    * 
    * <pre>
@@ -813,8 +819,8 @@ public abstract class Type {
    * </p>
    * <p>
    * To resolve this issue, we normalise recursive types by unfactoring them
-   * where possible. Factoring is where we push types into the recursive block,
-   * as follows
+   * where possible. Factoring is where we push types into the recursive
+   * block, as follows
    * </p>
    * 
    * <pre>
@@ -823,10 +829,10 @@ public abstract class Type {
    */
   public static Type normaliseRecursiveType(Type t) {
     if (t instanceof Type.Void || t instanceof Type.Null
-				|| t instanceof Type.Bool || t instanceof Type.Char
-				|| t instanceof Type.Int || t instanceof Type.Real
-				|| t instanceof Type.Any || t instanceof Type.Existential
-				|| t instanceof Type.Named) {
+        || t instanceof Type.Bool || t instanceof Type.Char
+        || t instanceof Type.Int || t instanceof Type.Real
+        || t instanceof Type.Any || t instanceof Type.Existential
+        || t instanceof Type.Named) {
       return t;
     } else if (t instanceof Type.List) {
       Type.List lt = (Type.List) t;
@@ -967,9 +973,9 @@ public abstract class Type {
       Type.List tl = (Type.List) t;
       return Type.T_DICTIONARY(Type.T_INT, tl.element);
     } else if (t instanceof Type.Strung) {
-        Type.Strung tl = (Type.Strung) t;
-        return Type.T_DICTIONARY(Type.T_INT, Type.T_CHAR);
-      } else if (t instanceof Type.Named) {
+      // Type.Strung tl = (Type.Strung) t;
+      return Type.T_DICTIONARY(Type.T_INT, Type.T_CHAR);
+    } else if (t instanceof Type.Named) {
       Type.Named nt = (Type.Named) t;
       return effectiveDictionaryType(nt.type);
     }
@@ -1030,9 +1036,8 @@ public abstract class Type {
    */
   public static String toShortString(Type t) {
     if (t instanceof Any || t instanceof Void || t instanceof Null
-				|| t instanceof Real || t instanceof Int || t instanceof Char
-				|| t instanceof Bool || t instanceof Meta
-				|| t instanceof Existential) {
+        || t instanceof Real || t instanceof Int || t instanceof Char
+        || t instanceof Bool || t instanceof Meta || t instanceof Existential) {
       return t.toString();
     } else if (t instanceof Set) {
       Set st = (Set) t;
@@ -1198,40 +1203,38 @@ public abstract class Type {
 
   public static final class Char extends NonUnion {
 
-	  private Char() {
-	  }
+    private Char() {}
 
-	  public boolean equals(Object o) {
-		  return o == T_CHAR;
-	  }
+    public boolean equals(Object o) {
+      return o == T_CHAR;
+    }
 
-	  public int hashCode() {
-		  return 1;
-	  }
+    public int hashCode() {
+      return 1;
+    }
 
-	  public String toString() {
-		  return "char";
-	  }
+    public String toString() {
+      return "char";
+    }
   }
 
   public static final class Strung extends NonUnion {
 
-	  private Strung() {
-	  }
+    private Strung() {}
 
-	  public boolean equals(Object o) {
-		  return o == T_STRING;
-	  }
+    public boolean equals(Object o) {
+      return o == T_STRING;
+    }
 
-	  public int hashCode() {
-		  return 2;
-	  }
+    public int hashCode() {
+      return 2;
+    }
 
-	  public String toString() {
-		  return "string";
-	  }
+    public String toString() {
+      return "string";
+    }
   }
-  
+
   public static final class Int extends NonUnion {
 
     private Int() {}
@@ -1585,7 +1588,8 @@ public abstract class Type {
   }
 
   private static final ArrayList<Type> types = new ArrayList<Type>();
-  private static final HashMap<Type, Integer> cache = new HashMap<Type, Integer>();
+  private static final HashMap<Type, Integer> cache =
+      new HashMap<Type, Integer>();
 
   @SuppressWarnings("unchecked")
   private static <T extends Type> T get(T type) {
