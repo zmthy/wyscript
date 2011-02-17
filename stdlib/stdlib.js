@@ -1,6 +1,6 @@
-var $Map, $Set, $debug, $newMap, $newSet, println$VA, str, str$StA;
+var $Map, $Set, $debug, $newMap, $newSet, println$VA, str$StA;
 
-str = str$StA = (function () {
+str$StA = (function () {
   function keys(o) {
     var i, k;
     if (Object.keys) {
@@ -12,7 +12,7 @@ str = str$StA = (function () {
     }
     return k.sort();
   }
-  function join(list, arr, fn) {
+  function join(arr, fn, list) {
     var i, l, r;
     r = [];
     for (i = 0, l = arr.length; i < l; ++i) {
@@ -20,25 +20,26 @@ str = str$StA = (function () {
     }
     return (list ? "[" : "{") + r.join(", ") + (list ? "]" : "}");
   }
-  return function (o) {
+  function str(o) {
     var v;
     if (typeof o === 'object') {
       if (o instanceof Array) {
-        return join(true, o, str);
+        return join(o, str, true);
       } else if (o instanceof $Map) {
         v = o.values;
-        return join(false, o.keys, function (k, i) {
+        return join(o.keys, function (k, i) {
           return str(k) + "=" + str(v[i]);
         });
       } else if (o instanceof $Set) {
-        return join(false, o.values, str);
+        return join(o.values, str);
       }
-      return join(false, keys(o), function (k) {
+      return join(keys(o), function (k) {
         return k + ":" + str(o[k]);
       });
     }
     return o.toString();
-  };
+  }
+  return str;
 }());
 
 println$VA = (function () {
