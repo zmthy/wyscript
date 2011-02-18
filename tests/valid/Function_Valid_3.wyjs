@@ -4,5 +4,5 @@ string f(int x):
     return str(x)
 
 void main([string] args):
-    y = 234987234987234982304980130982398723
+    y = 23498723
     println(f(y))

@@ -5,7 +5,6 @@ import java.util.List;
 
 import wyjs.ast.expr.JsExpr;
 import wyjs.ast.expr.JsInvoke;
-import wyjs.ast.expr.JsList;
 import wyjs.ast.expr.JsLiteral;
 import wyjs.ast.expr.JsVariable;
 
@@ -33,9 +32,12 @@ public abstract class JsHelpers {
 
   public static JsInvoke newMap(List<? extends JsExpr> k,
       List<? extends JsExpr> v) {
+    assert(k.size() == v.size());
     List<JsExpr> args = new ArrayList<JsExpr>();
-    args.add(new JsList(k));
-    args.add(new JsList(v));
+    for (int i = 0; i < k.size(); ++i) {
+      args.add(k.get(i));
+      args.add(v.get(i));
+    }
     return new JsInvoke(new JsVariable("$newMap"), args);
   }
 

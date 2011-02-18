@@ -1,4 +1,4 @@
-var $Map, $Set, $debug, $newMap, $newSet, println$VA, str$StA;
+var $Set, $debug, $newSet, println$VA, str$StA;
 
 str$StA = (function () {
   function keys(o) {
@@ -23,15 +23,14 @@ str$StA = (function () {
   function str(o) {
     var v;
     if (typeof o === 'object') {
-      if (o instanceof Array) {
+      if (o instanceof $Set) {
+        return join(o, str);
+      } else if (o instanceof Array) {
         return join(o, str, true);
       } else if (o instanceof $Map) {
-        v = o.values;
-        return join(o.keys, function (k, i) {
-          return str(k) + "=" + str(v[i]);
+        return join(keys(o), function (k) {
+          return str(k) + "=" + str(o[k]);
         });
-      } else if (o instanceof $Set) {
-        return join(o.values, str);
       }
       return join(keys(o), function (k) {
         return k + ":" + str(o[k]);
@@ -44,9 +43,13 @@ str$StA = (function () {
 
 println$VA = (function () {
   return typeof sysout === 'undefined' ? function () {} : function (o) {
-    sysout.println(str(o));
+    sysout.println(str$StA(o));
   };
 }());
+
+function isLetter$BI(i) {
+  return /[a-zA-Z]/.test(String.fromCharCode(i));
+}
 
 // Performs a deep clone of a given value.
 function $clone(a) {
@@ -204,17 +207,15 @@ $newSet = (function () {
   var p;
   function Set(a) {
     var i, l;
-    this.values = [];
-    this.length = 0;
     for (i = 0, l = a.length; i < l; ++i) {
       this.push(a[i]);
     }
   }
-  p = Set.prototype;
+  p = Set.prototype = [];
+  p.listPush = p.push;
   p.push = function (v) {
-    if (!$in(this.values, v)) {
-      this.values.push(v);
-      this.length += 1;
+    if (!$in(this, v)) {
+      this.listPush(v);
     }
   };
   p.concat = function (a) {
@@ -231,37 +232,50 @@ $newSet = (function () {
   };
 }());
 
-// Returns a new map collection.
+function $Map() {}
+
 $newMap = (function () {
-  var p;
-  function Map(k, v) {
-    this.keys = $clone(k) || [];
-    this.values = $clone(v) || [];
-    this.length = 0;
+  return function () {
+    var a, i, l, m;
+    a = arguments, m = new $Map;
+    for (i = 0, l = a.length; i < l; i += 2) {
+      m[str$StA(a[i])] = a[i + 1];
+    }
+    return m;
   }
-  p = Map.prototype;
-  p.put = function (k, v) {
-    var index;
-    index = $indexOf(this.keys, k);
-    if (index > -1) {
-      this.keys[index] = k;
-      this.values[index] = v;
-    } else {
-      this.keys.push(k);
-      this.values.push(v);
-      this.length += 1;
-    }
-  };
-  p.get = function (k) {
-    var index;
-    index = $indexOf(this.keys, k);
-    if (index > -1) {
-      return this.values[index];
-    }
-    return null;
-  };
-  $Map = Map;
-  return function (k, v) {
-    return new Map(k, v);
-  };
 }());
+
+// // Returns a new map collection.
+// $newMap = (function () {
+//   var p;
+//   function Map(k, v) {
+//     this.keys = $clone(k) || [];
+//     this.values = $clone(v) || [];
+//     this.length = 0;
+//   }
+//   p = Map.prototype;
+//   p.put = function (k, v) {
+//     var index;
+//     index = $indexOf(this.keys, k);
+//     if (index > -1) {
+//       this.keys[index] = k;
+//       this.values[index] = v;
+//     } else {
+//       this.keys.push(k);
+//       this.values.push(v);
+//       this.length += 1;
+//     }
+//   };
+//   p.get = function (k) {
+//     var index;
+//     index = $indexOf(this.keys, k);
+//     if (index > -1) {
+//       return this.values[index];
+//     }
+//     return null;
+//   };
+//   $Map = Map;
+//   return function (k, v) {
+//     return new Map(k, v);
+//   };
+// }());

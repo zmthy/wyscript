@@ -1,3 +1,5 @@
+define byte as int
+
 {byte} f(int x):
     return {x}
 

@@ -332,7 +332,8 @@ public class Builder {
   }
 
   public JsExpr doListAccess(Module wfile, Access expr) {
-    return new JsAccess(doExpr(wfile, expr.src), doExpr(wfile, expr.index));
+    return new JsAccess(doExpr(wfile, expr.src), new JsInvoke(new JsVariable(
+        "str$StA"), doExpr(wfile, expr.index)));
   }
 
   public JsExpr doUnOp(Module wfile, UnOp expr) {
@@ -416,8 +417,8 @@ public class Builder {
     String mangled = expr.name + "$" + Type.type2str(attr.type);
 
     JsExpr function =
-        expr.receiver == null ? new JsVariable(mangled) : new JsAccess(
-            doExpr(wfile, expr.receiver), mangled);
+        expr.receiver == null ? new JsVariable(mangled) : new JsAccess(doExpr(
+            wfile, expr.receiver), mangled);
 
     return new JsInvoke(function, doExprs(wfile, expr.arguments));
   }

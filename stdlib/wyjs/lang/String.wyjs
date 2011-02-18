@@ -14,3 +14,6 @@ extern void println(* value):
     } else if (typeof console !== "undefined") {
     console.log(str(value));
     }
+
+extern bool isLetter(int value):
+    return /[a-zA-Z]/.test(String.fromCharCode(i));

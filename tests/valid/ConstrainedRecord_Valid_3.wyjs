@@ -1,3 +1,5 @@
+define byte as int
+
 define btup as {byte op, byte index}
 
 [byte] f(btup b):        

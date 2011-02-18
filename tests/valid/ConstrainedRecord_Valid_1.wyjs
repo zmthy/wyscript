@@ -4,6 +4,8 @@ define NOP as 0
 define unitCode as { NOP, RET }
 define UNIT as {unitCode op}
 
+define byte as int
+
 [byte] f(UNIT x):
     return [x.op]
 
