@@ -24,7 +24,8 @@ public class JsReturn implements JsStmt {
   /**
    * A non-empty return statement.
    * 
-   * @param value The value to return.
+   * @param value
+   *          The value to return.
    */
   public JsReturn(JsExpr value) {
     this.value = value;
@@ -38,8 +39,8 @@ public class JsReturn implements JsStmt {
   }
 
   public String compile(JsFormatter ws) {
-    return ws.idt + "return"
-        + (this.value == null ? "" : " " + value.compile(ws)) + ws.ln;
+    return ws.idt + "return" + (this.value == null ? "" : " " + value.compile(ws))
+        + ws.ln;
   }
 
   public void collectAssignments(Set<String> assignments) {

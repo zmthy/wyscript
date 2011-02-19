@@ -48,6 +48,10 @@ public abstract class JsHelpers {
   public static JsInvoke newSet(List<JsExpr> e) {
     return new JsInvoke(new JsVariable("$newSet"), e);
   }
+  
+  public static JsInvoke newTuple(List<JsExpr> e) {
+    return new JsInvoke(new JsVariable("$newTuple"), e);
+  }
 
   public static JsInvoke subset(JsExpr a, JsExpr b, boolean e) {
     return new JsInvoke(new JsVariable("$subset"), JsLists.wrap(a, b,

@@ -5,5 +5,5 @@ define byte as int
 
 void main([string] args):
     bytes = f(0)
-    println(str(bytes))
+    println(bytes)
 

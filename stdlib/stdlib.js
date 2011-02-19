@@ -1,4 +1,4 @@
-var $Set, $debug, $newSet, println$VA, str$StA;
+var $Set, $Tuple, $debug, $newSet, $newTuple, println$VA, str$StA;
 
 str$StA = (function () {
   function keys(o) {
@@ -12,21 +12,23 @@ str$StA = (function () {
     }
     return k.sort();
   }
-  function join(arr, fn, list) {
+  function join(arr, fn, o, e) {
     var i, l, r;
     r = [];
     for (i = 0, l = arr.length; i < l; ++i) {
       r.push(fn(arr[i], i));
     }
-    return (list ? "[" : "{") + r.join(", ") + (list ? "]" : "}");
+    return (o ? o : "{") + r.join(", ") + (e ? e : "}");
   }
   function str(o) {
     var v;
     if (typeof o === 'object') {
-      if (o instanceof $Set) {
+      if (o instanceof $Tuple) {
+        return join(o, str, '(', ')')
+      } else if (o instanceof $Set) {
         return join(o, str);
       } else if (o instanceof Array) {
-        return join(o, str, true);
+        return join(o, str, '[', ']');
       } else if (o instanceof $Map) {
         return join(keys(o), function (k) {
           return str(k) + "=" + str(o[k]);
@@ -51,21 +53,24 @@ function isLetter$BI(i) {
   return /[a-zA-Z]/.test(String.fromCharCode(i));
 }
 
+// Clones an object's constructor and prototype but no properties.
+function $copy(a) {
+  if (a.constructor === Array) {
+    return [];
+  }
+  function C() {}
+  C.prototype = a.constructor.prototype;
+  return new C;
+}
+
 // Performs a deep clone of a given value.
 function $clone(a) {
   var b, i, l;
   b = a;
   if (typeof a === 'object') {
-    if (a instanceof Array) {
-      b = [];
-      for (i = 0, l = a.length; i < l; ++i) {
-        b[i] = $clone(a[i]);
-      }
-    } else {
-      b = {};
-      for (i in a) {
-        b[i] = $clone(a[i]);
-      }
+    b = $copy(a);
+    for (i in a) {
+      b[i] = $clone(a[i]);
     }
   }
   return b;
@@ -164,7 +169,7 @@ function $indexOf(a, e) {
 // leaving the originals unaffected.
 function $intersect(a, b) {
   var c, i, l, v;
-  c = new a.constructor();
+  c = $copy(a);
   for (i = 0, l = a.length; i < l; ++i) {
     v = a[i];
     if ($in(b, v)) {
@@ -211,7 +216,7 @@ $newSet = (function () {
       this.push(a[i]);
     }
   }
-  p = Set.prototype = [];
+  (p = Set.prototype = []).constructor = Set;
   p.listPush = p.push;
   p.push = function (v) {
     if (!$in(this, v)) {
@@ -234,14 +239,26 @@ $newSet = (function () {
 
 function $Map() {}
 
-$newMap = (function () {
-  return function () {
-    var a, i, l, m;
-    a = arguments, m = new $Map;
-    for (i = 0, l = a.length; i < l; i += 2) {
-      m[str$StA(a[i])] = a[i + 1];
+function $newMap() {
+  var a, i, l, m;
+  a = arguments, m = new $Map;
+  for (i = 0, l = a.length; i < l; i += 2) {
+    m[str$StA(a[i])] = a[i + 1];
+  }
+  return m;
+}
+
+$newTuple = (function() {
+  function Tuple(a) {
+    var i, l;
+    for (i = 0, l = a.length; i < l; ++i) {
+      this.push(a[i]);
     }
-    return m;
+  }
+  (Tuple.prototype = []).constructor = Tuple;
+  $Tuple = Tuple;
+  return function () {
+    return new Tuple(arguments);
   }
 }());
 

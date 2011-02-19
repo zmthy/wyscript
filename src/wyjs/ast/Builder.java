@@ -3,8 +3,10 @@ package wyjs.ast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import wyjs.ast.expr.JsAccess;
 import wyjs.ast.expr.JsAssign;
@@ -101,17 +103,17 @@ public class Builder {
   }
 
   public JsStmt doFun(Module wfile, FunDecl decl) {
-    List<String> parameters =
-        decl.parameters.isEmpty() ? null : new ArrayList<String>();
-    List<JsStmt> body =
-        decl.statements.isEmpty() ? null : new ArrayList<JsStmt>();
+    List<String> parameters = decl.parameters.isEmpty() ? null
+        : new ArrayList<String>();
+    List<JsStmt> body = decl.statements.isEmpty() ? null
+        : new ArrayList<JsStmt>();
 
     for (Parameter parameter : decl.parameters) {
       parameters.add(parameter.name);
     }
 
     for (Stmt statement : decl.statements) {
-      JsStmt stmt = doStmt(wfile, statement);
+      JsStmt stmt = doStmt(wfile, decl, statement);
       if (stmt != null) {
         body.add(stmt);
       }
@@ -123,19 +125,19 @@ public class Builder {
     return new JsFunctionStmt(mangled, parameters, body);
   }
 
-  public JsStmt doStmt(Module wfile, Stmt stmt) {
+  public JsStmt doStmt(Module wfile, FunDecl function, Stmt stmt) {
     if (stmt instanceof Assign) {
-      return doAssign(wfile, (Assign) stmt);
+      return doAssign(wfile, function, (Assign) stmt);
     } else if (stmt instanceof Assert) {
       return doAssert(wfile, (Assert) stmt);
     } else if (stmt instanceof Return) {
       return doReturn(wfile, (Return) stmt);
     } else if (stmt instanceof While) {
-      return doWhile(wfile, (While) stmt);
+      return doWhile(wfile, function, (While) stmt);
     } else if (stmt instanceof For) {
-      return doFor(wfile, (For) stmt);
+      return doFor(wfile, function, (For) stmt);
     } else if (stmt instanceof IfElse) {
-      return doIfElse(wfile, (IfElse) stmt);
+      return doIfElse(wfile, function, (IfElse) stmt);
     } else if (stmt instanceof ExternJS) {
       return doExtern(wfile, (ExternJS) stmt);
     } else if (stmt instanceof Skip) {
@@ -150,15 +152,160 @@ public class Builder {
         0);
   }
 
-  public JsStmt doAssign(Module wfile, Assign stmt) {
-    JsExpr lhs = doExpr(wfile, stmt.lhs);
+  public JsStmt doAssign(Module wfile, FunDecl function, Assign stmt) {
+    Expr slhs = stmt.lhs, srhs = stmt.rhs;
+    JsExpr lhs = doExpr(wfile, slhs);
 
     if (!(lhs instanceof JsAssignable)) {
       throw new SyntaxError("Unassignable left hand side used: " + lhs,
           wfile.filename, 0, 0);
     }
 
-    return new JsLine(new JsAssign((JsAssignable) lhs, doExpr(wfile, stmt.rhs)));
+    JsExpr rhs = doExpr(wfile, srhs);
+
+    if (slhs instanceof Variable && srhs instanceof Variable) {
+      boolean found = false;
+      List<Stmt> body = function.statements;
+      for (int i = 0; i < body.size(); ++i) {
+        Stmt s = body.get(i);
+        if (!found) {
+          if (s == stmt) {
+            found = true;
+          }
+          continue;
+        }
+
+        // Just placing this first is the conservative option, but it works
+        // for now.
+        if (modifies(s, (Variable) slhs) || modifies(s, (Variable) srhs)) {
+          rhs = JsHelpers.clone(rhs);
+          break;
+        }
+        if (assigns(s, slhs)) {
+          Expr alhs = ((Assign) s).lhs;
+          if (alhs == slhs) {
+            break;
+          }
+        }
+      }
+    }
+
+    return new JsLine(new JsAssign((JsAssignable) lhs, rhs));
+  }
+
+  private Set<Stmt> collect(Stmt stmt) {
+    Set<Stmt> stmts = new HashSet<Stmt>();
+    if (stmt instanceof For) {
+      stmts.addAll(((For) stmt).body);
+    } else if (stmt instanceof While) {
+      stmts.addAll(((While) stmt).body);
+    } else if (stmt instanceof IfElse) {
+      IfElse ie = (IfElse) stmt;
+      stmts.addAll(ie.trueBranch);
+      stmts.addAll(ie.falseBranch);
+    }
+    return stmts;
+  }
+
+  private boolean assigns(Stmt stmt, Expr expr) {
+    for (Stmt s : collect(stmt)) {
+      if (assigns(s, expr)) {
+        return true;
+      }
+    }
+    if (stmt instanceof Assign) {
+      Assign assign = (Assign) stmt;
+      return assign.lhs == expr;
+    }
+
+    return false;
+  }
+
+  private boolean modifies(Stmt stmt, Variable expr) {
+    for (Stmt s : collect(stmt)) {
+      if (modifies(s, expr)) {
+        return true;
+      }
+    }
+    if (stmt instanceof Assign) {
+      Assign assign = (Assign) stmt;
+      Expr lhs = assign.lhs;
+      if (lhs instanceof RecordAccess || lhs instanceof Access) {
+        if (find(lhs, expr)) {
+          return true;
+        }
+      }
+    } else if (stmt instanceof Invoke) {
+      for (Expr arg : ((Invoke) stmt).arguments) {
+        if (find(arg, expr)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private boolean find(Expr expr, Variable thing) {
+    if (expr instanceof Variable) {
+      if (((Variable) expr).var.equals(thing.var)) {
+        return true;
+      }
+    }
+
+    if (expr instanceof BinOp) {
+      BinOp bop = (BinOp) expr;
+      return find(bop.lhs, thing) || find(bop.rhs, thing);
+    } else if (expr instanceof Access) {
+      Access acc = (Access) expr;
+      return find(acc.src, thing) || find(acc.index, thing);
+    } else if (expr instanceof UnOp) {
+      return find(((UnOp) expr).mhs, thing);
+    } else if (expr instanceof NaryOp) {
+      return findIn(((NaryOp) expr).arguments, thing);
+    } else if (expr instanceof Comprehension) {
+      Comprehension com = (Comprehension) expr;
+      return find(com.condition, thing) || find(com.value, thing)
+          || findInPairs(com.sources, thing);
+    } else if (expr instanceof RecordAccess) {
+      return find(((RecordAccess) expr).lhs, thing);
+    } else if (expr instanceof DictionaryGen) {
+      return findInPairs(((DictionaryGen) expr).pairs, thing);
+    } else if (expr instanceof RecordGen) {
+      return findIn(((RecordGen) expr).fields.values(), thing);
+    } else if (expr instanceof TupleGen) {
+      return findIn(((TupleGen) expr).fields, thing);
+    } else if (expr instanceof Invoke) {
+      Invoke inv = (Invoke) expr;
+      return find(inv.receiver, thing) || findIn(inv.arguments, thing);
+    }
+
+    return false;
+  }
+
+  private boolean findIn(Iterable<Expr> exprs, Variable thing) {
+    for (Expr e : exprs) {
+      if (find(e, thing)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean findInPairs(Iterable<? extends Pair<?, Expr>> exprs,
+      Variable thing) {
+    for (Pair<?, Expr> e : exprs) {
+      Object first = e.first();
+      if (first instanceof Expr) {
+        if (find((Expr) first, thing)) {
+          return true;
+        }
+      }
+      if (find(e.second(), thing)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public JsStmt doAssert(Module wfile, Assert stmt) {
@@ -166,29 +313,34 @@ public class Builder {
   }
 
   public JsStmt doReturn(Module wfile, Return stmt) {
-    return new JsReturn(doExpr(wfile, stmt.expr));
+    if (stmt.expr != null) {
+      return new JsReturn(JsHelpers.clone(doExpr(wfile, stmt.expr)));
+    }
+    return new JsReturn();
   }
 
-  public JsStmt doWhile(Module wfile, While stmt) {
+  public JsStmt doWhile(Module wfile, FunDecl function, While stmt) {
     return new JsWhile(doExpr(wfile, stmt.condition), collectBody(wfile,
-        stmt.body));
+        function, stmt.body));
   }
 
-  public JsStmt doFor(Module wfile, For stmt) {
+  public JsStmt doFor(Module wfile, FunDecl function, For stmt) {
     return new JsFor(stmt.variable, doExpr(wfile, stmt.source), collectBody(
-        wfile, stmt.body));
+        wfile, function, stmt.body));
   }
 
-  public JsStmt doIfElse(Module wfile, IfElse stmt) {
+  public JsStmt doIfElse(Module wfile, FunDecl function, IfElse stmt) {
     return new JsIfElse(doExpr(wfile, stmt.condition), collectBody(wfile,
-        stmt.trueBranch), collectBody(wfile, stmt.falseBranch));
+        function, stmt.trueBranch), collectBody(wfile, function,
+        stmt.falseBranch));
   }
 
-  private List<JsStmt> collectBody(Module wfile, List<Stmt> statements) {
+  private List<JsStmt> collectBody(Module wfile, FunDecl function,
+      List<Stmt> statements) {
     List<JsStmt> body = statements.isEmpty() ? null : new ArrayList<JsStmt>();
 
     for (Stmt statement : statements) {
-      body.add(doStmt(wfile, statement));
+      body.add(doStmt(wfile, function, statement));
     }
 
     return body;
@@ -389,8 +541,7 @@ public class Builder {
   }
 
   public JsExpr doDictionaryGen(Module wfile, DictionaryGen expr) {
-    List<JsExpr> keys = new ArrayList<JsExpr>(), values =
-        new ArrayList<JsExpr>();
+    List<JsExpr> keys = new ArrayList<JsExpr>(), values = new ArrayList<JsExpr>();
 
     for (Pair<Expr, Expr> pair : expr.pairs) {
       keys.add(doExpr(wfile, pair.first()));
@@ -409,18 +560,22 @@ public class Builder {
   }
 
   public JsExpr doTupleGen(Module wfile, TupleGen expr) {
-    return new JsList(doExprs(wfile, expr.fields));
+    return JsHelpers.newTuple(doExprs(wfile, expr.fields));
   }
 
   public JsExpr doInvoke(Module wfile, Invoke expr) {
     Attribute.FunType attr = expr.attribute(Attribute.FunType.class);
     String mangled = expr.name + "$" + Type.type2str(attr.type);
 
-    JsExpr function =
-        expr.receiver == null ? new JsVariable(mangled) : new JsAccess(doExpr(
-            wfile, expr.receiver), mangled);
+    JsExpr function = expr.receiver == null ? new JsVariable(mangled)
+        : new JsAccess(doExpr(wfile, expr.receiver), mangled);
 
-    return new JsInvoke(function, doExprs(wfile, expr.arguments));
+    List<JsExpr> args = doExprs(wfile, expr.arguments);
+    for (int i = 0; i < args.size(); ++i) {
+      args.set(i, JsHelpers.clone(args.get(i)));
+    }
+
+    return new JsInvoke(function, args);
   }
 
 }
