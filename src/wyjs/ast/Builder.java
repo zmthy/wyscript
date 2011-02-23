@@ -231,13 +231,13 @@ public class Builder {
       Assign assign = (Assign) stmt;
       Expr lhs = assign.lhs;
       if (lhs instanceof RecordAccess || lhs instanceof Access) {
-        if (find(lhs, expr)) {
+        if (find(lhs, expr, true)) {
           return true;
         }
       }
     } else if (stmt instanceof Invoke) {
       for (Expr arg : ((Invoke) stmt).arguments) {
-        if (find(arg, expr)) {
+        if (find(arg, expr, true)) {
           return true;
         }
       }
@@ -246,7 +246,15 @@ public class Builder {
     return false;
   }
 
-  private boolean find(Expr expr, Variable thing) {
+  /**
+   * Looks into an expression, looking for the given variable.
+   * 
+   * @param expr The expression to search in.
+   * @param thing The variable to look for.
+   * @param modifies Whether non-modifying references should be ignored.
+   * @return Whether the variable is found.
+   */
+  private boolean find(Expr expr, Variable thing, boolean modifies) {
     if (expr instanceof Variable) {
       if (((Variable) expr).var.equals(thing.var)) {
         return true;
@@ -255,20 +263,22 @@ public class Builder {
 
     if (expr instanceof BinOp) {
       BinOp bop = (BinOp) expr;
-      return find(bop.lhs, thing) || find(bop.rhs, thing);
+      return find(bop.lhs, thing, modifies) || find(bop.rhs, thing, modifies);
     } else if (expr instanceof Access) {
       Access acc = (Access) expr;
-      return find(acc.src, thing) || find(acc.index, thing);
+      return find(acc.src, thing, modifies) || modifies
+          && find(acc.index, thing, modifies);
     } else if (expr instanceof UnOp) {
-      return find(((UnOp) expr).mhs, thing);
+      return find(((UnOp) expr).mhs, thing, modifies);
     } else if (expr instanceof NaryOp) {
       return findIn(((NaryOp) expr).arguments, thing);
     } else if (expr instanceof Comprehension) {
       Comprehension com = (Comprehension) expr;
-      return find(com.condition, thing) || find(com.value, thing)
+      return find(com.condition, thing, modifies)
+          || find(com.value, thing, modifies)
           || findInPairs(com.sources, thing);
     } else if (expr instanceof RecordAccess) {
-      return find(((RecordAccess) expr).lhs, thing);
+      return find(((RecordAccess) expr).lhs, thing, modifies);
     } else if (expr instanceof DictionaryGen) {
       return findInPairs(((DictionaryGen) expr).pairs, thing);
     } else if (expr instanceof RecordGen) {
@@ -277,7 +287,8 @@ public class Builder {
       return findIn(((TupleGen) expr).fields, thing);
     } else if (expr instanceof Invoke) {
       Invoke inv = (Invoke) expr;
-      return find(inv.receiver, thing) || findIn(inv.arguments, thing);
+      return find(inv.receiver, thing, modifies)
+          || findIn(inv.arguments, thing);
     }
 
     return false;
@@ -285,7 +296,7 @@ public class Builder {
 
   private boolean findIn(Iterable<Expr> exprs, Variable thing) {
     for (Expr e : exprs) {
-      if (find(e, thing)) {
+      if (find(e, thing, false)) {
         return true;
       }
     }
@@ -297,11 +308,11 @@ public class Builder {
     for (Pair<?, Expr> e : exprs) {
       Object first = e.first();
       if (first instanceof Expr) {
-        if (find((Expr) first, thing)) {
+        if (find((Expr) first, thing, false)) {
           return true;
         }
       }
-      if (find(e.second(), thing)) {
+      if (find(e.second(), thing, false)) {
         return true;
       }
     }
